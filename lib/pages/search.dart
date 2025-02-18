@@ -4,13 +4,13 @@ class SearchPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Color(0xFF121212),
       appBar: AppBar(
-        backgroundColor: Colors.black,
+        backgroundColor: Color(0xFF121212),
         elevation: 0,
         title: SizedBox.shrink(),
         leading: Padding(
-          padding: const EdgeInsets.only(left: 0), // Ensure no extra left padding
+          padding: const EdgeInsets.only(left: 0),
           child: IconButton(
             icon: Icon(
               Icons.arrow_back,
