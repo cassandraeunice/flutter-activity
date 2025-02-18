@@ -56,10 +56,19 @@ flutter:
 
   assets:
     - assets/sandy.jpg
+    - assets/chromakopia.jpg
     - assets/freudian.jpg
     - assets/drake.png
     - assets/1975.png
     - assets/liked.jpeg
+    - assets/alligatorbites.jpg
+    - assets/gnx.jpg
+    - assets/playlist1.jpg
+    - assets/playlist2.jpg
+    - assets/playlist3.png
+    - assets/playlist4.jpg
+    - assets/playlist5.jpg
+    - assets/playlist6.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

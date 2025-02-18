@@ -11,7 +11,7 @@ class MoodyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Music App',
+      title: 'Moody',
       theme: ThemeData(
         primaryColor: Color(0xFF121212),
         scaffoldBackgroundColor: Color(0xFF121212),
@@ -31,13 +31,11 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Music App',
+          'Moody',
           style: TextStyle(color: Colors.white),
         ),
         iconTheme: IconThemeData(color: Colors.white),
       ),
-
-
       drawer: Drawer(
         backgroundColor: Color(0xFF202223),
         child: ListView(
@@ -74,7 +72,7 @@ class HomePage extends StatelessWidget {
             ListTile(
               leading: Icon(
                 Icons.home_filled,
-                color: Color(0xFFF94C57), // Change icon color here
+                color: Color(0xFFF94C57),
               ),
               title: Text(
                 'Home',
@@ -82,7 +80,7 @@ class HomePage extends StatelessWidget {
               ),
               onTap: () => Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => SearchPage()), //change SearchPage() to HomePage() if ever
+                MaterialPageRoute(builder: (context) => HomePage()),
               ),
             ),
             ListTile(
@@ -111,6 +109,150 @@ class HomePage extends StatelessWidget {
               onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => SearchPage()),
+              ),
+            ),
+          ],
+        ),
+      ),
+      body: SingleChildScrollView( // Wrap the entire body in a SingleChildScrollView
+        child: Padding(
+          padding: const EdgeInsets.only(left: 15.0, bottom: 15.0, right: 15.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Recently Played",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold
+                ),
+              ),
+              SizedBox(height: 10),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    _buildRecentlyCard('assets/chromakopia.jpg', "CHROMAKOPIA", "Tyler, The Creator"),
+                    SizedBox(width: 2),
+                    _buildRecentlyCard('assets/alligatorbites.jpg', "Alligator bites...", "Doechii"),
+                    SizedBox(width: 2),
+                    _buildRecentlyCard('assets/gnx.jpg', "GNX", "Kendrick Lamar"),
+                    SizedBox(width: 2),
+                  ],
+                ),
+              ),
+              SizedBox(height: 16),
+              Text(
+                "Made for You",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold
+                ),
+              ),
+              SizedBox(height: 10),
+              SingleChildScrollView(
+                scrollDirection: Axis.vertical, // Vertical scrolling
+                child: Column(
+                  children: [
+                    Wrap(
+                      spacing: 2, // Horizontal space between the items
+                      runSpacing: 2, // Vertical space between the rows
+                      children: [
+                        _buildPlaylistCard('assets/playlist1.jpg', "Study Hub"),
+                        _buildPlaylistCard('assets/playlist2.jpg', "On Repeat"),
+                        _buildPlaylistCard('assets/playlist3.png', "volume UPPP"),
+                        _buildPlaylistCard('assets/playlist4.jpg', "carpool!!"),
+                        _buildPlaylistCard('assets/playlist5.jpg', "focus time"),
+                        _buildPlaylistCard('assets/playlist6.jpg', "stuck in January"),
+                      ],
+                    ),
+                  ],
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Add the _buildGenreCard method here
+  Widget _buildPlaylistCard(String imagePath, String playlistName) {
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(3),
+      ),
+      elevation: 5,
+      child: Container(
+        width: 170,
+        height: 220,
+        padding: const EdgeInsets.all(10.0),
+        color: Colors.black,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Image.asset(
+              imagePath,
+              width: 155,
+              height: 155,
+              fit: BoxFit.cover,
+            ),
+            SizedBox(height: 8),
+            Text(
+              playlistName,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+              overflow: TextOverflow.ellipsis, // Handles overflow
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRecentlyCard(String imagePath, String albumName, String artistName) {
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(4),
+      ),
+      elevation: 5,
+      child: Container(
+        width: 175,
+        height: 225, // Increased height to accommodate text
+        padding: const EdgeInsets.all(8.0),
+        color: Colors.black,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Album Image
+            Image.asset(
+              imagePath,
+              width: 155,
+              height: 155,
+              fit: BoxFit.cover,
+            ),
+            SizedBox(height: 8),
+            // Album Name
+            Text(
+              albumName,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            // Artist Name
+            Text(
+              artistName,
+              style: TextStyle(
+                color: Colors.grey,
+                fontSize: 14,
               ),
             ),
           ],
