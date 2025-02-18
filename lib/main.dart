@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'pages/search.dart';
 import 'pages/library.dart';
+import 'pages/profile.dart';
 
 void main() {
   runApp(MoodyApp());
@@ -60,9 +61,15 @@ class HomePage extends StatelessWidget {
                         'Cassandra',
                         style: TextStyle(color: Color(0xFFF94C57), fontSize: 15),
                       ),
-                      Text(
-                        'View Profile',
-                        style: TextStyle(color: Colors.white, fontSize: 13),
+                      InkWell(
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => ProfilePage()),
+                        ),
+                        child: Text(
+                          'View Profile',
+                          style: TextStyle(color: Colors.white, fontSize: 13),
+                        ),
                       ),
                     ],
                   ),
