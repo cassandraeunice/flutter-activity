@@ -14,7 +14,7 @@ class ProfilePage extends StatelessWidget {
           child: IconButton(
             icon: Icon(
               Icons.arrow_back,
-              color: Colors.white, // Your desired color
+              color: Colors.white,
             ),
             onPressed: () {
               Navigator.pop(context);
@@ -22,13 +22,12 @@ class ProfilePage extends StatelessWidget {
           ),
         ),
       ),
-      body: SingleChildScrollView( // Make the body scrollable vertically
+      body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.only(left: 15.0, bottom: 15.0, right: 15.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center, // Center everything
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // CircleAvatar with increased size
               Center(
                 child: CircleAvatar(
                   backgroundImage: AssetImage('assets/sandy.jpg'),
@@ -37,7 +36,6 @@ class ProfilePage extends StatelessWidget {
               ),
               SizedBox(height: 30),
 
-              // Centered "Edit Profile" button
               Center(
                 child: Container(
                   decoration: BoxDecoration(
@@ -60,11 +58,10 @@ class ProfilePage extends StatelessWidget {
               ),
               SizedBox(height: 16),
 
-              // Horizontally scrollable stats
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center, // Center stats horizontally
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     _buildStatsColumn('10', 'PLAYLISTS'),
                     SizedBox(width: 20),
@@ -76,7 +73,6 @@ class ProfilePage extends StatelessWidget {
               ),
               SizedBox(height: 20),
 
-              // Playlist title and song details
               Row(
                 children: [
                   Text(
@@ -91,11 +87,9 @@ class ProfilePage extends StatelessWidget {
               ),
               SizedBox(height: 20),
 
-              // Liked Songs section
               _buildPlaylistCard('assets/liked.jpeg', 'Liked Songs'),
               SizedBox(height: 16),
 
-              // Artist section (repeated)
               _buildArtistRow('Lana Del Rey', 'Artist'),
               _buildArtistRow('Lana Del Rey', 'Artist'),
               _buildArtistRow('Lana Del Rey', 'Artist'),
@@ -103,7 +97,6 @@ class ProfilePage extends StatelessWidget {
 
               SizedBox(height: 16),
 
-              // See all playlist button
               Row(
                 children: [
                   Text(
@@ -123,7 +116,6 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  // Helper function to build stats block
   Widget _buildStatsColumn(String value, String label) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -147,7 +139,6 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  // Helper function to build a playlist card
   Widget _buildPlaylistCard(String imagePath, String title) {
     return Row(
       children: [
@@ -190,7 +181,6 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  // Helper function to build artist row
   Widget _buildArtistRow(String artistName, String role) {
     return Row(
       children: [

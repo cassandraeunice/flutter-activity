@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'pages/search.dart';
 import 'pages/library.dart';
 import 'pages/profile.dart';
+import 'pages/album.dart';
 
 void main() {
   runApp(MoodyApp());
@@ -116,6 +117,20 @@ class HomePage extends StatelessWidget {
               onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => SearchPage()),
+              ),
+            ),
+            ListTile(
+              leading: Icon(
+                Icons.album,
+                color: Color(0xFFF94C57),
+              ),
+              title: Text(
+                'Album',
+                style: TextStyle(color: Color(0xFFF94C57), fontSize: 13),
+              ),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => AlbumPage()),
               ),
             ),
           ],
