@@ -192,6 +192,41 @@ class LibraryPage extends StatelessWidget {
               SizedBox(height: 16),
               Row(
                 children: [
+                  Image.asset(
+                    'assets/playlist2.jpg',
+                    width: 67,
+                    height: 67,
+                  ),
+                  SizedBox(width: 10),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'On Repeat',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                            'Playlist',
+                            style: TextStyle(
+                              color: Color(0xFFB3B3B3),
+                              fontSize: 13,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  )
+                ],
+              ),
+              SizedBox(height: 16),
+              Row(
+                children: [
                   CircleAvatar(
                     radius: 35,
                     backgroundImage: AssetImage('assets/gnx.jpg'),
