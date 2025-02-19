@@ -3,6 +3,8 @@ import 'pages/search.dart';
 import 'pages/library.dart';
 import 'pages/profile.dart';
 import 'pages/album.dart';
+import 'pages/settings.dart';
+
 
 void main() {
   runApp(MoodyApp());
@@ -130,9 +132,25 @@ class HomePage extends StatelessWidget {
                 MaterialPageRoute(builder: (context) => AlbumPage()),
               ),
             ),
+            ListTile(
+              leading: Icon(
+                Icons.settings,
+                color: Color(0xFFF94C57),
+              ),
+              title: Text(
+                'Settings',
+                style: TextStyle(color: Color(0xFFF94C57), fontSize: 13),
+              ),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SettingsPage()),
+              ),
+            ),
           ],
         ),
       ),
+
+      // Home PAge
       body: SingleChildScrollView( // Wrap the entire body in a SingleChildScrollView
         child: Padding(
           padding: const EdgeInsets.only(left: 15.0, bottom: 15.0, right: 15.0),
