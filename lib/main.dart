@@ -32,10 +32,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'Moody',
-          style: TextStyle(color: Colors.white),
-        ),
+
         iconTheme: IconThemeData(color: Colors.white),
       ),
       drawer: Drawer(

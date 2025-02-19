@@ -14,7 +14,7 @@ class SearchPage extends StatelessWidget {
           child: IconButton(
             icon: Icon(
               Icons.arrow_back,
-              color: Colors.white, // Your desired color
+              color: Colors.white,
             ),
             onPressed: () {
               Navigator.pop(context);
@@ -22,7 +22,7 @@ class SearchPage extends StatelessWidget {
           ),
         ),
       ),
-      body: SingleChildScrollView( // Make the body scrollable vertically
+      body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.only(left: 15.0, bottom: 15.0, right: 15.0),
           child: Column(
