@@ -194,7 +194,7 @@ class LibraryPage extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 35,
-                    backgroundImage: AssetImage('assets/sandy.jpg'),
+                    backgroundImage: AssetImage('assets/gnx.jpg'),
                   ),
                   SizedBox(width: 10),
                   Column(
@@ -202,7 +202,7 @@ class LibraryPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Lana Del Rey',
+                        'Kendrick Lamar',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 16,
@@ -228,7 +228,7 @@ class LibraryPage extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 35,
-                    backgroundImage: AssetImage('assets/sandy.jpg'),
+                    backgroundImage: AssetImage('assets/alligatorbites.jpg'),
                   ),
                   SizedBox(width: 10),
                   Column(
@@ -236,7 +236,7 @@ class LibraryPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Lana Del Rey',
+                        'Doechiii',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 16,
@@ -262,7 +262,7 @@ class LibraryPage extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 35,
-                    backgroundImage: AssetImage('assets/sandy.jpg'),
+                    backgroundImage: AssetImage('assets/chromakopia.jpg'),
                   ),
                   SizedBox(width: 10),
                   Column(
@@ -270,7 +270,111 @@ class LibraryPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Lana Del Rey',
+                        'Tyler, The Creator',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                            'Artist',
+                            style: TextStyle(
+                              color: Color(0xFFB3B3B3),
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  )
+                ],
+              ),
+              SizedBox(height: 16),
+              Row(
+                children: [
+                  Image.asset(
+                    'assets/clairo.jpg',
+                    width: 67,
+                    height: 67,
+                  ),
+                  SizedBox(width: 10),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Charm',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                            'Album',
+                            style: TextStyle(
+                              color: Color(0xFFB3B3B3),
+                              fontSize: 13,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  )
+                ],
+              ),
+              SizedBox(height: 16),
+              Row(
+                children: [
+                  Image.asset(
+                    'assets/fleetwoodmac.jpg',
+                    width: 67,
+                    height: 67,
+                  ),
+                  SizedBox(width: 10),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Rumors (Super Deluxe)',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                            'Album',
+                            style: TextStyle(
+                              color: Color(0xFFB3B3B3),
+                              fontSize: 13,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  )
+                ],
+              ),
+              SizedBox(height: 16),
+              Row(
+                children: [
+                  CircleAvatar(
+                    radius: 35,
+                    backgroundImage: AssetImage('assets/oasis.jpg'),
+                  ),
+                  SizedBox(width: 10),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Oasis',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 16,
@@ -296,7 +400,7 @@ class LibraryPage extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 35,
-                    backgroundImage: AssetImage('assets/sandy.jpg'),
+                    backgroundImage: AssetImage('assets/realityclub.jpg'),
                   ),
                   SizedBox(width: 10),
                   Column(
@@ -304,109 +408,7 @@ class LibraryPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Lana Del Rey',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          Text(
-                            'Artist',
-                            style: TextStyle(
-                              color: Color(0xFFB3B3B3),
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  )
-                ],
-              ),
-              SizedBox(height: 16),
-              Row(
-                children: [
-                  CircleAvatar(
-                    radius: 35,
-                    backgroundImage: AssetImage('assets/sandy.jpg'),
-                  ),
-                  SizedBox(width: 10),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Lana Del Rey',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          Text(
-                            'Artist',
-                            style: TextStyle(
-                              color: Color(0xFFB3B3B3),
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  )
-                ],
-              ),
-              SizedBox(height: 16),
-              Row(
-                children: [
-                  CircleAvatar(
-                    radius: 35,
-                    backgroundImage: AssetImage('assets/sandy.jpg'),
-                  ),
-                  SizedBox(width: 10),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Lana Del Rey',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          Text(
-                            'Artist',
-                            style: TextStyle(
-                              color: Color(0xFFB3B3B3),
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  )
-                ],
-              ),
-              SizedBox(height: 16),
-              Row(
-                children: [
-                  CircleAvatar(
-                    radius: 35,
-                    backgroundImage: AssetImage('assets/sandy.jpg'),
-                  ),
-                  SizedBox(width: 10),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Lana Del Rey',
+                        'Reality Club',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 16,

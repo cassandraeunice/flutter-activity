@@ -69,6 +69,10 @@ flutter:
     - assets/playlist4.jpg
     - assets/playlist5.jpg
     - assets/playlist6.jpg
+    - assets/clairo.jpg
+    - assets/fleetwoodmac.jpg
+    - assets/oasis.jpg
+    - assets/realityclub.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
