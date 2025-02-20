@@ -9,22 +9,19 @@ class ProfilePage extends StatelessWidget {
         backgroundColor: Color(0xFF121212),
         elevation: 0,
         title: SizedBox.shrink(),
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 0),
-          child: IconButton(
-            icon: Icon(
-              Icons.arrow_back,
-              color: Colors.white,
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back,
+            color: Colors.white,
           ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.only(left: 15.0, bottom: 15.0, right: 15.0),
+          padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 15.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -87,16 +84,22 @@ class ProfilePage extends StatelessWidget {
               ),
               SizedBox(height: 20),
 
-              _buildPlaylistCard('assets/liked.jpeg', 'Liked Songs'),
+              // _buildPlaylistItem('assets/liked.jpeg', 'Liked Songs'),
+              // SizedBox(height: 16),
+
+              // Playlist Rows
+              _buildPlaylistItem('assets/playlist1.jpg', 'Study Hub'),
               SizedBox(height: 16),
-
-              _buildArtistRow('Lana Del Rey', 'Artist'),
-              _buildArtistRow('Lana Del Rey', 'Artist'),
-              _buildArtistRow('Lana Del Rey', 'Artist'),
-              _buildArtistRow('Lana Del Rey', 'Artist'),
-
+              _buildPlaylistItem('assets/playlist2.jpg', 'On Repeat'),
               SizedBox(height: 16),
-
+              _buildPlaylistItem('assets/playlist3.png', 'Volume UPPP'),
+              SizedBox(height: 16),
+              _buildPlaylistItem('assets/playlist4.jpg', 'carpool!!'),
+              SizedBox(height: 16),
+              _buildPlaylistItem('assets/playlist5.jpg', 'focus time'),
+              SizedBox(height: 16),
+              _buildPlaylistItem('assets/playlist6.jpg', 'stuck in January'),
+              SizedBox(height: 16),
               Row(
                 children: [
                   Text(
@@ -116,30 +119,30 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  Widget _buildStatsColumn(String value, String label) {
+  Widget _buildStatsColumn(String count, String label) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          value,
+          count,
           style: TextStyle(
             color: Colors.white,
-            fontSize: 16,
+            fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
         ),
+        SizedBox(height: 4),
         Text(
           label,
           style: TextStyle(
-            color: Colors.white,
-            fontSize: 12,
+            color: Colors.white70,
+            fontSize: 14,
           ),
         ),
       ],
     );
   }
 
-  Widget _buildPlaylistCard(String imagePath, String title) {
+  Widget _buildPlaylistItem(String imagePath, String title) {
     return Row(
       children: [
         Image.asset(
@@ -149,6 +152,7 @@ class ProfilePage extends StatelessWidget {
         ),
         SizedBox(width: 10),
         Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
@@ -160,55 +164,35 @@ class ProfilePage extends StatelessWidget {
             ),
             Row(
               children: [
-                Icon(
-                  Icons.push_pin,
-                  color: Color(0xFFFF375F),
-                  size: 12,
-                ),
-                SizedBox(width: 8),
                 Text(
-                  'Playlist - 58 songs',
+                  'Playlist',
                   style: TextStyle(
                     color: Color(0xFFB3B3B3),
-                    fontSize: 12,
+                    fontSize: 13,
                   ),
                 ),
               ],
             ),
           ],
-        ),
+        )
       ],
     );
   }
 
-  Widget _buildArtistRow(String artistName, String role) {
-    return Row(
-      children: [
-        CircleAvatar(
-          radius: 35,
-          backgroundImage: AssetImage('assets/sandy.jpg'),
+  Widget _buildPlaylistCard(String imagePath, String title) {
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
+      color: Color(0xFF1F1F1F),
+      child: ListTile(
+        contentPadding: EdgeInsets.all(10),
+        leading: Image.asset(imagePath, width: 50, height: 50),
+        title: Text(
+          title,
+          style: TextStyle(color: Colors.white, fontSize: 16),
         ),
-        SizedBox(width: 10),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              artistName,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-              ),
-            ),
-            Text(
-              role,
-              style: TextStyle(
-                color: Color(0xFFB3B3B3),
-                fontSize: 12,
-              ),
-            ),
-          ],
-        ),
-      ],
+      ),
     );
   }
 }
