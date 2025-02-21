@@ -135,7 +135,7 @@ class LibraryPage extends StatelessWidget {
                 children: [
                   Icon(
                     Icons.music_note,
-                    color: Color(0xFFA7A7A7),
+                    color: Colors.white,
                     size: 12,
                   ),
                   Text(
@@ -172,7 +172,7 @@ class LibraryPage extends StatelessWidget {
                         children: [
                           Icon(
                             Icons.push_pin,
-                            color: Color(0xFFFF375F),
+                            color: Colors.white,
                             size: 12,
                           ),
                           SizedBox(width: 8), // Add spacing between icon and text

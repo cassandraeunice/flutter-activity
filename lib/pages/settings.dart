@@ -52,8 +52,8 @@ class SettingsPage extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          'Cassandra',
-                          style: TextStyle(color: Color(0xFFF94C57), fontSize: 15),
+                          'Cassandra Cortez',
+                          style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
                         ),
                         InkWell(
                           onTap: () => Navigator.push(
@@ -62,7 +62,7 @@ class SettingsPage extends StatelessWidget {
                           ),
                           child: Text(
                             'View Profile',
-                            style: TextStyle(color: Colors.white, fontSize: 13),
+                            style: TextStyle(color: Colors.white, fontSize: 18),
                           ),
                         ),
                       ],
@@ -70,7 +70,7 @@ class SettingsPage extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(height: 10),
+              SizedBox(height: 15),
               _buildSettingItem("Display Name"),
               _buildSettingItem("Email"),
               _buildSettingItem("Password"),
@@ -93,7 +93,7 @@ class SettingsPage extends StatelessWidget {
         title,
         style: TextStyle(
           color: Colors.white,
-          fontSize: 16,
+          fontSize: 18,
         ),
       ),
       trailing: Icon(

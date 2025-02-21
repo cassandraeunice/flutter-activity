@@ -97,11 +97,11 @@ class SearchPage extends StatelessWidget {
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
-                    _buildGenreCard("News & Politics", 'assets/freudian.jpg', Color(0xFF8768A7)),
+                    _buildGenreCard("News & Politics", 'assets/politics.jpg', Color(0xFF8768A7)),
                     SizedBox(width: 8),
-                    _buildGenreCard("Comedy", 'assets/drake.png', Color(0xFFCF4321)),
+                    _buildGenreCard("Comedy", 'assets/comedy.jpg', Color(0xFFCF4321)),
                     SizedBox(width: 8),
-                    _buildGenreCard("Games", 'assets/1975.png', Color(0xFF3371E4)),
+                    _buildGenreCard("Games", 'assets/game.jpg', Color(0xFF3371E4)),
                   ],
                 ),
               ),
@@ -127,10 +127,10 @@ class SearchPage extends StatelessWidget {
                   mainAxisSpacing: 8, // Space between rows
                 ),
                 children: [
-                  _buildGenreCard("2021 Wrapped", 'assets/freudian.jpg', Color(0xFFABBB6D)),
-                  _buildGenreCard("Podcasts", 'assets/drake.png', Color(0xFF223160)),
-                  _buildGenreCard("Charts", 'assets/1975.png', Color(0xFF8768A7)),
-                  _buildGenreCard("Made for you", 'assets/1975.png', Color(0xFF75A768)),
+                  _buildGenreCard("2021 Wrapped", 'assets/wrapped.jpg', Color(0xFFABBB6D)),
+                  _buildGenreCard("Podcasts", 'assets/podcast.jpg', Color(0xFF223160)),
+                  _buildGenreCard("Charts", 'assets/charts.jpg', Color(0xFF8768A7)),
+                  _buildGenreCard("Made for you", 'assets/made for you.jpg', Color(0xFF75A768)),
                   // Add more cards as needed
                 ],
               ),

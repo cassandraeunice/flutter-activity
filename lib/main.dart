@@ -38,119 +38,142 @@ class HomePage extends StatelessWidget {
         iconTheme: IconThemeData(color: Colors.white),
       ),
       drawer: Drawer(
-        backgroundColor: Color(0xFF202223),
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            DrawerHeader(
-              decoration: BoxDecoration(color: Color(0xFF202223)),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  CircleAvatar(
-                    radius: 30,
-                    backgroundImage: AssetImage('assets/sandy.jpg'),
-                  ),
-                  SizedBox(width: 10),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
+        backgroundColor: Colors.black,
+        child: Padding(
+          padding: const EdgeInsets.only(left: 10.0),
+          child: Column(
+            children: [
+              // Add top padding for space
+              Padding(
+                padding: const EdgeInsets.only(top: 20.0), // Add space at the top
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Text(
-                        'Cassandra',
-                        style: TextStyle(color: Color(0xFFF94C57), fontSize: 15),
+                      CircleAvatar(
+                        radius: 40,
+                        backgroundImage: AssetImage('assets/sandy.jpg'),
                       ),
-                      InkWell(
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => ProfilePage()),
-                        ),
-                        child: Text(
-                          'View Profile',
-                          style: TextStyle(color: Colors.white, fontSize: 13),
-                        ),
+                      SizedBox(width: 15),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'Cassandra',
+                            style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
+                          InkWell(
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => ProfilePage()),
+                            ),
+                            child: Text(
+                              'View Profile',
+                              style: TextStyle(color: Colors.white, fontSize: 16),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
+                ),
               ),
-            ),
-            ListTile(
-              leading: Icon(
-                Icons.home_filled,
-                color: Color(0xFFF94C57),
+
+              // Main Drawer Items List with space above it
+              Expanded(
+                child: ListView(
+                  padding: EdgeInsets.zero,
+                  children: [
+                    ListTile(
+                      leading: Icon(
+                        Icons.home_filled,
+                        color: Colors.white,
+                        size: 30,
+                      ),
+                      title: Text(
+                        'Home',
+                        style: TextStyle(color: Colors.white, fontSize: 18),
+                      ),
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => HomePage()),
+                      ),
+                    ),
+                    ListTile(
+                      leading: Icon(
+                        Icons.library_music,
+                        color: Colors.white,
+                        size: 30,
+                      ),
+                      title: Text(
+                        'Your Library',
+                        style: TextStyle(color: Colors.white, fontSize: 18),
+                      ),
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => LibraryPage()),
+                      ),
+                    ),
+                    ListTile(
+                      leading: Icon(
+                        Icons.search,
+                        color: Colors.white,
+                        size: 30,
+                      ),
+                      title: Text(
+                        'Search',
+                        style: TextStyle(color: Colors.white, fontSize: 18),
+                      ),
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => SearchPage()),
+                      ),
+                    ),
+                    ListTile(
+                      leading: Icon(
+                        Icons.settings,
+                        color: Colors.white,
+                        size: 30,
+                      ),
+                      title: Text(
+                        'Settings',
+                        style: TextStyle(color: Colors.white, fontSize: 18),
+                      ),
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => SettingsPage()),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              title: Text(
-                'Home',
-                style: TextStyle(color: Color(0xFFF94C57), fontSize: 13),
+
+              // Add bottom padding for space before logout
+              Padding(
+                padding: const EdgeInsets.only(bottom: 20.0), // Add space at the bottom
+                child: ListTile(
+                  leading: Icon(
+                    Icons.logout,
+                    color: Colors.white,
+                    size: 30,
+                  ),
+                  title: Text(
+                    'Logout',
+                    style: TextStyle(color: Colors.white, fontSize: 18),
+                  ),
+                  onTap: () {
+                    // Handle logout logic here
+                  },
+                ),
               ),
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => HomePage()),
-              ),
-            ),
-            ListTile(
-              leading: Icon(
-                Icons.library_music,
-                color: Color(0xFFF94C57),
-              ),
-              title: Text(
-                'Your Library',
-                style: TextStyle(color: Color(0xFFF94C57), fontSize: 13),
-              ),
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => LibraryPage()),
-              ),
-            ),
-            ListTile(
-              leading: Icon(
-                Icons.search,
-                color: Color(0xFFF94C57),
-              ),
-              title: Text(
-                'Search',
-                style: TextStyle(color: Color(0xFFF94C57), fontSize: 13),
-              ),
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => SearchPage()),
-              ),
-            ),
-            // ListTile(
-            //   leading: Icon(
-            //     Icons.album,
-            //     color: Color(0xFFF94C57),
-            //   ),
-            //   title: Text(
-            //     'Album',
-            //     style: TextStyle(color: Color(0xFFF94C57), fontSize: 13),
-            //   ),
-            //   onTap: () => Navigator.push(
-            //     context,
-            //     MaterialPageRoute(builder: (context) => AlbumPage()),
-            //   ),
-            // ),
-            ListTile(
-              leading: Icon(
-                Icons.settings,
-                color: Color(0xFFF94C57),
-              ),
-              title: Text(
-                'Settings',
-                style: TextStyle(color: Color(0xFFF94C57), fontSize: 13),
-              ),
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => SettingsPage()),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
-
-      // Home PAge
+        // Home PAge
       body: SingleChildScrollView( // Wrap the entire body in a SingleChildScrollView
         child: Padding(
           padding: const EdgeInsets.only(left: 15.0, bottom: 15.0, right: 15.0),
