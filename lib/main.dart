@@ -43,9 +43,8 @@ class HomePage extends StatelessWidget {
           padding: const EdgeInsets.only(left: 10.0),
           child: Column(
             children: [
-              // Add top padding for space
               Padding(
-                padding: const EdgeInsets.only(top: 20.0), // Add space at the top
+                padding: const EdgeInsets.only(top: 20.0),
                 child: Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: Row(
@@ -72,7 +71,7 @@ class HomePage extends StatelessWidget {
                             ),
                             child: Text(
                               'View Profile',
-                              style: TextStyle(color: Colors.white, fontSize: 16),
+                              style: TextStyle(color: Colors.white70, fontSize: 16),
                             ),
                           ),
                         ],
@@ -181,10 +180,19 @@ class HomePage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
+                "Home",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold
+                ),
+              ),
+              SizedBox(height: 10),
+              Text(
                 "Recently Played",
                 style: TextStyle(
                     color: Colors.white,
-                    fontSize: 18,
+                    fontSize: 16,
                     fontWeight: FontWeight.bold
                 ),
               ),
@@ -211,7 +219,7 @@ class HomePage extends StatelessWidget {
                 "Made for You",
                 style: TextStyle(
                     color: Colors.white,
-                    fontSize: 18,
+                    fontSize: 16,
                     fontWeight: FontWeight.bold
                 ),
               ),

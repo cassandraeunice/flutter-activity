@@ -31,8 +31,16 @@ class ProfilePage extends StatelessWidget {
                   radius: 60,
                 ),
               ),
-              SizedBox(height: 30),
-
+              SizedBox(height: 10),
+              Text(
+                "Cassandra Cortez",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 10),
               Center(
                 child: Container(
                   decoration: BoxDecoration(
@@ -106,7 +114,7 @@ class ProfilePage extends StatelessWidget {
                     "See all playlist",
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 16,
+                      fontSize: 12,
                       fontWeight: FontWeight.bold,
                     ),
                   ),

@@ -74,9 +74,7 @@ class SearchPage extends StatelessWidget {
                 child: Row(
                   children: [
                     _buildGenreCard("R&B", 'assets/freudian.jpg', Color(0xFF9854B2)),
-                    SizedBox(width: 8),
                     _buildGenreCard("Hip-hop", 'assets/drake.png', Color(0xFF678026)),
-                    SizedBox(width: 8),
                     _buildGenreCard("Pop", 'assets/1975.png', Color(0xFF3371E4)),
                   ],
                 ),
@@ -98,9 +96,7 @@ class SearchPage extends StatelessWidget {
                 child: Row(
                   children: [
                     _buildGenreCard("News & Politics", 'assets/politics.jpg', Color(0xFF8768A7)),
-                    SizedBox(width: 8),
                     _buildGenreCard("Comedy", 'assets/comedy.jpg', Color(0xFFCF4321)),
-                    SizedBox(width: 8),
                     _buildGenreCard("Games", 'assets/game.jpg', Color(0xFF3371E4)),
                   ],
                 ),
@@ -118,21 +114,21 @@ class SearchPage extends StatelessWidget {
               ),
               SizedBox(height: 10),
               // Grid view section
-              GridView(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2, // 2 cards per row
-                  crossAxisSpacing: 8, // Space between columns
-                  mainAxisSpacing: 8, // Space between rows
-                ),
-                children: [
-                  _buildGenreCard("2021 Wrapped", 'assets/wrapped.jpg', Color(0xFFABBB6D)),
-                  _buildGenreCard("Podcasts", 'assets/podcast.jpg', Color(0xFF223160)),
-                  _buildGenreCard("Charts", 'assets/charts.jpg', Color(0xFF8768A7)),
-                  _buildGenreCard("Made for you", 'assets/made for you.jpg', Color(0xFF75A768)),
-                  // Add more cards as needed
+          SingleChildScrollView(
+            scrollDirection: Axis.vertical, // Vertical scrolling
+            child: Column(
+              children: [
+                  Wrap(
+                    children: [
+                      _buildGenreCard("2024 Wrapped", 'assets/wrapped.jpg', Color(0xFFABBB6D)),
+                      _buildGenreCard("Podcasts", 'assets/podcast.jpg', Color(0xFF223160)),
+                      _buildGenreCard("Charts", 'assets/charts.jpg', Color(0xFF8768A7)),
+                      _buildGenreCard("Made for you", 'assets/made for you.jpg', Color(0xFF75A768)),
+
+                    ]
+                  )
                 ],
+                )
               ),
             ],
           ),
