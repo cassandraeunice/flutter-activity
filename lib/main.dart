@@ -1,10 +1,17 @@
+import 'package:activity_1/pages/login.dart';
 import 'package:flutter/material.dart';
 import 'pages/search.dart';
 import 'pages/library.dart';
 import 'pages/profile.dart';
 // import 'pages/album.dart';
 import 'pages/settings.dart';
-
+import 'pages/start_page.dart';
+import 'pages/sign_up/sign_up1.dart';
+import 'pages/sign_up/sign_up2.dart';
+import 'pages/sign_up/sign_up3.dart';
+import 'pages/sign_up/sign_up4.dart';
+import 'pages/forgot_password/forgot_password1.dart';
+import 'pages/forgot_password/forgot_password2.dart';
 
 void main() {
   runApp(MoodyApp());
@@ -24,7 +31,18 @@ class MoodyApp extends StatelessWidget {
           elevation: 0,
         ),
       ),
-      home: HomePage(),
+      initialRoute: '/',  // Start page
+      routes: {
+        '/': (context) => StartPage(),
+        '/signup1': (context) => SignUpPage1(),
+        '/signup2': (context) => SignUpPage2(),
+        '/signup3': (context) => SignUpPage3(),
+        '/signup4': (context) => SignUpPage4(),
+        '/login': (context) => LoginPage(),
+        '/homepage': (context) => HomePage(),
+        '/forgotpassword1': (context) => ForgotPasswordPage1(),
+        '/forgotpassword2': (context) => ForgotPasswordPage2(),
+      },
     );
   }
 }
@@ -201,15 +219,15 @@ class HomePage extends StatelessWidget {
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
-                    _buildRecentlyCard('assets/chromakopia.jpg', "CHROMAKOPIA", "Tyler, The Creator"),
+                    _buildRecentlyCard('assets/album/chromakopia.jpg', "CHROMAKOPIA", "Tyler, The Creator"),
                     SizedBox(width: 2),
-                    _buildRecentlyCard('assets/alligatorbites.jpg', "Alligator bites...", "Doechii"),
+                    _buildRecentlyCard('assets/album/alligatorbites.jpg', "Alligator bites...", "Doechii"),
                     SizedBox(width: 2),
-                    _buildRecentlyCard('assets/gnx.jpg', "GNX", "Kendrick Lamar"),
+                    _buildRecentlyCard('assets/album/gnx.jpg', "GNX", "Kendrick Lamar"),
                     SizedBox(width: 2),
-                    _buildRecentlyCard('assets/fleetwoodmac.jpg', "Rumors", "Fleetwood Max"),
+                    _buildRecentlyCard('assets/album/fleetwoodmac.jpg', "Rumors", "Fleetwood Max"),
                     SizedBox(width: 2),
-                    _buildRecentlyCard('assets/realityclub.jpg', "Is It The Answer", "Reality Club"),
+                    _buildRecentlyCard('assets/album/realityclub.jpg', "Is It The Answer", "Reality Club"),
                     SizedBox(width: 2),
                   ],
                 ),
@@ -232,12 +250,12 @@ class HomePage extends StatelessWidget {
                       spacing: 2, // Horizontal space between the items
                       runSpacing: 2, // Vertical space between the rows
                       children: [
-                        _buildPlaylistCard('assets/playlist1.jpg', "Study Hub"),
-                        _buildPlaylistCard('assets/playlist2.jpg', "On Repeat"),
-                        _buildPlaylistCard('assets/playlist3.png', "volume UPPP"),
-                        _buildPlaylistCard('assets/playlist4.jpg', "carpool!!"),
-                        _buildPlaylistCard('assets/playlist5.jpg', "focus time"),
-                        _buildPlaylistCard('assets/playlist6.jpg', "stuck in January"),
+                        _buildPlaylistCard('assets/playlist/playlist1.jpg', "Study Hub"),
+                        _buildPlaylistCard('assets/playlist/playlist2.jpg', "On Repeat"),
+                        _buildPlaylistCard('assets/playlist/playlist3.png', "volume UPPP"),
+                        _buildPlaylistCard('assets/playlist/playlist4.jpg', "carpool!!"),
+                        _buildPlaylistCard('assets/playlist/playlist5.jpg', "focus time"),
+                        _buildPlaylistCard('assets/playlist/playlist6.jpg', "stuck in January"),
                       ],
                     ),
                   ],

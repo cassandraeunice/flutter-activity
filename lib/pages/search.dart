@@ -73,9 +73,9 @@ class SearchPage extends StatelessWidget {
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
-                    _buildGenreCard("R&B", 'assets/freudian.jpg', Color(0xFF9854B2)),
-                    _buildGenreCard("Hip-hop", 'assets/drake.png', Color(0xFF678026)),
-                    _buildGenreCard("Pop", 'assets/1975.png', Color(0xFF3371E4)),
+                    _buildGenreCard("R&B", 'assets/category/freudian.jpg', Color(0xFF9854B2)),
+                    _buildGenreCard("Hip-hop", 'assets/category/drake.png', Color(0xFF678026)),
+                    _buildGenreCard("Pop", 'assets/category/1975.png', Color(0xFF3371E4)),
                   ],
                 ),
               ),
@@ -95,9 +95,9 @@ class SearchPage extends StatelessWidget {
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
-                    _buildGenreCard("News & Politics", 'assets/politics.jpg', Color(0xFF8768A7)),
-                    _buildGenreCard("Comedy", 'assets/comedy.jpg', Color(0xFFCF4321)),
-                    _buildGenreCard("Games", 'assets/game.jpg', Color(0xFF3371E4)),
+                    _buildGenreCard("News & Politics", 'assets/category/politics.jpg', Color(0xFF8768A7)),
+                    _buildGenreCard("Comedy", 'assets/category/comedy.jpg', Color(0xFFCF4321)),
+                    _buildGenreCard("Games", 'assets/category/game.jpg', Color(0xFF3371E4)),
                   ],
                 ),
               ),
@@ -115,15 +115,15 @@ class SearchPage extends StatelessWidget {
               SizedBox(height: 10),
               // Grid view section
           SingleChildScrollView(
-            scrollDirection: Axis.vertical, // Vertical scrolling
+            scrollDirection: Axis.vertical,
             child: Column(
               children: [
                   Wrap(
                     children: [
-                      _buildGenreCard("2024 Wrapped", 'assets/wrapped.jpg', Color(0xFFABBB6D)),
-                      _buildGenreCard("Podcasts", 'assets/podcast.jpg', Color(0xFF223160)),
-                      _buildGenreCard("Charts", 'assets/charts.jpg', Color(0xFF8768A7)),
-                      _buildGenreCard("Made for you", 'assets/made for you.jpg', Color(0xFF75A768)),
+                      _buildGenreCard("2024 Wrapped", 'assets/category/wrapped.jpg', Color(0xFFABBB6D)),
+                      _buildGenreCard("Podcasts", 'assets/category/podcast.jpg', Color(0xFF223160)),
+                      _buildGenreCard("Charts", 'assets/category/charts.jpg', Color(0xFF8768A7)),
+                      _buildGenreCard("Made for you", 'assets/category/made for you.jpg', Color(0xFF75A768)),
 
                     ]
                   )

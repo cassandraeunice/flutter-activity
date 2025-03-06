@@ -152,7 +152,7 @@ class LibraryPage extends StatelessWidget {
               Row(
                 children: [
                   Image.asset(
-                    'assets/liked.jpeg',
+                    'assets/playlist/liked.jpeg',
                     width: 67,
                     height: 67,
                   ),
@@ -193,7 +193,7 @@ class LibraryPage extends StatelessWidget {
               Row(
                 children: [
                   Image.asset(
-                    'assets/playlist2.jpg',
+                    'assets/playlist/playlist2.jpg',
                     width: 67,
                     height: 67,
                   ),
@@ -229,7 +229,7 @@ class LibraryPage extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 35,
-                    backgroundImage: AssetImage('assets/gnx.jpg'),
+                    backgroundImage: AssetImage('assets/album/gnx.jpg'),
                   ),
                   SizedBox(width: 10),
                   Column(
@@ -263,7 +263,7 @@ class LibraryPage extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 35,
-                    backgroundImage: AssetImage('assets/alligatorbites.jpg'),
+                    backgroundImage: AssetImage('assets/album/alligatorbites.jpg'),
                   ),
                   SizedBox(width: 10),
                   Column(
@@ -297,7 +297,7 @@ class LibraryPage extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 35,
-                    backgroundImage: AssetImage('assets/chromakopia.jpg'),
+                    backgroundImage: AssetImage('assets/album/chromakopia.jpg'),
                   ),
                   SizedBox(width: 10),
                   Column(
@@ -330,7 +330,7 @@ class LibraryPage extends StatelessWidget {
               Row(
                 children: [
                   Image.asset(
-                    'assets/clairo.jpg',
+                    'assets/album/clairo.jpg',
                     width: 67,
                     height: 67,
                   ),
@@ -365,7 +365,7 @@ class LibraryPage extends StatelessWidget {
               Row(
                 children: [
                   Image.asset(
-                    'assets/fleetwoodmac.jpg',
+                    'assets/album/fleetwoodmac.jpg',
                     width: 67,
                     height: 67,
                   ),
@@ -401,7 +401,7 @@ class LibraryPage extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 35,
-                    backgroundImage: AssetImage('assets/oasis.jpg'),
+                    backgroundImage: AssetImage('assets/album/oasis.jpg'),
                   ),
                   SizedBox(width: 10),
                   Column(
@@ -435,7 +435,7 @@ class LibraryPage extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 35,
-                    backgroundImage: AssetImage('assets/realityclub.jpg'),
+                    backgroundImage: AssetImage('assets/album/realityclub.jpg'),
                   ),
                   SizedBox(width: 10),
                   Column(

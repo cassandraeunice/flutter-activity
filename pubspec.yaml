@@ -56,31 +56,32 @@ flutter:
 
   assets:
     - assets/sandy.jpg
-    - assets/chromakopia.jpg
-    - assets/freudian.jpg
-    - assets/drake.png
-    - assets/1975.png
-    - assets/charts.jpg
-    - assets/comedy.jpg
-    - assets/game.jpg
-    - assets/made for you.jpg
-    - assets/pinoy.png
-    - assets/podcast.jpg
-    - assets/politics.jpg
-    - assets/wrapped.jpg
-    - assets/liked.jpeg
-    - assets/alligatorbites.jpg
-    - assets/gnx.jpg
-    - assets/playlist1.jpg
-    - assets/playlist2.jpg
-    - assets/playlist3.png
-    - assets/playlist4.jpg
-    - assets/playlist5.jpg
-    - assets/playlist6.jpg
-    - assets/clairo.jpg
-    - assets/fleetwoodmac.jpg
-    - assets/oasis.jpg
-    - assets/realityclub.jpg
+    - assets/album/chromakopia.jpg
+    - assets/category/freudian.jpg
+    - assets/category/drake.png
+    - assets/category/1975.png
+    - assets/category/charts.jpg
+    - assets/category/comedy.jpg
+    - assets/category/game.jpg
+    - assets/category/made for you.jpg
+    - assets/category/pinoy.png
+    - assets/category/podcast.jpg
+    - assets/category/politics.jpg
+    - assets/category/wrapped.jpg
+    - assets/playlist/liked.jpeg
+    - assets/album/alligatorbites.jpg
+    - assets/album/gnx.jpg
+    - assets/playlist/playlist1.jpg
+    - assets/playlist/playlist2.jpg
+    - assets/playlist/playlist3.png
+    - assets/playlist/playlist4.jpg
+    - assets/playlist/playlist5.jpg
+    - assets/playlist/playlist6.jpg
+    - assets/album/clairo.jpg
+    - assets/album/fleetwoodmac.jpg
+    - assets/album/oasis.jpg
+    - assets/album/realityclub.jpg
+    - assets/background/start.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
