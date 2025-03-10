@@ -96,17 +96,17 @@ class ProfilePage extends StatelessWidget {
               // SizedBox(height: 16),
 
               // Playlist Rows
-              _buildPlaylistItem('assets/playlist1.jpg', 'Study Hub'),
+              _buildPlaylistItem('assets/playlist/playlist1.jpg', 'Study Hub'),
               SizedBox(height: 16),
-              _buildPlaylistItem('assets/playlist2.jpg', 'On Repeat'),
+              _buildPlaylistItem('assets/playlist/playlist2.jpg', 'On Repeat'),
               SizedBox(height: 16),
-              _buildPlaylistItem('assets/playlist3.png', 'Volume UPPP'),
+              _buildPlaylistItem('assets/playlist/playlist3.png', 'Volume UPPP'),
               SizedBox(height: 16),
-              _buildPlaylistItem('assets/playlist4.jpg', 'carpool!!'),
+              _buildPlaylistItem('assets/playlist/playlist4.jpg', 'carpool!!'),
               SizedBox(height: 16),
-              _buildPlaylistItem('assets/playlist5.jpg', 'focus time'),
+              _buildPlaylistItem('assets/playlist/playlist5.jpg', 'focus time'),
               SizedBox(height: 16),
-              _buildPlaylistItem('assets/playlist6.jpg', 'stuck in January'),
+              _buildPlaylistItem('assets/playlist/playlist6.jpg', 'stuck in January'),
               SizedBox(height: 16),
               Row(
                 children: [
