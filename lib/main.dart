@@ -12,6 +12,7 @@ import 'pages/sign_up/sign_up3.dart';
 import 'pages/sign_up/sign_up4.dart';
 import 'pages/forgot_password/forgot_password1.dart';
 import 'pages/forgot_password/forgot_password2.dart';
+import 'pages/edit_profile.dart';
 
 void main() {
   runApp(MoodyApp());
@@ -42,6 +43,7 @@ class MoodyApp extends StatelessWidget {
         '/homepage': (context) => HomePage(),
         '/forgotpassword1': (context) => ForgotPasswordPage1(),
         '/forgotpassword2': (context) => ForgotPasswordPage2(),
+        '/editprofile': (context) => EditProfilePage(),
       },
     );
   }
