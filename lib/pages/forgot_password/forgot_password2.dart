@@ -6,21 +6,45 @@ class ForgotPasswordPage2 extends StatefulWidget {
 }
 
 class _ForgotPassword2State extends State<ForgotPasswordPage2> {
-
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
 
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
 
-  String? _errorText;
+  List<String> _passwordErrors = [];
+  List<String> _confirmPasswordErrors = [];
 
   void _validatePasswords() {
     setState(() {
-      if (_passwordController.text != _confirmPasswordController.text) {
-        _errorText = "Passwords do not match";
-      } else {
-        _errorText = null;
+      _passwordErrors.clear();
+      _confirmPasswordErrors.clear();
+      String password = _passwordController.text.trim();
+      String confirmPassword = _confirmPasswordController.text.trim();
+
+      // Password validation
+      if (password.isEmpty) {
+        _passwordErrors.add("Password is required.");
+      }
+      if (password.length < 8) {
+        _passwordErrors.add("At least 8 characters.");
+      }
+      if (!RegExp(r'[A-Z]').hasMatch(password)) {
+        _passwordErrors.add("At least 1 uppercase letter (A-Z).");
+      }
+      if (!RegExp(r'[0-9]').hasMatch(password)) {
+        _passwordErrors.add("At least 1 number (0-9).");
+      }
+      if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(password)) {
+        _passwordErrors.add("At least 1 special character (@\$!%*?&).");
+      }
+
+      // Confirm password validation
+      if (confirmPassword.isEmpty) {
+        _confirmPasswordErrors.add("Confirm password is required.");
+      }
+      if (password != confirmPassword) {
+        _confirmPasswordErrors.add("Passwords do not match.");
       }
     });
   }
@@ -46,7 +70,6 @@ class _ForgotPassword2State extends State<ForgotPasswordPage2> {
         ),
         centerTitle: true,
       ),
-
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
         child: Column(
@@ -61,7 +84,7 @@ class _ForgotPassword2State extends State<ForgotPasswordPage2> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 10),
 
             // Password Field
             TextField(
@@ -89,6 +112,30 @@ class _ForgotPassword2State extends State<ForgotPasswordPage2> {
                 ),
               ),
             ),
+
+            // Password Errors in List Style
+            _passwordErrors.isNotEmpty
+                ? Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: _passwordErrors
+                  .map((error) => Padding(
+                padding: const EdgeInsets.only(left: 10, top: 2),
+                child: Row(
+                  children: [
+                    Icon(Icons.error_outline, color: Colors.red, size: 16),
+                    SizedBox(width: 5),
+                    Expanded(
+                      child: Text(
+                        error,
+                        style: TextStyle(color: Colors.red, fontSize: 14),
+                      ),
+                    ),
+                  ],
+                ),
+              ))
+                  .toList(),
+            )
+                : SizedBox(),
 
             SizedBox(height: 20),
 
@@ -126,18 +173,41 @@ class _ForgotPassword2State extends State<ForgotPasswordPage2> {
                     });
                   },
                 ),
-                errorText: _errorText,
               ),
-              onChanged: (value) => _validatePasswords(),
             ),
+
+            // Confirm Password Errors in List Style
+            _confirmPasswordErrors.isNotEmpty
+                ? Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: _confirmPasswordErrors
+                  .map((error) => Padding(
+                padding: const EdgeInsets.only(left: 10, top: 2),
+                child: Row(
+                  children: [
+                    Icon(Icons.error_outline, color: Colors.red, size: 16),
+                    SizedBox(width: 5),
+                    Expanded(
+                      child: Text(
+                        error,
+                        style: TextStyle(color: Colors.red, fontSize: 14),
+                      ),
+                    ),
+                  ],
+                ),
+              ))
+                  .toList(),
+            )
+                : SizedBox(),
+
             SizedBox(height: 30),
 
-            // Next button
+            // Next button (Always Enabled)
             Center(
               child: ElevatedButton(
                 onPressed: () {
                   _validatePasswords();
-                  if (_errorText == null) {
+                  if (_passwordErrors.isEmpty && _confirmPasswordErrors.isEmpty) {
                     Navigator.pushNamed(context, '/signup3');
                   }
                 },
@@ -148,7 +218,11 @@ class _ForgotPassword2State extends State<ForgotPasswordPage2> {
                 ),
                 child: Text(
                   'Next',
-                  style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),

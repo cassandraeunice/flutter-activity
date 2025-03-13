@@ -13,7 +13,6 @@ class _SignUpPage2State extends State<SignUpPage2> {
   final TextEditingController _confirmPasswordController = TextEditingController();
   List<String> _passwordErrors = [];
   String? _confirmPasswordError;
-  bool _isFormValid = false;
 
   final RegExp passwordUppercase = RegExp(r'[A-Z]');
   final RegExp passwordNumber = RegExp(r'[0-9]');
@@ -22,6 +21,8 @@ class _SignUpPage2State extends State<SignUpPage2> {
   void _validatePasswords() {
     setState(() {
       _passwordErrors.clear();
+      _confirmPasswordError = null;
+
       String password = _passwordController.text.trim();
       String confirmPassword = _confirmPasswordController.text.trim();
 
@@ -38,12 +39,16 @@ class _SignUpPage2State extends State<SignUpPage2> {
         _confirmPasswordError = "Confirm Password is required.";
       } else if (password != confirmPassword) {
         _confirmPasswordError = "Passwords do not match.";
-      } else {
-        _confirmPasswordError = null;
       }
-
-      _isFormValid = _passwordErrors.isEmpty && _confirmPasswordError == null;
     });
+  }
+
+  void _onNextPressed() {
+    _validatePasswords();
+
+    if (_passwordErrors.isEmpty && _confirmPasswordError == null) {
+      Navigator.pushNamed(context, '/signup3');
+    }
   }
 
   @override
@@ -108,7 +113,6 @@ class _SignUpPage2State extends State<SignUpPage2> {
                   },
                 ),
               ),
-              onChanged: (value) => _validatePasswords(),
             ),
             SizedBox(height: 5),
 
@@ -177,7 +181,6 @@ class _SignUpPage2State extends State<SignUpPage2> {
                   },
                 ),
               ),
-              onChanged: (value) => _validatePasswords(),
             ),
             SizedBox(height: 5),
 
@@ -204,17 +207,12 @@ class _SignUpPage2State extends State<SignUpPage2> {
 
             SizedBox(height: 30),
 
-            // Next button
+            // Next button (Always Enabled)
             Center(
               child: ElevatedButton(
-                onPressed: _isFormValid
-                    ? () {
-                  Navigator.pushNamed(context, '/signup3');
-                }
-                    : null,
+                onPressed: _onNextPressed,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: _isFormValid ? Colors.white : Colors.grey[500],
-                  disabledBackgroundColor: Colors.grey[500],
+                  backgroundColor: Colors.white,
                   minimumSize: Size(200, 50),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                 ),
@@ -222,7 +220,7 @@ class _SignUpPage2State extends State<SignUpPage2> {
                   'Next',
                   style: TextStyle(
                     fontSize: 18,
-                    color: _isFormValid ? Colors.black : Colors.black54,
+                    color: Colors.black,
                     fontWeight: FontWeight.bold,
                   ),
                 ),

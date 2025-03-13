@@ -8,7 +8,6 @@ class SignUpPage4 extends StatefulWidget {
 class _SignUpPage4State extends State<SignUpPage4> {
   final TextEditingController _nameController = TextEditingController();
   String? _errorText;
-  bool _isFormValid = false;
 
   void _validateName() {
     setState(() {
@@ -21,9 +20,15 @@ class _SignUpPage4State extends State<SignUpPage4> {
       } else {
         _errorText = null;
       }
-
-      _isFormValid = _errorText == null;
     });
+  }
+
+  void _onCreateAccountPressed() {
+    _validateName();
+
+    if (_errorText == null) {
+      Navigator.pushNamed(context, '/homepage');
+    }
   }
 
   @override
@@ -70,7 +75,6 @@ class _SignUpPage4State extends State<SignUpPage4> {
                   controller: _nameController,
                   style: TextStyle(color: Colors.white),
                   decoration: InputDecoration(
-                    labelStyle: TextStyle(color: Colors.white70),
                     filled: true,
                     fillColor: Color(0xFF777777),
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(5)),
@@ -79,11 +83,10 @@ class _SignUpPage4State extends State<SignUpPage4> {
                       borderRadius: BorderRadius.circular(5),
                     ),
                   ),
-                  onChanged: (value) => _validateName(),
                 ),
                 SizedBox(height: 5),
 
-                // Error Message with Icon
+                // Error Message
                 _errorText != null
                     ? Padding(
                   padding: const EdgeInsets.only(left: 10, top: 2),
@@ -153,12 +156,11 @@ class _SignUpPage4State extends State<SignUpPage4> {
                     style: TextStyle(color: Colors.white, fontSize: 12),
                   ),
                 ),
-                SizedBox(height: 100), // Space before the button
+                SizedBox(height: 100),
               ],
             ),
           ),
 
-          // Positioned Bottom Button
           Positioned(
             bottom: 20,
             left: 0,
@@ -166,14 +168,9 @@ class _SignUpPage4State extends State<SignUpPage4> {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 30),
               child: ElevatedButton(
-                onPressed: _isFormValid
-                    ? () {
-                  Navigator.pushNamed(context, '/homepage');
-                }
-                    : null, // Disable button if form is invalid
+                onPressed: _onCreateAccountPressed,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: _isFormValid ? Colors.white : Colors.grey[500], // Button disabled color
-                  disabledBackgroundColor: Colors.grey[500], // Explicit disabled color
+                  backgroundColor: Colors.white,
                   minimumSize: Size(double.infinity, 50),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                 ),
@@ -181,7 +178,7 @@ class _SignUpPage4State extends State<SignUpPage4> {
                   'Create an Account',
                   style: TextStyle(
                     fontSize: 18,
-                    color: _isFormValid ? Colors.black : Colors.black54, // Disabled text color
+                    color: Colors.black,
                     fontWeight: FontWeight.bold,
                   ),
                 ),

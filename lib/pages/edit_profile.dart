@@ -1,6 +1,80 @@
 import 'package:flutter/material.dart';
 
-class EditProfilePage extends StatelessWidget {
+class EditProfilePage extends StatefulWidget {
+  @override
+  _EditProfilePageState createState() => _EditProfilePageState();
+}
+
+class _EditProfilePageState extends State<EditProfilePage> {
+  final TextEditingController _displayNameController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+
+  String? _displayNameError;
+  String? _usernameError;
+  String? _emailError;
+
+  // Playlist switch states
+  Map<String, bool> _playlistSwitches = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _initializePlaylists();
+  }
+
+  void _initializePlaylists() {
+    List<String> playlistTitles = [
+      'Study Hub',
+      'On Repeat',
+      'Volume UPPP',
+      'carpool!!',
+      'focus time',
+      'stuck in January',
+    ];
+
+    // Set default state (all toggles ON)
+    for (var title in playlistTitles) {
+      _playlistSwitches[title] = true;
+    }
+  }
+
+  void _validateInput(String field) {
+    setState(() {
+      switch (field) {
+        case "Display Name":
+          _displayNameError = _displayNameController.text.trim().isEmpty
+              ? "Display Name is required."
+              : null;
+          break;
+        case "Username":
+          _usernameError = _usernameController.text.trim().isEmpty
+              ? "Username is required."
+              : null;
+          break;
+        case "Email":
+          String email = _emailController.text.trim();
+          _emailError = email.isEmpty
+              ? "Email is required."
+              : !RegExp(r"^[^@]+@[^@]+\.[^@]+$").hasMatch(email)
+              ? "Enter a valid email format (e.g., user@example.com)."
+              : null;
+          break;
+      }
+    });
+  }
+
+  void _onSaveChangesPressed() {
+    _validateInput("Display Name");
+    _validateInput("Username");
+    _validateInput("Email");
+
+    if (_displayNameError == null && _usernameError == null && _emailError == null) {
+      // Save changes and navigate back
+      Navigator.pop(context);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,11 +126,11 @@ class EditProfilePage extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 20),
-              _buildTextField("Display Name", "Cassandra Cortez"),
+              _buildTextField("Display Name", _displayNameController, _displayNameError),
               SizedBox(height: 16),
-              _buildTextField("Username", "cassie123"),
+              _buildTextField("Username", _usernameController, _usernameError),
               SizedBox(height: 16),
-              _buildTextField("Email", "cassie@example.com"),
+              _buildTextField("Email", _emailController, _emailError),
               SizedBox(height: 16),
               _buildPlaylistSection(),
               SizedBox(height: 30),
@@ -68,9 +142,7 @@ class EditProfilePage extends StatelessWidget {
                   ),
                   padding: EdgeInsets.symmetric(horizontal: 50, vertical: 12),
                 ),
-                onPressed: () {
-                  // Save profile changes
-                },
+                onPressed: _onSaveChangesPressed,
                 child: Text(
                   "Save Changes",
                   style: TextStyle(color: Colors.white, fontSize: 16),
@@ -83,22 +155,44 @@ class EditProfilePage extends StatelessWidget {
     );
   }
 
-  Widget _buildTextField(String label, String initialValue, {int maxLines = 1}) {
-    return TextField(
-      style: TextStyle(color: Colors.white),
-      maxLines: maxLines,
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: TextStyle(color: Colors.white70),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: Colors.white70),
+  Widget _buildTextField(String label, TextEditingController controller, String? errorText) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TextField(
+          controller: controller,
+          style: TextStyle(color: Colors.white),
+          decoration: InputDecoration(
+            labelText: label,
+            labelStyle: TextStyle(color: Colors.white70),
+            filled: true,
+            fillColor: Color(0xFF222222),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(color: Colors.white70),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(5),
+              borderSide: BorderSide(color: Colors.white),
+            ),
+          ),
+          onChanged: (value) => _validateInput(label),
         ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(5),
-          borderSide: BorderSide(color: Colors.white),
-        ),
-      ),
+        if (errorText != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 5),
+            child: Row(
+              children: [
+                Icon(Icons.error_outline, color: Colors.red, size: 16),
+                SizedBox(width: 5),
+                Text(
+                  errorText,
+                  style: TextStyle(color: Colors.red, fontSize: 14),
+                ),
+              ],
+            ),
+          ),
+      ],
     );
   }
 
@@ -122,6 +216,7 @@ class EditProfilePage extends StatelessWidget {
         SizedBox(height: 10),
         Column(
           children: playlists.map((playlist) {
+            String title = playlist['title']!;
             return Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: Row(
@@ -136,15 +231,17 @@ class EditProfilePage extends StatelessWidget {
                       ),
                       SizedBox(width: 10),
                       Text(
-                        playlist['title']!,
+                        title,
                         style: TextStyle(color: Colors.white, fontSize: 16),
                       ),
                     ],
                   ),
                   Switch(
-                    value: true,
+                    value: _playlistSwitches[title] ?? true,
                     onChanged: (bool newValue) {
-                      // Handle switch toggle functionality
+                      setState(() {
+                        _playlistSwitches[title] = newValue;
+                      });
                     },
                     activeColor: Colors.green,
                   ),

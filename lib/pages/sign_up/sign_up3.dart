@@ -9,7 +9,6 @@ class SignUpPage3 extends StatefulWidget {
 class _SignUpPage3State extends State<SignUpPage3> {
   final TextEditingController _phoneController = TextEditingController();
   String? _errorText;
-  bool _isFormValid = false;
 
   void _validatePhoneNumber() {
     setState(() {
@@ -24,9 +23,15 @@ class _SignUpPage3State extends State<SignUpPage3> {
       } else {
         _errorText = null;
       }
-
-      _isFormValid = _errorText == null;
     });
+  }
+
+  void _onNextPressed() {
+    _validatePhoneNumber();
+
+    if (_errorText == null) {
+      Navigator.pushNamed(context, '/signup4');
+    }
   }
 
   @override
@@ -85,10 +90,10 @@ class _SignUpPage3State extends State<SignUpPage3> {
                   borderRadius: BorderRadius.circular(5),
                 ),
               ),
-              onChanged: (value) => _validatePhoneNumber(),
             ),
             SizedBox(height: 5),
 
+            // Error Message
             _errorText != null
                 ? Padding(
               padding: const EdgeInsets.only(left: 10, top: 2),
@@ -111,17 +116,11 @@ class _SignUpPage3State extends State<SignUpPage3> {
 
             SizedBox(height: 20),
 
-            // Next button
             Center(
               child: ElevatedButton(
-                onPressed: _isFormValid
-                    ? () {
-                  Navigator.pushNamed(context, '/signup4');
-                }
-                    : null,
+                onPressed: _onNextPressed,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: _isFormValid ? Colors.white : Colors.grey[500],
-                  disabledBackgroundColor: Colors.grey[500],
+                  backgroundColor: Colors.white,
                   minimumSize: Size(200, 50),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                 ),
@@ -129,7 +128,7 @@ class _SignUpPage3State extends State<SignUpPage3> {
                   'Next',
                   style: TextStyle(
                     fontSize: 18,
-                    color: _isFormValid ? Colors.black : Colors.black54,
+                    color: Colors.black,
                     fontWeight: FontWeight.bold,
                   ),
                 ),

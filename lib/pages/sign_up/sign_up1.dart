@@ -8,7 +8,6 @@ class SignUpPage1 extends StatefulWidget {
 class _SignUpPage1State extends State<SignUpPage1> {
   final TextEditingController _emailController = TextEditingController();
   List<String> _emailErrors = [];
-  bool _isFormValid = false;
 
   // Regular expression for basic email validation
   final RegExp emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
@@ -31,9 +30,15 @@ class _SignUpPage1State extends State<SignUpPage1> {
           _emailErrors.add("Enter a valid email format (e.g., user@example.com).");
         }
       }
-
-      _isFormValid = _emailErrors.isEmpty;
     });
+  }
+
+  void _onNextPressed() {
+    _validateEmail();
+
+    if (_emailErrors.isEmpty) {
+      Navigator.pushNamed(context, '/signup2');
+    }
   }
 
   @override
@@ -87,11 +92,9 @@ class _SignUpPage1State extends State<SignUpPage1> {
                   borderRadius: BorderRadius.circular(5),
                 ),
               ),
-              onChanged: (value) => _validateEmail(),
             ),
             SizedBox(height: 5),
 
-            // Email Validation Errors in List Style
             _emailErrors.isNotEmpty
                 ? Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -128,17 +131,11 @@ class _SignUpPage1State extends State<SignUpPage1> {
             ),
             SizedBox(height: 30),
 
-            // Next button
             Center(
               child: ElevatedButton(
-                onPressed: _isFormValid
-                    ? () {
-                  Navigator.pushNamed(context, '/signup2');
-                }
-                    : null, // Disable button if form is invalid
+                onPressed: _onNextPressed,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: _isFormValid ? Colors.white : Colors.grey[500], // Disabled button color
-                  disabledBackgroundColor: Colors.grey[500], // Explicit disabled color
+                  backgroundColor: Colors.white,
                   minimumSize: Size(200, 50),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                 ),
@@ -146,7 +143,7 @@ class _SignUpPage1State extends State<SignUpPage1> {
                   'Next',
                   style: TextStyle(
                     fontSize: 18,
-                    color: _isFormValid ? Colors.black : Colors.black54, // Disabled text color
+                    color: Colors.black,
                     fontWeight: FontWeight.bold,
                   ),
                 ),

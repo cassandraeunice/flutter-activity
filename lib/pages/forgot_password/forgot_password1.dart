@@ -6,6 +6,29 @@ class ForgotPasswordPage1 extends StatefulWidget {
 }
 
 class _ForgotPassword1State extends State<ForgotPasswordPage1> {
+  final TextEditingController _emailController = TextEditingController();
+  String? _errorText;
+  bool _isFormValid = false;
+
+  final RegExp emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
+  final RegExp usernameRegex = RegExp(r'^[a-zA-Z0-9]+$'); // Alphanumeric, no spaces
+
+  void _validateInput() {
+    setState(() {
+      String input = _emailController.text.trim();
+
+      if (input.isEmpty) {
+        _errorText = "This field is required.";
+      } else if (!emailRegex.hasMatch(input) && !usernameRegex.hasMatch(input)) {
+        _errorText = "Enter a valid email or username.";
+      } else {
+        _errorText = null;
+      }
+
+      _isFormValid = _errorText == null;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,7 +50,6 @@ class _ForgotPassword1State extends State<ForgotPasswordPage1> {
         ),
         centerTitle: true,
       ),
-
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
         child: Column(
@@ -45,11 +67,11 @@ class _ForgotPassword1State extends State<ForgotPasswordPage1> {
             ),
             SizedBox(height: 10),
 
-            // Email Field
+            // Email or Username Input Field
             TextField(
+              controller: _emailController,
               style: TextStyle(color: Colors.white),
               decoration: InputDecoration(
-                labelStyle: TextStyle(color: Colors.white70),
                 filled: true,
                 fillColor: Color(0xFF777777),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(5)),
@@ -58,24 +80,54 @@ class _ForgotPassword1State extends State<ForgotPasswordPage1> {
                   borderRadius: BorderRadius.circular(5),
                 ),
               ),
+              onChanged: (value) => _validateInput(),
             ),
+            SizedBox(height: 5),
+
+            // Error Message with Icon
+            _errorText != null
+                ? Padding(
+              padding: const EdgeInsets.only(left: 10, top: 2),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(Icons.error_outline, color: Colors.red, size: 16),
+                  SizedBox(width: 5),
+                  Expanded(
+                    child: Text(
+                      _errorText!,
+                      style: TextStyle(color: Colors.red, fontSize: 14),
+                      softWrap: true,
+                    ),
+                  ),
+                ],
+              ),
+            )
+                : SizedBox(),
 
             SizedBox(height: 30),
 
             // Next button
             Center(
               child: ElevatedButton(
-                onPressed: () {
+                onPressed: _isFormValid
+                    ? () {
                   Navigator.pushNamed(context, '/forgotpassword2');
-                },
+                }
+                    : null, // Disable button if input is invalid
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
+                  backgroundColor: _isFormValid ? Colors.white : Colors.grey[500], // Button disabled color
+                  disabledBackgroundColor: Colors.grey[500], // Explicit disabled color
                   minimumSize: Size(200, 50),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                 ),
                 child: Text(
                   'Next',
-                  style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: _isFormValid ? Colors.black : Colors.black54, // Disabled text color
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
