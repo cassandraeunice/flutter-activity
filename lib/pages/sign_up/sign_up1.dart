@@ -6,6 +6,36 @@ class SignUpPage1 extends StatefulWidget {
 }
 
 class _SignUpPage1State extends State<SignUpPage1> {
+  final TextEditingController _emailController = TextEditingController();
+  List<String> _emailErrors = [];
+  bool _isFormValid = false;
+
+  // Regular expression for basic email validation
+  final RegExp emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
+
+  void _validateEmail() {
+    setState(() {
+      _emailErrors.clear();
+      String email = _emailController.text.trim();
+
+      if (email.isEmpty) {
+        _emailErrors.add("Email is required.");
+      } else {
+        if (!email.contains("@")) {
+          _emailErrors.add("Must contain '@' symbol.");
+        }
+        if (!email.contains(".")) {
+          _emailErrors.add("Must contain a domain (e.g., '.com').");
+        }
+        if (!emailRegex.hasMatch(email)) {
+          _emailErrors.add("Enter a valid email format (e.g., user@example.com).");
+        }
+      }
+
+      _isFormValid = _emailErrors.isEmpty;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,11 +57,9 @@ class _SignUpPage1State extends State<SignUpPage1> {
         ),
         centerTitle: true,
       ),
-
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 20),
@@ -47,6 +75,7 @@ class _SignUpPage1State extends State<SignUpPage1> {
 
             // Email Field
             TextField(
+              controller: _emailController,
               style: TextStyle(color: Colors.white),
               decoration: InputDecoration(
                 labelStyle: TextStyle(color: Colors.white70),
@@ -58,7 +87,36 @@ class _SignUpPage1State extends State<SignUpPage1> {
                   borderRadius: BorderRadius.circular(5),
                 ),
               ),
+              onChanged: (value) => _validateEmail(),
             ),
+            SizedBox(height: 5),
+
+            // Email Validation Errors in List Style
+            _emailErrors.isNotEmpty
+                ? Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: _emailErrors
+                  .map((error) => Padding(
+                padding: const EdgeInsets.only(left: 10, top: 2),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(Icons.error_outline, color: Colors.red, size: 16),
+                    SizedBox(width: 5),
+                    Expanded(
+                      child: Text(
+                        error,
+                        style: TextStyle(color: Colors.red, fontSize: 14),
+                        softWrap: true,
+                      ),
+                    ),
+                  ],
+                ),
+              ))
+                  .toList(),
+            )
+                : SizedBox(),
+
             SizedBox(height: 10),
 
             Align(
@@ -73,17 +131,24 @@ class _SignUpPage1State extends State<SignUpPage1> {
             // Next button
             Center(
               child: ElevatedButton(
-                onPressed: () {
+                onPressed: _isFormValid
+                    ? () {
                   Navigator.pushNamed(context, '/signup2');
-                },
+                }
+                    : null, // Disable button if form is invalid
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
+                  backgroundColor: _isFormValid ? Colors.white : Colors.grey[500], // Disabled button color
+                  disabledBackgroundColor: Colors.grey[500], // Explicit disabled color
                   minimumSize: Size(200, 50),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                 ),
                 child: Text(
                   'Next',
-                  style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: _isFormValid ? Colors.black : Colors.black54, // Disabled text color
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),

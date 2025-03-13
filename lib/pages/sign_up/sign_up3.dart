@@ -8,6 +8,26 @@ class SignUpPage3 extends StatefulWidget {
 
 class _SignUpPage3State extends State<SignUpPage3> {
   final TextEditingController _phoneController = TextEditingController();
+  String? _errorText;
+  bool _isFormValid = false;
+
+  void _validatePhoneNumber() {
+    setState(() {
+      String phone = _phoneController.text.trim();
+
+      if (phone.isEmpty) {
+        _errorText = "Phone number is required.";
+      } else if (phone.length < 10) {
+        _errorText = "Phone number must be 10 digits.";
+      } else if (!RegExp(r'^[0-9]+$').hasMatch(phone)) {
+        _errorText = "Only numbers are allowed.";
+      } else {
+        _errorText = null;
+      }
+
+      _isFormValid = _errorText == null;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,23 +85,53 @@ class _SignUpPage3State extends State<SignUpPage3> {
                   borderRadius: BorderRadius.circular(5),
                 ),
               ),
+              onChanged: (value) => _validatePhoneNumber(),
             ),
-            SizedBox(height: 30),
+            SizedBox(height: 5),
+
+            _errorText != null
+                ? Padding(
+              padding: const EdgeInsets.only(left: 10, top: 2),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(Icons.error_outline, color: Colors.red, size: 16),
+                  SizedBox(width: 5),
+                  Expanded(
+                    child: Text(
+                      _errorText!,
+                      style: TextStyle(color: Colors.red, fontSize: 14),
+                      softWrap: true,
+                    ),
+                  ),
+                ],
+              ),
+            )
+                : SizedBox(),
+
+            SizedBox(height: 20),
 
             // Next button
             Center(
               child: ElevatedButton(
-                onPressed: () {
+                onPressed: _isFormValid
+                    ? () {
                   Navigator.pushNamed(context, '/signup4');
-                },
+                }
+                    : null,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
+                  backgroundColor: _isFormValid ? Colors.white : Colors.grey[500],
+                  disabledBackgroundColor: Colors.grey[500],
                   minimumSize: Size(200, 50),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                 ),
                 child: Text(
                   'Next',
-                  style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: _isFormValid ? Colors.black : Colors.black54,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),

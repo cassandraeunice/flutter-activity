@@ -7,7 +7,59 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   bool _isPasswordVisible = false;
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  List<String> _emailErrors = [];
+  List<String> _passwordErrors = [];
+
+  // Regular expressions for validation
+  final RegExp emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
+  final RegExp passwordUppercase = RegExp(r'[A-Z]');
+  final RegExp passwordNumber = RegExp(r'[0-9]');
+  final RegExp passwordSpecialChar = RegExp(r'[@$!%*?&]');
+
+  void _validateInputs() {
+    setState(() {
+      // Validate email
+      _emailErrors.clear();
+      if (_emailController.text.isEmpty) {
+        _emailErrors.add("Email is required");
+      } else {
+        if (!_emailController.text.contains("@")) {
+          _emailErrors.add("Must contain '@' symbol");
+        }
+        if (!_emailController.text.contains(".")) {
+          _emailErrors.add("Must contain a domain (e.g., '.com')");
+        }
+        if (!emailRegex.hasMatch(_emailController.text)) {
+          _emailErrors.add("Enter a valid email format (e.g., user@example.com)");
+        }
+      }
+
+      // Validate password
+      _passwordErrors.clear();
+      if (_passwordController.text.isEmpty) {
+        _passwordErrors.add("Password is required");
+      } else {
+        if (_passwordController.text.length < 8) {
+          _passwordErrors.add("At least 8 characters");
+        }
+        if (!passwordUppercase.hasMatch(_passwordController.text)) {
+          _passwordErrors.add("At least 1 uppercase letter (A-Z)");
+        }
+        if (!passwordNumber.hasMatch(_passwordController.text)) {
+          _passwordErrors.add("At least 1 number (0-9)");
+        }
+        if (!passwordSpecialChar.hasMatch(_passwordController.text)) {
+          _passwordErrors.add("At least 1 special character (@\$!%*?&)");
+        }
+      }
+    });
+
+    if (_emailErrors.isEmpty && _passwordErrors.isEmpty) {
+      Navigator.pushNamed(context, '/homepage');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,24 +82,23 @@ class _LoginPageState extends State<LoginPage> {
         ),
         centerTitle: true,
       ),
-
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 20),
             Center(
-              child:
-                Text(
-                  "Welcome back!",
-                  style: TextStyle(color: Colors.white, fontSize: 25, fontWeight: FontWeight.bold),
-                ),
+              child: Text(
+                "Welcome back!",
+                style: TextStyle(color: Colors.white, fontSize: 25, fontWeight: FontWeight.bold),
+              ),
             ),
             SizedBox(height: 20),
+
             // Email Field
             TextField(
+              controller: _emailController,
               style: TextStyle(color: Colors.white),
               decoration: InputDecoration(
                 labelText: "Email",
@@ -59,14 +110,40 @@ class _LoginPageState extends State<LoginPage> {
                   borderSide: BorderSide(color: Color(0xFF777777)),
                   borderRadius: BorderRadius.circular(5),
                 ),
-                suffixIcon: IconButton(
-                  icon: Icon(Icons.email, color: Colors.white),
-                  onPressed: () {},
-                ),
+                suffixIcon: Icon(Icons.email, color: Colors.white),
               ),
             ),
+            SizedBox(height: 5),
+
+            // Email Validation Errors (Wrapped Text)
+            _emailErrors.isNotEmpty
+                ? Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: _emailErrors
+                  .map((error) => Padding(
+                padding: const EdgeInsets.only(left: 10, top: 2),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(Icons.error_outline, color: Colors.red, size: 16),
+                    SizedBox(width: 5),
+                    Expanded( // Ensures wrapping
+                      child: Text(
+                        error,
+                        style: TextStyle(color: Colors.red, fontSize: 14),
+                        softWrap: true,
+                      ),
+                    ),
+                  ],
+                ),
+              ))
+                  .toList(),
+            )
+                : SizedBox(),
+
             SizedBox(height: 15),
 
+            // Password Field
             TextField(
               controller: _passwordController,
               obscureText: !_isPasswordVisible,
@@ -94,16 +171,42 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
             ),
+            SizedBox(height: 5),
+
+            // Password Validation Errors (Wrapped Text)
+            _passwordErrors.isNotEmpty
+                ? Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: _passwordErrors
+                  .map((error) => Padding(
+                padding: const EdgeInsets.only(left: 10, top: 2),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(Icons.error_outline, color: Colors.red, size: 16),
+                    SizedBox(width: 5),
+                    Expanded( // Ensures wrapping
+                      child: Text(
+                        error,
+                        style: TextStyle(color: Colors.red, fontSize: 14),
+                        softWrap: true,
+                      ),
+                    ),
+                  ],
+                ),
+              ))
+                  .toList(),
+            )
+                : SizedBox(),
+
             SizedBox(height: 30),
 
+            // Login Button
             Center(
               child: Column(
-                mainAxisSize: MainAxisSize.min,
                 children: [
                   ElevatedButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/homepage');
-                    },
+                    onPressed: _validateInputs,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
                       minimumSize: Size(double.infinity, 50),

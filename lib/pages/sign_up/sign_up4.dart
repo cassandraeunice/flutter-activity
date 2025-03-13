@@ -6,6 +6,26 @@ class SignUpPage4 extends StatefulWidget {
 }
 
 class _SignUpPage4State extends State<SignUpPage4> {
+  final TextEditingController _nameController = TextEditingController();
+  String? _errorText;
+  bool _isFormValid = false;
+
+  void _validateName() {
+    setState(() {
+      String name = _nameController.text.trim();
+
+      if (name.isEmpty) {
+        _errorText = "Name is required.";
+      } else if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(name)) {
+        _errorText = "Only letters and spaces are allowed.";
+      } else {
+        _errorText = null;
+      }
+
+      _isFormValid = _errorText == null;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,7 +47,6 @@ class _SignUpPage4State extends State<SignUpPage4> {
         ),
         centerTitle: true,
       ),
-
       body: Stack(
         children: [
           SingleChildScrollView(
@@ -48,6 +67,7 @@ class _SignUpPage4State extends State<SignUpPage4> {
 
                 // Name Input Field
                 TextField(
+                  controller: _nameController,
                   style: TextStyle(color: Colors.white),
                   decoration: InputDecoration(
                     labelStyle: TextStyle(color: Colors.white70),
@@ -59,7 +79,31 @@ class _SignUpPage4State extends State<SignUpPage4> {
                       borderRadius: BorderRadius.circular(5),
                     ),
                   ),
+                  onChanged: (value) => _validateName(),
                 ),
+                SizedBox(height: 5),
+
+                // Error Message with Icon
+                _errorText != null
+                    ? Padding(
+                  padding: const EdgeInsets.only(left: 10, top: 2),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(Icons.error_outline, color: Colors.red, size: 16),
+                      SizedBox(width: 5),
+                      Expanded(
+                        child: Text(
+                          _errorText!,
+                          style: TextStyle(color: Colors.red, fontSize: 14),
+                          softWrap: true,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+                    : SizedBox(),
+
                 SizedBox(height: 10),
                 Align(
                   alignment: Alignment.centerLeft,
@@ -122,17 +166,24 @@ class _SignUpPage4State extends State<SignUpPage4> {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 30),
               child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/homepage'); //change if nacreate na yung sa choose artists
-                },
+                onPressed: _isFormValid
+                    ? () {
+                  Navigator.pushNamed(context, '/homepage');
+                }
+                    : null, // Disable button if form is invalid
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
+                  backgroundColor: _isFormValid ? Colors.white : Colors.grey[500], // Button disabled color
+                  disabledBackgroundColor: Colors.grey[500], // Explicit disabled color
                   minimumSize: Size(double.infinity, 50),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                 ),
                 child: Text(
                   'Create an Account',
-                  style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: _isFormValid ? Colors.black : Colors.black54, // Disabled text color
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),

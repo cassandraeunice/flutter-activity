@@ -11,16 +11,38 @@ class _SignUpPage2State extends State<SignUpPage2> {
 
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
+  List<String> _passwordErrors = [];
+  String? _confirmPasswordError;
+  bool _isFormValid = false;
 
-  String? _errorText;
+  final RegExp passwordUppercase = RegExp(r'[A-Z]');
+  final RegExp passwordNumber = RegExp(r'[0-9]');
+  final RegExp passwordSpecialChar = RegExp(r'[@$!%*?&]');
 
   void _validatePasswords() {
     setState(() {
-      if (_passwordController.text != _confirmPasswordController.text) {
-        _errorText = "Passwords do not match";
+      _passwordErrors.clear();
+      String password = _passwordController.text.trim();
+      String confirmPassword = _confirmPasswordController.text.trim();
+
+      if (password.isEmpty) {
+        _passwordErrors.add("Password is required.");
       } else {
-        _errorText = null;
+        if (password.length < 8) _passwordErrors.add("At least 8 characters.");
+        if (!passwordUppercase.hasMatch(password)) _passwordErrors.add("At least 1 uppercase letter (A-Z).");
+        if (!passwordNumber.hasMatch(password)) _passwordErrors.add("At least 1 number (0-9).");
+        if (!passwordSpecialChar.hasMatch(password)) _passwordErrors.add("At least 1 special character (@\$!%*?&).");
       }
+
+      if (confirmPassword.isEmpty) {
+        _confirmPasswordError = "Confirm Password is required.";
+      } else if (password != confirmPassword) {
+        _confirmPasswordError = "Passwords do not match.";
+      } else {
+        _confirmPasswordError = null;
+      }
+
+      _isFormValid = _passwordErrors.isEmpty && _confirmPasswordError == null;
     });
   }
 
@@ -45,7 +67,6 @@ class _SignUpPage2State extends State<SignUpPage2> {
         ),
         centerTitle: true,
       ),
-
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
         child: Column(
@@ -60,7 +81,7 @@ class _SignUpPage2State extends State<SignUpPage2> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 10),
 
             // Password Field
             TextField(
@@ -87,17 +108,39 @@ class _SignUpPage2State extends State<SignUpPage2> {
                   },
                 ),
               ),
+              onChanged: (value) => _validatePasswords(),
             ),
-            SizedBox(height: 10),
+            SizedBox(height: 5),
 
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                "Use at least 8 characters.",
-                style: TextStyle(color: Colors.white, fontSize: 12),
-              ),
-            ),
-            SizedBox(height: 20),
+            // Password Validation Errors (List Style)
+            _passwordErrors.isNotEmpty
+                ? Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: _passwordErrors
+                  .map(
+                    (error) => Padding(
+                  padding: const EdgeInsets.only(left: 10, top: 2),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(Icons.error_outline, color: Colors.red, size: 16),
+                      SizedBox(width: 5),
+                      Expanded(
+                        child: Text(
+                          error,
+                          style: TextStyle(color: Colors.red, fontSize: 14),
+                          softWrap: true,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+                  .toList(),
+            )
+                : SizedBox(),
+
+            SizedBox(height: 10),
 
             Text(
               "Confirm Password",
@@ -133,29 +176,55 @@ class _SignUpPage2State extends State<SignUpPage2> {
                     });
                   },
                 ),
-                errorText: _errorText,
               ),
               onChanged: (value) => _validatePasswords(),
             ),
+            SizedBox(height: 5),
+
+            // Confirm Password Error
+            _confirmPasswordError != null
+                ? Padding(
+              padding: const EdgeInsets.only(left: 10, top: 2),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(Icons.error_outline, color: Colors.red, size: 16),
+                  SizedBox(width: 5),
+                  Expanded(
+                    child: Text(
+                      _confirmPasswordError!,
+                      style: TextStyle(color: Colors.red, fontSize: 14),
+                      softWrap: true,
+                    ),
+                  ),
+                ],
+              ),
+            )
+                : SizedBox(),
+
             SizedBox(height: 30),
 
             // Next button
             Center(
               child: ElevatedButton(
-                onPressed: () {
-                  _validatePasswords();
-                  if (_errorText == null) {
-                    Navigator.pushNamed(context, '/signup3');
-                  }
-                },
+                onPressed: _isFormValid
+                    ? () {
+                  Navigator.pushNamed(context, '/signup3');
+                }
+                    : null,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
+                  backgroundColor: _isFormValid ? Colors.white : Colors.grey[500],
+                  disabledBackgroundColor: Colors.grey[500],
                   minimumSize: Size(200, 50),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                 ),
                 child: Text(
                   'Next',
-                  style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: _isFormValid ? Colors.black : Colors.black54,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
