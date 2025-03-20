@@ -202,7 +202,6 @@ class _ForgotPassword2State extends State<ForgotPasswordPage2> {
 
             SizedBox(height: 30),
 
-            // Next button (Always Enabled)
             Center(
               child: ElevatedButton(
                 onPressed: () {

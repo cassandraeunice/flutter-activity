@@ -140,7 +140,7 @@ class SearchPage extends StatelessWidget {
   Widget _buildGenreCard(String genre, String imagePath, Color color) {
     return Card(
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(4), // Card radius
+        borderRadius: BorderRadius.circular(4),
       ),
       elevation: 5,
       color: color,

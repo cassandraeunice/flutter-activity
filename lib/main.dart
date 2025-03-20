@@ -101,7 +101,6 @@ class HomePage extends StatelessWidget {
                 ),
               ),
 
-              // Main Drawer Items List with space above it
               Expanded(
                 child: ListView(
                   padding: EdgeInsets.zero,
@@ -170,9 +169,8 @@ class HomePage extends StatelessWidget {
                 ),
               ),
 
-              // Add bottom padding for space before logout
               Padding(
-                padding: const EdgeInsets.only(bottom: 20.0), // Add space at the bottom
+                padding: const EdgeInsets.only(bottom: 20.0),
                 child: ListTile(
                   leading: Icon(
                     Icons.logout,
@@ -193,7 +191,7 @@ class HomePage extends StatelessWidget {
         ),
       ),
         // Home PAge
-      body: SingleChildScrollView( // Wrap the entire body in a SingleChildScrollView
+      body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.only(left: 15.0, bottom: 15.0, right: 15.0),
           child: Column(
@@ -245,12 +243,12 @@ class HomePage extends StatelessWidget {
               ),
               SizedBox(height: 10),
               SingleChildScrollView(
-                scrollDirection: Axis.vertical, // Vertical scrolling
+                scrollDirection: Axis.vertical,
                 child: Column(
                   children: [
                     Wrap(
-                      spacing: 2, // Horizontal space between the items
-                      runSpacing: 2, // Vertical space between the rows
+                      spacing: 2,
+                      runSpacing: 2,
                       children: [
                         _buildPlaylistCard('assets/playlist/playlist1.jpg', "Study Hub"),
                         _buildPlaylistCard('assets/playlist/playlist2.jpg', "On Repeat"),
@@ -270,7 +268,6 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  // Add the _buildGenreCard method here
   Widget _buildPlaylistCard(String imagePath, String playlistName) {
     return Card(
       shape: RoundedRectangleBorder(
@@ -300,7 +297,7 @@ class HomePage extends StatelessWidget {
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
-              overflow: TextOverflow.ellipsis, // Handles overflow
+              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),
@@ -316,7 +313,7 @@ class HomePage extends StatelessWidget {
       elevation: 5,
       child: Container(
         width: 175,
-        height: 225, // Increased height to accommodate text
+        height: 225,
         padding: const EdgeInsets.all(8.0),
         color: Colors.black,
         child: Column(

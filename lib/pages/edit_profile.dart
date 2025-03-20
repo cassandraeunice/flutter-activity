@@ -33,7 +33,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
       'stuck in January',
     ];
 
-    // Set default state (all toggles ON)
     for (var title in playlistTitles) {
       _playlistSwitches[title] = true;
     }
@@ -70,7 +69,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     _validateInput("Email");
 
     if (_displayNameError == null && _usernameError == null && _emailError == null) {
-      // Save changes and navigate back
+
       Navigator.pop(context);
     }
   }

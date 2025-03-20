@@ -115,7 +115,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
             SizedBox(height: 5),
 
-            // Email Validation Errors (Wrapped Text)
+            // Email Validation Errors
             _emailErrors.isNotEmpty
                 ? Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -173,7 +173,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
             SizedBox(height: 5),
 
-            // Password Validation Errors (Wrapped Text)
+            // Password Validation Errors
             _passwordErrors.isNotEmpty
                 ? Column(
               crossAxisAlignment: CrossAxisAlignment.start,

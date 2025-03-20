@@ -6,7 +6,6 @@ class StartPage extends StatelessWidget {
     return Scaffold(
       body: Column(
         children: [
-          // Background Image at the Top
           Container(
             width: double.infinity,
             height: 500,
@@ -37,7 +36,6 @@ class StartPage extends StatelessWidget {
           ),
           SizedBox(height: 40),
 
-          // Buttons Section with Padding
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 30),
             child: Column(
@@ -70,7 +68,7 @@ class StartPage extends StatelessWidget {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.transparent,
-                    elevation: 0, // Removes shadow
+                    elevation: 0,
                   ),
                   child: Text(
                     'Login',

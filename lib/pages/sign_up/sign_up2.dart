@@ -116,7 +116,7 @@ class _SignUpPage2State extends State<SignUpPage2> {
             ),
             SizedBox(height: 5),
 
-            // Password Validation Errors (List Style)
+            // Password Validation Errors
             _passwordErrors.isNotEmpty
                 ? Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -207,7 +207,7 @@ class _SignUpPage2State extends State<SignUpPage2> {
 
             SizedBox(height: 30),
 
-            // Next button (Always Enabled)
+            // Next button
             Center(
               child: ElevatedButton(
                 onPressed: _onNextPressed,

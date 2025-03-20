@@ -11,7 +11,7 @@ class _ForgotPassword1State extends State<ForgotPasswordPage1> {
   bool _isFormValid = false;
 
   final RegExp emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
-  final RegExp usernameRegex = RegExp(r'^[a-zA-Z0-9]+$'); // Alphanumeric, no spaces
+  final RegExp usernameRegex = RegExp(r'^[a-zA-Z0-9]+$');
 
   void _validateInput() {
     setState(() {
@@ -114,10 +114,10 @@ class _ForgotPassword1State extends State<ForgotPasswordPage1> {
                     ? () {
                   Navigator.pushNamed(context, '/forgotpassword2');
                 }
-                    : null, // Disable button if input is invalid
+                    : null,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: _isFormValid ? Colors.white : Colors.grey[500], // Button disabled color
-                  disabledBackgroundColor: Colors.grey[500], // Explicit disabled color
+                  backgroundColor: _isFormValid ? Colors.white : Colors.grey[500],
+                  disabledBackgroundColor: Colors.grey[500],
                   minimumSize: Size(200, 50),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                 ),
@@ -125,7 +125,7 @@ class _ForgotPassword1State extends State<ForgotPasswordPage1> {
                   'Next',
                   style: TextStyle(
                     fontSize: 18,
-                    color: _isFormValid ? Colors.black : Colors.black54, // Disabled text color
+                    color: _isFormValid ? Colors.black : Colors.black54,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
