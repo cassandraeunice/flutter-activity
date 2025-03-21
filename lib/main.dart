@@ -181,9 +181,10 @@ class HomePage extends StatelessWidget {
                     'Logout',
                     style: TextStyle(color: Colors.white, fontSize: 18),
                   ),
-                  onTap: () {
-                    // Handle logout logic here
-                  },
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => StartPage()),
+                  ),
                 ),
               ),
             ],
