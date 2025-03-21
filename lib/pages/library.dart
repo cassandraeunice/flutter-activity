@@ -38,78 +38,75 @@ class LibraryPage extends StatelessWidget {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.only(left: 15.0, bottom: 15.0, right: 15.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Your Library",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 25,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 16),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    _buildCategoryChip('Playlists'),
-                    SizedBox(width: 10),
-                    _buildCategoryChip('Artists'),
-                    SizedBox(width: 10),
-                    _buildCategoryChip('Albums'),
-                    SizedBox(width: 10),
-                    _buildCategoryChip('Podcasts & Shows'),
-                  ],
-                ),
-              ),
-              SizedBox(height: 20),
-              Row(
-                children: [
-                  Icon(
-                    Icons.music_note,
+      body: Padding(
+        padding: const EdgeInsets.only(left: 15.0, bottom: 15.0, right: 15.0),
+        child: ListView(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Your Library",
+                  style: TextStyle(
                     color: Colors.white,
-                    size: 12,
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold,
                   ),
-                  Text(
-                    "Recently Played",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 16),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  _buildCategoryChip('Playlists'),
+                  SizedBox(width: 10),
+                  _buildCategoryChip('Artists'),
+                  SizedBox(width: 10),
+                  _buildCategoryChip('Albums'),
+                  SizedBox(width: 10),
+                  _buildCategoryChip('Podcasts & Shows'),
                 ],
               ),
-              SizedBox(height: 20),
-              _buildRecentlyPlayedItem('Liked Songs', 'Playlist - 58 songs', 'assets/playlist/liked.jpeg'),
-              SizedBox(height: 16),
-              _buildRecentlyPlayedItem('On Repeat', 'Playlist', 'assets/playlist/playlist2.jpg'),
-              SizedBox(height: 16),
-              _buildArtistItem('Kendrick Lamar', 'Artist', 'assets/album/gnx.jpg'),
-              SizedBox(height: 16),
-              _buildArtistItem('Doechiii', 'Artist', 'assets/album/alligatorbites.jpg'),
-              SizedBox(height: 16),
-              _buildArtistItem('Tyler, The Creator', 'Artist', 'assets/album/chromakopia.jpg'),
-              SizedBox(height: 16),
-              _buildAlbumItem('Charm', 'Album', 'assets/album/clairo.jpg'),
-              SizedBox(height: 16),
-              _buildAlbumItem('Rumors (Super Deluxe)', 'Album', 'assets/album/fleetwoodmac.jpg'),
-              SizedBox(height: 16),
-              _buildArtistItem('Oasis', 'Artist', 'assets/album/oasis.jpg'),
-              SizedBox(height: 16),
-              _buildArtistItem('Reality Club', 'Artist', 'assets/album/realityclub.jpg'),
-            ],
-          ),
+            ),
+            SizedBox(height: 20),
+            Row(
+              children: [
+                Icon(
+                  Icons.music_note,
+                  color: Colors.white,
+                  size: 12,
+                ),
+                Text(
+                  "Recently Played",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 20),
+            _buildRecentlyPlayedItem('Liked Songs', 'Playlist - 58 songs', 'assets/playlist/liked.jpeg'),
+            SizedBox(height: 16),
+            _buildRecentlyPlayedItem('On Repeat', 'Playlist', 'assets/playlist/playlist2.jpg'),
+            SizedBox(height: 16),
+            _buildArtistItem('Kendrick Lamar', 'Artist', 'assets/album/gnx.jpg'),
+            SizedBox(height: 16),
+            _buildArtistItem('Doechiii', 'Artist', 'assets/album/alligatorbites.jpg'),
+            SizedBox(height: 16),
+            _buildArtistItem('Tyler, The Creator', 'Artist', 'assets/album/chromakopia.jpg'),
+            SizedBox(height: 16),
+            _buildAlbumItem('Charm', 'Album', 'assets/album/clairo.jpg'),
+            SizedBox(height: 16),
+            _buildAlbumItem('Rumors (Super Deluxe)', 'Album', 'assets/album/fleetwoodmac.jpg'),
+            SizedBox(height: 16),
+            _buildArtistItem('Oasis', 'Artist', 'assets/album/oasis.jpg'),
+            SizedBox(height: 16),
+            _buildArtistItem('Reality Club', 'Artist', 'assets/album/realityclub.jpg'),
+          ],
         ),
       ),
     );
