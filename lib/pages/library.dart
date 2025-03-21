@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'create_playlist.dart'; // Ensure this import points to your CreatePlaylist file
 
 class LibraryPage extends StatelessWidget {
   @override
@@ -21,6 +22,21 @@ class LibraryPage extends StatelessWidget {
             },
           ),
         ),
+        actions: [
+          IconButton(
+            icon: Icon(
+              Icons.add, // The plus icon
+              color: Color(0xFFA7A7A7),
+              size: 30,
+            ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => CreatePlaylist()),
+              );
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -39,11 +55,6 @@ class LibraryPage extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  Icon(
-                    Icons.add, // The plus icon
-                    color: Color(0xFFA7A7A7),
-                    size: 30,
-                  ),
                 ],
               ),
               SizedBox(height: 16),
@@ -51,86 +62,17 @@ class LibraryPage extends StatelessWidget {
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Color(0xFF121212),
-                        borderRadius: BorderRadius.circular(30),
-                        border: Border.all(
-                          color: Colors.white,
-                          width: 1,
-                        ),
-                      ),
-                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                      child: Text(
-                        'Playlists',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ),
+                    _buildCategoryChip('Playlists'),
                     SizedBox(width: 10),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Color(0xFF121212),
-                        borderRadius: BorderRadius.circular(30),
-                        border: Border.all(
-                          color: Colors.white,
-                          width: 1,
-                        ),
-                      ),
-                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                      child: Text(
-                        'Artists',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ),
+                    _buildCategoryChip('Artists'),
                     SizedBox(width: 10),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Color(0xFF121212),
-                        borderRadius: BorderRadius.circular(30),
-                        border: Border.all(
-                          color: Colors.white,
-                          width: 1,
-                        ),
-                      ),
-                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                      child: Text(
-                        'Albums',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ),
+                    _buildCategoryChip('Albums'),
                     SizedBox(width: 10),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Color(0xFF121212),
-                        borderRadius: BorderRadius.circular(30),
-                        border: Border.all(
-                          color: Colors.white,
-                          width: 1,
-                        ),
-                      ),
-                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                      child: Text(
-                        'Podcasts & Shows',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ),
+                    _buildCategoryChip('Podcasts & Shows'),
                   ],
                 ),
               ),
               SizedBox(height: 20),
-
               Row(
                 children: [
                   Icon(
@@ -149,326 +91,146 @@ class LibraryPage extends StatelessWidget {
                 ],
               ),
               SizedBox(height: 20),
-              Row(
-                children: [
-                  Image.asset(
-                    'assets/playlist/liked.jpeg',
-                    width: 67,
-                    height: 67,
-                  ),
-                  SizedBox(width: 10),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Liked Songs',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.push_pin,
-                            color: Colors.white,
-                            size: 12,
-                          ),
-                          SizedBox(width: 8),
-                          Text(
-                            'Playlist - 58 songs',
-                            style: TextStyle(
-                              color: Color(0xFFB3B3B3),
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  )
-                ],
-              ),
+              _buildRecentlyPlayedItem('Liked Songs', 'Playlist - 58 songs', 'assets/playlist/liked.jpeg'),
               SizedBox(height: 16),
-              Row(
-                children: [
-                  Image.asset(
-                    'assets/playlist/playlist2.jpg',
-                    width: 67,
-                    height: 67,
-                  ),
-                  SizedBox(width: 10),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'On Repeat',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          Text(
-                            'Playlist',
-                            style: TextStyle(
-                              color: Color(0xFFB3B3B3),
-                              fontSize: 13,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  )
-                ],
-              ),
+              _buildRecentlyPlayedItem('On Repeat', 'Playlist', 'assets/playlist/playlist2.jpg'),
               SizedBox(height: 16),
-              Row(
-                children: [
-                  CircleAvatar(
-                    radius: 35,
-                    backgroundImage: AssetImage('assets/album/gnx.jpg'),
-                  ),
-                  SizedBox(width: 10),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Kendrick Lamar',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          Text(
-                            'Artist',
-                            style: TextStyle(
-                              color: Color(0xFFB3B3B3),
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  )
-                ],
-              ),
+              _buildArtistItem('Kendrick Lamar', 'Artist', 'assets/album/gnx.jpg'),
               SizedBox(height: 16),
-              Row(
-                children: [
-                  CircleAvatar(
-                    radius: 35,
-                    backgroundImage: AssetImage('assets/album/alligatorbites.jpg'),
-                  ),
-                  SizedBox(width: 10),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Doechiii',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          Text(
-                            'Artist',
-                            style: TextStyle(
-                              color: Color(0xFFB3B3B3),
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  )
-                ],
-              ),
+              _buildArtistItem('Doechiii', 'Artist', 'assets/album/alligatorbites.jpg'),
               SizedBox(height: 16),
-              Row(
-                children: [
-                  CircleAvatar(
-                    radius: 35,
-                    backgroundImage: AssetImage('assets/album/chromakopia.jpg'),
-                  ),
-                  SizedBox(width: 10),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Tyler, The Creator',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          Text(
-                            'Artist',
-                            style: TextStyle(
-                              color: Color(0xFFB3B3B3),
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  )
-                ],
-              ),
+              _buildArtistItem('Tyler, The Creator', 'Artist', 'assets/album/chromakopia.jpg'),
               SizedBox(height: 16),
-              Row(
-                children: [
-                  Image.asset(
-                    'assets/album/clairo.jpg',
-                    width: 67,
-                    height: 67,
-                  ),
-                  SizedBox(width: 10),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Charm',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          Text(
-                            'Album',
-                            style: TextStyle(
-                              color: Color(0xFFB3B3B3),
-                              fontSize: 13,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  )
-                ],
-              ),
+              _buildAlbumItem('Charm', 'Album', 'assets/album/clairo.jpg'),
               SizedBox(height: 16),
-              Row(
-                children: [
-                  Image.asset(
-                    'assets/album/fleetwoodmac.jpg',
-                    width: 67,
-                    height: 67,
-                  ),
-                  SizedBox(width: 10),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Rumors (Super Deluxe)',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          Text(
-                            'Album',
-                            style: TextStyle(
-                              color: Color(0xFFB3B3B3),
-                              fontSize: 13,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  )
-                ],
-              ),
+              _buildAlbumItem('Rumors (Super Deluxe)', 'Album', 'assets/album/fleetwoodmac.jpg'),
               SizedBox(height: 16),
-              Row(
-                children: [
-                  CircleAvatar(
-                    radius: 35,
-                    backgroundImage: AssetImage('assets/album/oasis.jpg'),
-                  ),
-                  SizedBox(width: 10),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Oasis',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          Text(
-                            'Artist',
-                            style: TextStyle(
-                              color: Color(0xFFB3B3B3),
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  )
-                ],
-              ),
+              _buildArtistItem('Oasis', 'Artist', 'assets/album/oasis.jpg'),
               SizedBox(height: 16),
-              Row(
-                children: [
-                  CircleAvatar(
-                    radius: 35,
-                    backgroundImage: AssetImage('assets/album/realityclub.jpg'),
-                  ),
-                  SizedBox(width: 10),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Reality Club',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          Text(
-                            'Artist',
-                            style: TextStyle(
-                              color: Color(0xFFB3B3B3),
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  )
-                ],
-              ),
+              _buildArtistItem('Reality Club', 'Artist', 'assets/album/realityclub.jpg'),
             ],
           ),
-
         ),
       ),
+    );
+  }
+
+  Widget _buildCategoryChip(String label) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Color(0xFF121212),
+        borderRadius: BorderRadius.circular(30),
+        border: Border.all(
+          color: Colors.white,
+          width: 1,
+        ),
+      ),
+      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      child: Text(
+        label,
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 12,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRecentlyPlayedItem(String title, String subtitle, String imagePath) {
+    return Row(
+      children: [
+        Image.asset(
+          imagePath,
+          width: 67,
+          height: 67,
+        ),
+        SizedBox(width: 10),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+              ),
+            ),
+            Text(
+              subtitle,
+              style: TextStyle(
+                color: Color(0xFFB3B3B3),
+                fontSize: 12,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildArtistItem(String name, String subtitle, String imagePath) {
+    return Row(
+      children: [
+        CircleAvatar(
+          radius: 35,
+          backgroundImage: AssetImage(imagePath),
+        ),
+        SizedBox(width: 10),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              name,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+              ),
+            ),
+            Text(
+              subtitle,
+              style: TextStyle(
+                color: Color(0xFFB3B3B3),
+                fontSize: 12,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAlbumItem(String title, String subtitle, String imagePath) {
+    return Row(
+      children: [
+        Image.asset(
+          imagePath,
+          width: 67,
+          height: 67,
+        ),
+        SizedBox(width: 10),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+              ),
+            ),
+            Text(
+              subtitle,
+              style: TextStyle(
+                color: Color(0xFFB3B3B3),
+                fontSize: 13,
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
