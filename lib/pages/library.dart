@@ -1,7 +1,15 @@
 import 'package:flutter/material.dart';
-import 'create_playlist.dart'; // Ensure this import points to your CreatePlaylist file
+import 'create_playlist.dart';
+import 'edit_playlist.dart';
 
-class LibraryPage extends StatelessWidget {
+class LibraryPage extends StatefulWidget {
+  @override
+  _LibraryPageState createState() => _LibraryPageState();
+}
+
+class _LibraryPageState extends State<LibraryPage> {
+  List<String> _playlists = [];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,15 +33,20 @@ class LibraryPage extends StatelessWidget {
         actions: [
           IconButton(
             icon: Icon(
-              Icons.add, // The plus icon
+              Icons.add,
               color: Color(0xFFA7A7A7),
               size: 30,
             ),
-            onPressed: () {
-              Navigator.push(
+            onPressed: () async {
+              final result = await Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => CreatePlaylist()),
               );
+              if (result != null) {
+                setState(() {
+                  _playlists.add(result);
+                });
+              }
             },
           ),
         ],
@@ -92,6 +105,8 @@ class LibraryPage extends StatelessWidget {
             _buildRecentlyPlayedItem('Liked Songs', 'Playlist - 58 songs', 'assets/playlist/liked.jpeg'),
             SizedBox(height: 16),
             _buildRecentlyPlayedItem('On Repeat', 'Playlist', 'assets/playlist/playlist2.jpg'),
+            SizedBox(height: 16),
+            ..._playlists.map((playlist) => _buildPlaylistItem(playlist)).toList(),
             SizedBox(height: 16),
             _buildArtistItem('Kendrick Lamar', 'Artist', 'assets/album/gnx.jpg'),
             SizedBox(height: 16),
@@ -161,6 +176,37 @@ class LibraryPage extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPlaylistItem(String playlist) {
+    return Row(
+      children: [
+        _buildRecentlyPlayedItem(playlist, 'Playlist', 'assets/playlist/default.jpg'),
+        IconButton(
+          icon: Icon(Icons.edit, color: Colors.white),
+          onPressed: () async {
+            final result = await Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => EditPlaylist(initialName: playlist)),
+            );
+            if (result != null) {
+              setState(() {
+                int index = _playlists.indexOf(playlist);
+                _playlists[index] = result;
+              });
+            }
+          },
+        ),
+        IconButton(
+          icon: Icon(Icons.delete, color: Colors.white),
+          onPressed: () {
+            setState(() {
+              _playlists.remove(playlist);
+            });
+          },
         ),
       ],
     );

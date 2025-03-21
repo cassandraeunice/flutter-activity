@@ -1,13 +1,23 @@
 import 'package:flutter/material.dart';
 
-class CreatePlaylist extends StatefulWidget {
+class EditPlaylist extends StatefulWidget {
+  final String initialName;
+
+  EditPlaylist({required this.initialName});
+
   @override
-  _CreatePlaylistState createState() => _CreatePlaylistState();
+  _EditPlaylistState createState() => _EditPlaylistState();
 }
 
-class _CreatePlaylistState extends State<CreatePlaylist> {
-  final TextEditingController _playlistController = TextEditingController();
+class _EditPlaylistState extends State<EditPlaylist> {
+  late TextEditingController _playlistController;
   final List<String> _errors = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _playlistController = TextEditingController(text: widget.initialName);
+  }
 
   void _validateInput() {
     setState(() {
@@ -18,7 +28,7 @@ class _CreatePlaylistState extends State<CreatePlaylist> {
     });
   }
 
-  void _onCreatePressed() {
+  void _onSavePressed() {
     _validateInput();
     if (_errors.isEmpty) {
       Navigator.pop(context, _playlistController.text);
@@ -36,7 +46,7 @@ class _CreatePlaylistState extends State<CreatePlaylist> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          "Give your playlist a name",
+          "Edit your playlist name",
           style: TextStyle(
             color: Colors.white,
             fontSize: 18,
@@ -104,17 +114,17 @@ class _CreatePlaylistState extends State<CreatePlaylist> {
 
             SizedBox(height: 10),
 
-            // Create Button
+            // Save Button
             Center(
               child: ElevatedButton(
-                onPressed: _onCreatePressed,
+                onPressed: _onSavePressed,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
                   minimumSize: Size(200, 50),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                 ),
                 child: Text(
-                  'Create',
+                  'Save',
                   style: TextStyle(
                     fontSize: 18,
                     color: Colors.black,
