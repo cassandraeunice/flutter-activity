@@ -8,7 +8,7 @@ class LibraryPage extends StatefulWidget {
 }
 
 class _LibraryPageState extends State<LibraryPage> {
-  List<String> _playlists = [];
+  List<Map<String, String>> _playlists = [];
 
   @override
   Widget build(BuildContext context) {
@@ -181,21 +181,21 @@ class _LibraryPageState extends State<LibraryPage> {
     );
   }
 
-  Widget _buildPlaylistItem(String playlist) {
+  Widget _buildPlaylistItem(Map<String, String> playlist) {
     return Row(
       children: [
-        _buildRecentlyPlayedItem(playlist, 'Playlist', 'assets/playlist/default.jpg'),
+        _buildRecentlyPlayedItem(playlist['name']!, 'Playlist', playlist['imagePath']!),
         IconButton(
           icon: Icon(Icons.edit, color: Colors.white),
           onPressed: () async {
             final result = await Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => EditPlaylist(initialName: playlist)),
+              MaterialPageRoute(builder: (context) => EditPlaylist(initialName: playlist['name']!)),
             );
             if (result != null) {
               setState(() {
                 int index = _playlists.indexOf(playlist);
-                _playlists[index] = result;
+                _playlists[index]['name'] = result;
               });
             }
           },

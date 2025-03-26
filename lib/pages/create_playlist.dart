@@ -21,7 +21,10 @@ class _CreatePlaylistState extends State<CreatePlaylist> {
   void _onCreatePressed() {
     _validateInput();
     if (_errors.isEmpty) {
-      Navigator.pop(context, _playlistController.text);
+      Navigator.pop(context, {
+        'name': _playlistController.text,
+        'imagePath': 'assets/playlist/playlist2.jpg'
+      });
     }
   }
 
