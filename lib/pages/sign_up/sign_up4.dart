@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SignUpPage4 extends StatefulWidget {
+  final String email;
+  final String password;
+  final String phone;
+
+  SignUpPage4({required this.email, required this.password, required this.phone});
+
   @override
   _SignUpPage4State createState() => _SignUpPage4State();
 }
@@ -8,6 +16,7 @@ class SignUpPage4 extends StatefulWidget {
 class _SignUpPage4State extends State<SignUpPage4> {
   final TextEditingController _nameController = TextEditingController();
   String? _errorText;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   void _validateName() {
     setState(() {
@@ -23,11 +32,36 @@ class _SignUpPage4State extends State<SignUpPage4> {
     });
   }
 
+  Future<void> _createUser() async {
+    try {
+      // Create user in Firebase Authentication
+      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+        email: widget.email,
+        password: widget.password,
+      );
+
+      // Store additional user details in Firestore
+      await FirebaseFirestore.instance.collection('users').doc(userCredential.user!.uid).set({
+        'name': _nameController.text.trim(),
+        'email': widget.email,
+        'phone': widget.phone,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+
+      // Navigate to the homepage
+      Navigator.pushNamed(context, '/homepage');
+    } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.message}')),
+      );
+    }
+  }
+
   void _onCreateAccountPressed() {
     _validateName();
 
     if (_errorText == null) {
-      Navigator.pushNamed(context, '/homepage');
+      _createUser();
     }
   }
 

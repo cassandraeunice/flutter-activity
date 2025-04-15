@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'sign_up3.dart';
 
 class SignUpPage2 extends StatefulWidget {
+  final String email;
+
+  SignUpPage2({required this.email});
+
   @override
   _SignUpPage2State createState() => _SignUpPage2State();
 }
@@ -47,7 +52,15 @@ class _SignUpPage2State extends State<SignUpPage2> {
     _validatePasswords();
 
     if (_passwordErrors.isEmpty && _confirmPasswordError == null) {
-      Navigator.pushNamed(context, '/signup3');
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SignUpPage3(
+            email: widget.email,
+            password: _passwordController.text.trim(),
+          ),
+        ),
+      );
     }
   }
 

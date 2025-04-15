@@ -1,7 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'edit_profile.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
+  @override
+  _ProfilePageState createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  String _userName = "Loading...";
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserName();
+  }
+
+  Future<void> _fetchUserName() async {
+    try {
+      User? user = _auth.currentUser;
+      if (user != null) {
+        DocumentSnapshot userDoc = await _firestore.collection('users').doc(user.uid).get();
+        setState(() {
+          _userName = userDoc['name'] ?? "User";
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _userName = "User";
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,7 +67,7 @@ class ProfilePage extends StatelessWidget {
               ),
               SizedBox(height: 10),
               Text(
-                "Cassandra Cortez",
+                _userName,
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 20,

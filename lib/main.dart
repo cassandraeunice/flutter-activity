@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'pages/search.dart';
 import 'pages/library.dart';
 import 'pages/profile.dart';
-// import 'pages/album.dart';
 import 'pages/settings.dart';
 import 'pages/start_page.dart';
 import 'pages/sign_up/sign_up1.dart';
@@ -11,10 +10,18 @@ import 'pages/sign_up/sign_up2.dart';
 import 'pages/sign_up/sign_up3.dart';
 import 'pages/sign_up/sign_up4.dart';
 import 'pages/forgot_password/forgot_password1.dart';
-import 'pages/forgot_password/forgot_password2.dart';
 import 'pages/edit_profile.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-void main() {
+
+
+void main() async {
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(MoodyApp());
 }
 
@@ -32,29 +39,55 @@ class MoodyApp extends StatelessWidget {
           elevation: 0,
         ),
       ),
-      initialRoute: '/',  // Start page
+      initialRoute: '/',
       routes: {
         '/': (context) => StartPage(),
         '/signup1': (context) => SignUpPage1(),
-        '/signup2': (context) => SignUpPage2(),
-        '/signup3': (context) => SignUpPage3(),
-        '/signup4': (context) => SignUpPage4(),
         '/login': (context) => LoginPage(),
         '/homepage': (context) => HomePage(),
         '/forgotpassword1': (context) => ForgotPasswordPage1(),
-        '/forgotpassword2': (context) => ForgotPasswordPage2(),
         '/editprofile': (context) => EditProfilePage(),
       },
     );
   }
 }
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  String _userName = "Loading...";
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserName();
+  }
+
+  Future<void> _fetchUserName() async {
+    try {
+      User? user = _auth.currentUser;
+      if (user != null) {
+        DocumentSnapshot userDoc = await _firestore.collection('users').doc(user.uid).get();
+        setState(() {
+          _userName = userDoc['name'] ?? "User";
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _userName = "User";
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-
         iconTheme: IconThemeData(color: Colors.white),
       ),
       drawer: Drawer(
@@ -81,7 +114,7 @@ class HomePage extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            'Cassandra',
+                            _userName,
                             style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
                           ),
                           InkWell(
@@ -100,7 +133,6 @@ class HomePage extends StatelessWidget {
                   ),
                 ),
               ),
-
               Expanded(
                 child: ListView(
                   padding: EdgeInsets.zero,
@@ -168,7 +200,6 @@ class HomePage extends StatelessWidget {
                   ],
                 ),
               ),
-
               Padding(
                 padding: const EdgeInsets.only(bottom: 20.0),
                 child: ListTile(
@@ -191,7 +222,6 @@ class HomePage extends StatelessWidget {
           ),
         ),
       ),
-        // Home PAge
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.only(left: 15.0, bottom: 15.0, right: 15.0),
@@ -203,8 +233,7 @@ class HomePage extends StatelessWidget {
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: 25,
-                    fontWeight: FontWeight.bold
-                ),
+                    fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 10),
               Text(
@@ -212,8 +241,7 @@ class HomePage extends StatelessWidget {
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: 16,
-                    fontWeight: FontWeight.bold
-                ),
+                    fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 10),
               SingleChildScrollView(
@@ -239,8 +267,7 @@ class HomePage extends StatelessWidget {
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: 16,
-                    fontWeight: FontWeight.bold
-                ),
+                    fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 10),
               SingleChildScrollView(
@@ -320,7 +347,6 @@ class HomePage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Album Image
             Image.asset(
               imagePath,
               width: 155,
@@ -328,7 +354,6 @@ class HomePage extends StatelessWidget {
               fit: BoxFit.cover,
             ),
             SizedBox(height: 8),
-            // Album Name
             Text(
               albumName,
               style: TextStyle(
@@ -337,7 +362,6 @@ class HomePage extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            // Artist Name
             Text(
               artistName,
               style: TextStyle(

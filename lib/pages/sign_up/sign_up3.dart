@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'sign_up4.dart';
 
 class SignUpPage3 extends StatefulWidget {
+  final String email;
+  final String password;
+
+  SignUpPage3({required this.email, required this.password});
+
   @override
   _SignUpPage3State createState() => _SignUpPage3State();
 }
@@ -30,7 +36,16 @@ class _SignUpPage3State extends State<SignUpPage3> {
     _validatePhoneNumber();
 
     if (_errorText == null) {
-      Navigator.pushNamed(context, '/signup4');
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SignUpPage4(
+            email: widget.email,
+            password: widget.password,
+            phone: _phoneController.text.trim(),
+          ),
+        ),
+      );
     }
   }
 

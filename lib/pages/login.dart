@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -11,53 +12,59 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
   List<String> _emailErrors = [];
   List<String> _passwordErrors = [];
+  bool _isLoading = false;
 
-  // Regular expressions for validation
-  final RegExp emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
-  final RegExp passwordUppercase = RegExp(r'[A-Z]');
-  final RegExp passwordNumber = RegExp(r'[0-9]');
-  final RegExp passwordSpecialChar = RegExp(r'[@$!%*?&]');
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  void _validateInputs() {
+  void _validateInputs() async {
     setState(() {
-      // Validate email
       _emailErrors.clear();
-      if (_emailController.text.isEmpty) {
-        _emailErrors.add("Email is required");
-      } else {
-        if (!_emailController.text.contains("@")) {
-          _emailErrors.add("Must contain '@' symbol");
-        }
-        if (!_emailController.text.contains(".")) {
-          _emailErrors.add("Must contain a domain (e.g., '.com')");
-        }
-        if (!emailRegex.hasMatch(_emailController.text)) {
-          _emailErrors.add("Enter a valid email format (e.g., user@example.com)");
-        }
-      }
-
-      // Validate password
       _passwordErrors.clear();
-      if (_passwordController.text.isEmpty) {
-        _passwordErrors.add("Password is required");
-      } else {
-        if (_passwordController.text.length < 8) {
-          _passwordErrors.add("At least 8 characters");
-        }
-        if (!passwordUppercase.hasMatch(_passwordController.text)) {
-          _passwordErrors.add("At least 1 uppercase letter (A-Z)");
-        }
-        if (!passwordNumber.hasMatch(_passwordController.text)) {
-          _passwordErrors.add("At least 1 number (0-9)");
-        }
-        if (!passwordSpecialChar.hasMatch(_passwordController.text)) {
-          _passwordErrors.add("At least 1 special character (@\$!%*?&)");
-        }
-      }
     });
 
+    String email = _emailController.text.trim();
+    String password = _passwordController.text.trim();
+
+    // Validate email
+    if (email.isEmpty) {
+      _emailErrors.add("Email is required");
+    } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+$').hasMatch(email)) {
+      _emailErrors.add("Enter a valid email format (e.g., user@example.com)");
+    }
+
+    // Validate password
+    if (password.isEmpty) {
+      _passwordErrors.add("Password is required");
+    }
+
     if (_emailErrors.isEmpty && _passwordErrors.isEmpty) {
-      Navigator.pushNamed(context, '/homepage');
+      setState(() {
+        _isLoading = true;
+      });
+
+      try {
+        // Sign in with Firebase Authentication
+        UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
+
+        // Navigate to the homepage on successful login
+        Navigator.pushNamed(context, '/homepage');
+      } on FirebaseAuthException catch (e) {
+        print("FirebaseAuthException: ${e.code}"); // Log the error code for debugging
+        setState(() {
+          if (e.code == 'user-not-found' || e.code == 'wrong-password') {
+            _passwordErrors.add("Invalid email or password.");
+          } else {
+            _passwordErrors.add("Invalid email or password.");
+          }
+        });
+      } finally {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -127,7 +134,7 @@ class _LoginPageState extends State<LoginPage> {
                   children: [
                     Icon(Icons.error_outline, color: Colors.red, size: 16),
                     SizedBox(width: 5),
-                    Expanded( // Ensures wrapping
+                    Expanded(
                       child: Text(
                         error,
                         style: TextStyle(color: Colors.red, fontSize: 14),
@@ -185,7 +192,7 @@ class _LoginPageState extends State<LoginPage> {
                   children: [
                     Icon(Icons.error_outline, color: Colors.red, size: 16),
                     SizedBox(width: 5),
-                    Expanded( // Ensures wrapping
+                    Expanded(
                       child: Text(
                         error,
                         style: TextStyle(color: Colors.red, fontSize: 14),
@@ -206,13 +213,15 @@ class _LoginPageState extends State<LoginPage> {
               child: Column(
                 children: [
                   ElevatedButton(
-                    onPressed: _validateInputs,
+                    onPressed: _isLoading ? null : _validateInputs,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
                       minimumSize: Size(double.infinity, 50),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                     ),
-                    child: Text(
+                    child: _isLoading
+                        ? CircularProgressIndicator(color: Colors.black)
+                        : Text(
                       'Login',
                       style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
                     ),

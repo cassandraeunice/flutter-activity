@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ForgotPasswordPage1 extends StatefulWidget {
   @override
@@ -8,25 +10,56 @@ class ForgotPasswordPage1 extends StatefulWidget {
 class _ForgotPassword1State extends State<ForgotPasswordPage1> {
   final TextEditingController _emailController = TextEditingController();
   String? _errorText;
-  bool _isFormValid = false;
 
-  final RegExp emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
-  final RegExp usernameRegex = RegExp(r'^[a-zA-Z0-9]+$');
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  void _validateInput() {
+  void _sendResetEmail() async {
     setState(() {
-      String input = _emailController.text.trim();
+      _errorText = null;
+    });
 
-      if (input.isEmpty) {
+    String email = _emailController.text.trim();
+
+    if (email.isEmpty) {
+      setState(() {
         _errorText = "This field is required.";
-      } else if (!emailRegex.hasMatch(input) && !usernameRegex.hasMatch(input)) {
-        _errorText = "Enter a valid email or username.";
-      } else {
-        _errorText = null;
+      });
+      return;
+    }
+
+    if (!RegExp(r'^[^@]+@[^@]+\.[^@]+$').hasMatch(email)) {
+      setState(() {
+        _errorText = "Enter a valid email.";
+      });
+      return;
+    }
+
+    try {
+      // Check if the email exists in Firestore
+      final querySnapshot = await _firestore
+          .collection('users')
+          .where('email', isEqualTo: email)
+          .get();
+
+      if (querySnapshot.docs.isEmpty) {
+        setState(() {
+          _errorText = "No account found for this email.";
+        });
+        return;
       }
 
-      _isFormValid = _errorText == null;
-    });
+      // Send the password reset email
+      await _auth.sendPasswordResetEmail(email: email);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Password reset email sent! Check your inbox.")),
+      );
+      Navigator.pop(context); // Return to the previous screen
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+        _errorText = e.message;
+      });
+    }
   }
 
   @override
@@ -53,21 +86,18 @@ class _ForgotPassword1State extends State<ForgotPasswordPage1> {
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 20),
             Text(
-              "Email or username",
+              "Enter your email to reset your password",
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 10),
-
-            // Email or Username Input Field
+            SizedBox(height: 20),
             TextField(
               controller: _emailController,
               style: TextStyle(color: Colors.white),
@@ -79,53 +109,25 @@ class _ForgotPassword1State extends State<ForgotPasswordPage1> {
                   borderSide: BorderSide(color: Color(0xFF777777)),
                   borderRadius: BorderRadius.circular(5),
                 ),
+                hintText: "Email",
+                hintStyle: TextStyle(color: Colors.white70),
+                errorText: _errorText,
               ),
-              onChanged: (value) => _validateInput(),
             ),
-            SizedBox(height: 5),
-
-            // Error Message with Icon
-            _errorText != null
-                ? Padding(
-              padding: const EdgeInsets.only(left: 10, top: 2),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(Icons.error_outline, color: Colors.red, size: 16),
-                  SizedBox(width: 5),
-                  Expanded(
-                    child: Text(
-                      _errorText!,
-                      style: TextStyle(color: Colors.red, fontSize: 14),
-                      softWrap: true,
-                    ),
-                  ),
-                ],
-              ),
-            )
-                : SizedBox(),
-
             SizedBox(height: 30),
-
-            // Next button
             Center(
               child: ElevatedButton(
-                onPressed: _isFormValid
-                    ? () {
-                  Navigator.pushNamed(context, '/forgotpassword2');
-                }
-                    : null,
+                onPressed: _sendResetEmail,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: _isFormValid ? Colors.white : Colors.grey[500],
-                  disabledBackgroundColor: Colors.grey[500],
+                  backgroundColor: Colors.white,
                   minimumSize: Size(200, 50),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                 ),
                 child: Text(
-                  'Next',
+                  'Reset Password',
                   style: TextStyle(
                     fontSize: 18,
-                    color: _isFormValid ? Colors.black : Colors.black54,
+                    color: Colors.black,
                     fontWeight: FontWeight.bold,
                   ),
                 ),

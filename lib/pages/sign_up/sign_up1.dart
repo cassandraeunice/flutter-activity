@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'sign_up2.dart';
 
 class SignUpPage1 extends StatefulWidget {
   @override
@@ -37,7 +38,12 @@ class _SignUpPage1State extends State<SignUpPage1> {
     _validateEmail();
 
     if (_emailErrors.isEmpty) {
-      Navigator.pushNamed(context, '/signup2');
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SignUpPage2(email: _emailController.text.trim()),
+        ),
+      );
     }
   }
 
