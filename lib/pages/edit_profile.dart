@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class EditProfilePage extends StatefulWidget {
   @override
@@ -6,21 +8,26 @@ class EditProfilePage extends StatefulWidget {
 }
 
 class _EditProfilePageState extends State<EditProfilePage> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
   final TextEditingController _displayNameController = TextEditingController();
-  final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
 
   String? _displayNameError;
-  String? _usernameError;
   String? _emailError;
 
   // Playlist switch states
   Map<String, bool> _playlistSwitches = {};
 
+  // Loading state
+  bool isLoading = false;
+
   @override
   void initState() {
     super.initState();
     _initializePlaylists();
+    _populateUserData();
   }
 
   void _initializePlaylists() {
@@ -38,17 +45,27 @@ class _EditProfilePageState extends State<EditProfilePage> {
     }
   }
 
+  Future<void> _populateUserData() async {
+    try {
+      User? user = _auth.currentUser;
+      if (user != null) {
+        DocumentSnapshot userDoc = await _firestore.collection('users').doc(user.uid).get();
+        setState(() {
+          _displayNameController.text = userDoc['name'] ?? '';
+          _emailController.text = user.email ?? '';
+        });
+      }
+    } catch (e) {
+      // Handle errors if needed
+    }
+  }
+
   void _validateInput(String field) {
     setState(() {
       switch (field) {
         case "Display Name":
           _displayNameError = _displayNameController.text.trim().isEmpty
               ? "Display Name is required."
-              : null;
-          break;
-        case "Username":
-          _usernameError = _usernameController.text.trim().isEmpty
-              ? "Username is required."
               : null;
           break;
         case "Email":
@@ -63,14 +80,64 @@ class _EditProfilePageState extends State<EditProfilePage> {
     });
   }
 
-  void _onSaveChangesPressed() {
+  void _onSaveChangesPressed() async {
     _validateInput("Display Name");
-    _validateInput("Username");
     _validateInput("Email");
 
-    if (_displayNameError == null && _usernameError == null && _emailError == null) {
+    if (_displayNameError == null && _emailError == null) {
+      setState(() {
+        // Show loading state
+        isLoading = true;
+      });
 
-      Navigator.pop(context);
+      try {
+        // Check if the email is unique
+        QuerySnapshot emailQuery = await _firestore
+            .collection('users')
+            .where('email', isEqualTo: _emailController.text.trim())
+            .get();
+
+        User? currentUser = _auth.currentUser;
+
+        if (emailQuery.docs.isNotEmpty &&
+            emailQuery.docs.first.id != currentUser?.uid) {
+          setState(() {
+            _emailError = "Email is already in use.";
+            isLoading = false; // Stop loading
+          });
+          return;
+        }
+
+        // Update Firebase Authentication email
+        await currentUser?.updateEmail(_emailController.text.trim());
+
+        // Update Firestore user data
+        await _firestore.collection('users').doc(currentUser?.uid).update({
+          'name': _displayNameController.text.trim(),
+          'email': _emailController.text.trim(),
+        });
+
+        // Update the UI and pass the updated data back
+        setState(() {
+          isLoading = false; // Stop loading
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Profile updated successfully!')),
+        );
+
+        Navigator.pop(context, {
+          'name': _displayNameController.text.trim(),
+          'email': _emailController.text.trim(),
+        });
+      } on FirebaseAuthException catch (e) {
+        setState(() {
+          isLoading = false; // Stop loading
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: ${e.message}')),
+        );
+      }
     }
   }
 
@@ -127,8 +194,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
               SizedBox(height: 20),
               _buildTextField("Display Name", _displayNameController, _displayNameError),
               SizedBox(height: 16),
-              _buildTextField("Username", _usernameController, _usernameError),
-              SizedBox(height: 16),
               _buildTextField("Email", _emailController, _emailError),
               SizedBox(height: 16),
               _buildPlaylistSection(),
@@ -141,8 +206,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   ),
                   padding: EdgeInsets.symmetric(horizontal: 50, vertical: 12),
                 ),
-                onPressed: _onSaveChangesPressed,
-                child: Text(
+                onPressed: isLoading ? null : _onSaveChangesPressed,
+                child: isLoading
+                    ? CircularProgressIndicator(color: Colors.white)
+                    : Text(
                   "Save Changes",
                   style: TextStyle(color: Colors.white, fontSize: 16),
                 ),

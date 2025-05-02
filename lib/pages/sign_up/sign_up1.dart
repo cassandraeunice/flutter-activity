@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'sign_up2.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SignUpPage1 extends StatefulWidget {
   @override
@@ -13,7 +14,7 @@ class _SignUpPage1State extends State<SignUpPage1> {
   // Regular expression for basic email validation
   final RegExp emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
 
-  void _validateEmail() {
+  void _validateEmail() async {
     setState(() {
       _emailErrors.clear();
       String email = _emailController.text.trim();
@@ -32,12 +33,39 @@ class _SignUpPage1State extends State<SignUpPage1> {
         }
       }
     });
+
+    if (_emailErrors.isEmpty) {
+      QuerySnapshot emailQuery = await FirebaseFirestore.instance
+          .collection('users')
+          .where('email', isEqualTo: _emailController.text.trim())
+          .get();
+
+      if (emailQuery.docs.isNotEmpty) {
+        setState(() {
+          _emailErrors.add("Email is already in use.");
+        });
+      }
+    }
   }
 
-  void _onNextPressed() {
+  void _onNextPressed() async {
     _validateEmail();
 
     if (_emailErrors.isEmpty) {
+      // Check if email already exists
+      QuerySnapshot emailQuery = await FirebaseFirestore.instance
+          .collection('users')
+          .where('email', isEqualTo: _emailController.text.trim())
+          .get();
+
+      if (emailQuery.docs.isNotEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: Email is already in use.')),
+        );
+        return;
+      }
+
+      // Navigate to the next page if email is unique
       Navigator.push(
         context,
         MaterialPageRoute(

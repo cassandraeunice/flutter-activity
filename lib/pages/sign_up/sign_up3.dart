@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'sign_up4.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SignUpPage3 extends StatefulWidget {
   final String email;
@@ -16,26 +17,57 @@ class _SignUpPage3State extends State<SignUpPage3> {
   final TextEditingController _phoneController = TextEditingController();
   String? _errorText;
 
-  void _validatePhoneNumber() {
+  void _validatePhoneNumber() async {
     setState(() {
+      List<String> phoneErrors = [];
       String phone = _phoneController.text.trim();
 
       if (phone.isEmpty) {
-        _errorText = "Phone number is required.";
-      } else if (phone.length < 10) {
-        _errorText = "Phone number must be 10 digits.";
-      } else if (!RegExp(r'^[0-9]+$').hasMatch(phone)) {
-        _errorText = "Only numbers are allowed.";
+        phoneErrors.add("Phone number is required.");
       } else {
-        _errorText = null;
+        if (phone.length < 10) {
+          phoneErrors.add("Phone number must be 10 digits.");
+        }
+        if (!RegExp(r'^[0-9]+$').hasMatch(phone)) {
+          phoneErrors.add("Only numbers are allowed.");
+        }
       }
+
+      _errorText = phoneErrors.isNotEmpty ? phoneErrors.join("\n") : null;
     });
+
+    if (_errorText == null) {
+      QuerySnapshot phoneQuery = await FirebaseFirestore.instance
+          .collection('users')
+          .where('phone', isEqualTo: _phoneController.text.trim())
+          .get();
+
+      if (phoneQuery.docs.isNotEmpty) {
+        setState(() {
+          _errorText = "Phone number is already in use.";
+        });
+      }
+    }
   }
 
-  void _onNextPressed() {
+  void _onNextPressed() async {
     _validatePhoneNumber();
 
     if (_errorText == null) {
+      // Check if phone number already exists
+      QuerySnapshot phoneQuery = await FirebaseFirestore.instance
+          .collection('users')
+          .where('phone', isEqualTo: _phoneController.text.trim())
+          .get();
+
+      if (phoneQuery.docs.isNotEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: Phone number is already in use.')),
+        );
+        return;
+      }
+
+      // Navigate to the next page if phone number is unique
       Navigator.push(
         context,
         MaterialPageRoute(

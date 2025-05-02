@@ -1,9 +1,14 @@
 import 'package:activity_1/pages/profile.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class SettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
     return Scaffold(
       backgroundColor: Color(0xFF121212),
       appBar: AppBar(
@@ -35,50 +40,74 @@ class SettingsPage extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 5),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                decoration: BoxDecoration(color: Color(0xFF121212)),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    CircleAvatar(
-                      radius: 30,
-                      backgroundImage: AssetImage('assets/sandy.jpg'),
-                    ),
-                    SizedBox(width: 10),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
+              StreamBuilder<DocumentSnapshot>(
+                stream: _firestore
+                    .collection('users')
+                    .doc(_auth.currentUser?.uid)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  }
+                  if (snapshot.hasError || !snapshot.hasData) {
+                    return Center(
+                      child: Text(
+                        "Error loading data",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    );
+                  }
+
+                  final userData = snapshot.data!;
+                  return Container(
+                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    decoration: BoxDecoration(color: Color(0xFF121212)),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Text(
-                          'Cassandra Cortez',
-                          style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                        CircleAvatar(
+                          radius: 30,
+                          backgroundImage: AssetImage('assets/sandy.jpg'),
                         ),
-                        InkWell(
-                          onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => ProfilePage()),
-                          ),
-                          child: Text(
-                            'View Profile',
-                            style: TextStyle(color: Colors.white70, fontSize: 18),
-                          ),
+                        SizedBox(width: 10),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              userData['name'] ?? 'User',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            InkWell(
+                              onTap: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ProfilePage()),
+                              ),
+                              child: Text(
+                                'View Profile',
+                                style: TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 18,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                  ],
-                ),
+                  );
+                },
               ),
               SizedBox(height: 15),
               _buildSettingItem("Display Name"),
               _buildSettingItem("Email"),
               _buildSettingItem("Password"),
-              // _buildSettingItem("Content and display"),
-              // _buildSettingItem("Privacy and social"),
-              // _buildSettingItem("Audio Quality"),
-              // _buildSettingItem("Video Quality"),
-              // _buildSettingItem("Notifications"),
               _buildSettingItem("About"),
             ],
           ),

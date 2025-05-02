@@ -16,8 +16,6 @@ import 'firebase_options.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-
-
 void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -60,29 +58,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  String _userName = "Loading...";
-
-  @override
-  void initState() {
-    super.initState();
-    _fetchUserName();
-  }
-
-  Future<void> _fetchUserName() async {
-    try {
-      User? user = _auth.currentUser;
-      if (user != null) {
-        DocumentSnapshot userDoc = await _firestore.collection('users').doc(user.uid).get();
-        setState(() {
-          _userName = userDoc['name'] ?? "User";
-        });
-      }
-    } catch (e) {
-      setState(() {
-        _userName = "User";
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -92,134 +67,160 @@ class _HomePageState extends State<HomePage> {
       ),
       drawer: Drawer(
         backgroundColor: Colors.black,
-        child: Padding(
-          padding: const EdgeInsets.only(left: 10.0),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 20.0),
-                child: Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
+        child: StreamBuilder<DocumentSnapshot>(
+          stream: _firestore
+              .collection('users')
+              .doc(_auth.currentUser?.uid)
+              .snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            }
+            if (snapshot.hasError || !snapshot.hasData) {
+              return Center(
+                child: Text(
+                  "Error loading data",
+                  style: TextStyle(color: Colors.white),
+                ),
+              );
+            }
+
+            final userData = snapshot.data!;
+            return Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 20.0),
+                  child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        CircleAvatar(
+                          radius: 40,
+                          backgroundImage: AssetImage('assets/sandy.jpg'),
+                        ),
+                        SizedBox(width: 15),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              userData['name'] ?? 'User',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            InkWell(
+                              onTap: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ProfilePage()),
+                              ),
+                              child: Text(
+                                'View Profile',
+                                style: TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: ListView(
+                    padding: EdgeInsets.zero,
                     children: [
-                      CircleAvatar(
-                        radius: 40,
-                        backgroundImage: AssetImage('assets/sandy.jpg'),
+                      ListTile(
+                        leading: Icon(
+                          Icons.home_filled,
+                          color: Colors.white,
+                          size: 30,
+                        ),
+                        title: Text(
+                          'Home',
+                          style: TextStyle(color: Colors.white, fontSize: 18),
+                        ),
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => HomePage()),
+                        ),
                       ),
-                      SizedBox(width: 15),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            _userName,
-                            style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
-                          ),
-                          InkWell(
-                            onTap: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => ProfilePage()),
-                            ),
-                            child: Text(
-                              'View Profile',
-                              style: TextStyle(color: Colors.white70, fontSize: 16),
-                            ),
-                          ),
-                        ],
+                      ListTile(
+                        leading: Icon(
+                          Icons.library_music,
+                          color: Colors.white,
+                          size: 30,
+                        ),
+                        title: Text(
+                          'Your Library',
+                          style: TextStyle(color: Colors.white, fontSize: 18),
+                        ),
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => LibraryPage()),
+                        ),
+                      ),
+                      ListTile(
+                        leading: Icon(
+                          Icons.search,
+                          color: Colors.white,
+                          size: 30,
+                        ),
+                        title: Text(
+                          'Search',
+                          style: TextStyle(color: Colors.white, fontSize: 18),
+                        ),
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => SearchPage()),
+                        ),
+                      ),
+                      ListTile(
+                        leading: Icon(
+                          Icons.settings,
+                          color: Colors.white,
+                          size: 30,
+                        ),
+                        title: Text(
+                          'Settings',
+                          style: TextStyle(color: Colors.white, fontSize: 18),
+                        ),
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => SettingsPage()),
+                        ),
                       ),
                     ],
                   ),
                 ),
-              ),
-              Expanded(
-                child: ListView(
-                  padding: EdgeInsets.zero,
-                  children: [
-                    ListTile(
-                      leading: Icon(
-                        Icons.home_filled,
-                        color: Colors.white,
-                        size: 30,
-                      ),
-                      title: Text(
-                        'Home',
-                        style: TextStyle(color: Colors.white, fontSize: 18),
-                      ),
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => HomePage()),
-                      ),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 20.0),
+                  child: ListTile(
+                    leading: Icon(
+                      Icons.logout,
+                      color: Colors.white,
+                      size: 30,
                     ),
-                    ListTile(
-                      leading: Icon(
-                        Icons.library_music,
-                        color: Colors.white,
-                        size: 30,
-                      ),
-                      title: Text(
-                        'Your Library',
-                        style: TextStyle(color: Colors.white, fontSize: 18),
-                      ),
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => LibraryPage()),
-                      ),
+                    title: Text(
+                      'Logout',
+                      style: TextStyle(color: Colors.white, fontSize: 18),
                     ),
-                    ListTile(
-                      leading: Icon(
-                        Icons.search,
-                        color: Colors.white,
-                        size: 30,
-                      ),
-                      title: Text(
-                        'Search',
-                        style: TextStyle(color: Colors.white, fontSize: 18),
-                      ),
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => SearchPage()),
-                      ),
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => StartPage()),
                     ),
-                    ListTile(
-                      leading: Icon(
-                        Icons.settings,
-                        color: Colors.white,
-                        size: 30,
-                      ),
-                      title: Text(
-                        'Settings',
-                        style: TextStyle(color: Colors.white, fontSize: 18),
-                      ),
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => SettingsPage()),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 20.0),
-                child: ListTile(
-                  leading: Icon(
-                    Icons.logout,
-                    color: Colors.white,
-                    size: 30,
-                  ),
-                  title: Text(
-                    'Logout',
-                    style: TextStyle(color: Colors.white, fontSize: 18),
-                  ),
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => StartPage()),
                   ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            );
+          },
         ),
       ),
       body: SingleChildScrollView(
