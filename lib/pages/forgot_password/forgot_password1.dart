@@ -10,6 +10,7 @@ class ForgotPasswordPage1 extends StatefulWidget {
 class _ForgotPassword1State extends State<ForgotPasswordPage1> {
   final TextEditingController _emailController = TextEditingController();
   String? _errorText;
+  bool _isLoading = false; // Add loading state
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -17,6 +18,7 @@ class _ForgotPassword1State extends State<ForgotPasswordPage1> {
   void _sendResetEmail() async {
     setState(() {
       _errorText = null;
+      _isLoading = true; // Start loading
     });
 
     String email = _emailController.text.trim();
@@ -24,6 +26,7 @@ class _ForgotPassword1State extends State<ForgotPasswordPage1> {
     if (email.isEmpty) {
       setState(() {
         _errorText = "This field is required.";
+        _isLoading = false; // Stop loading
       });
       return;
     }
@@ -31,12 +34,12 @@ class _ForgotPassword1State extends State<ForgotPasswordPage1> {
     if (!RegExp(r'^[^@]+@[^@]+\.[^@]+$').hasMatch(email)) {
       setState(() {
         _errorText = "Enter a valid email.";
+        _isLoading = false; // Stop loading
       });
       return;
     }
 
     try {
-      // Check if the email exists in Firestore
       final querySnapshot = await _firestore
           .collection('users')
           .where('email', isEqualTo: email)
@@ -45,19 +48,24 @@ class _ForgotPassword1State extends State<ForgotPasswordPage1> {
       if (querySnapshot.docs.isEmpty) {
         setState(() {
           _errorText = "No account found for this email.";
+          _isLoading = false; // Stop loading
         });
         return;
       }
 
-      // Send the password reset email
       await _auth.sendPasswordResetEmail(email: email);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Password reset email sent! Check your inbox.")),
       );
-      Navigator.pop(context); // Return to the previous screen
+      Navigator.pop(context);
     } on FirebaseAuthException catch (e) {
       setState(() {
         _errorText = e.message;
+        _isLoading = false; // Stop loading
+      });
+    } finally {
+      setState(() {
+        _isLoading = false; // Stop loading
       });
     }
   }
@@ -117,13 +125,15 @@ class _ForgotPassword1State extends State<ForgotPasswordPage1> {
             SizedBox(height: 30),
             Center(
               child: ElevatedButton(
-                onPressed: _sendResetEmail,
+                onPressed: _isLoading ? null : _sendResetEmail, // Disable button when loading
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
                   minimumSize: Size(200, 50),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                 ),
-                child: Text(
+                child: _isLoading
+                    ? CircularProgressIndicator(color: Colors.white) // Show loading indicator
+                    : Text(
                   'Reset Password',
                   style: TextStyle(
                     fontSize: 18,

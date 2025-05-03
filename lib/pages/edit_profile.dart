@@ -86,53 +86,58 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
     if (_displayNameError == null && _emailError == null) {
       setState(() {
-        // Show loading state
         isLoading = true;
       });
 
       try {
-        // Check if the email is unique
-        QuerySnapshot emailQuery = await _firestore
-            .collection('users')
-            .where('email', isEqualTo: _emailController.text.trim())
-            .get();
-
         User? currentUser = _auth.currentUser;
 
-        if (emailQuery.docs.isNotEmpty &&
-            emailQuery.docs.first.id != currentUser?.uid) {
-          setState(() {
-            _emailError = "Email is already in use.";
-            isLoading = false; // Stop loading
-          });
-          return;
+        final String newDisplayName = _displayNameController.text.trim();
+        final String newEmail = _emailController.text.trim();
+        final String currentEmail = currentUser?.email ?? '';
+
+        DocumentSnapshot userDoc = await _firestore.collection('users').doc(currentUser?.uid).get();
+        final String currentDisplayName = userDoc['name'] ?? '';
+
+        // Only proceed with email uniqueness check and verification if email changed
+        if (newEmail != currentEmail) {
+          QuerySnapshot emailQuery = await _firestore
+              .collection('users')
+              .where('email', isEqualTo: newEmail)
+              .get();
+
+          if (emailQuery.docs.isNotEmpty && emailQuery.docs.first.id != currentUser?.uid) {
+            setState(() {
+              _emailError = "Email is already in use.";
+              isLoading = false;
+            });
+            return;
+          }
+
+          // Send verification email only if email changed
+          await currentUser?.verifyBeforeUpdateEmail(newEmail);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Verification email sent. Please verify your new email.')),
+          );
         }
 
-        // Update Firebase Authentication email
-        await currentUser?.updateEmail(_emailController.text.trim());
+        // Update only changed fields in Firestore
+        Map<String, dynamic> updates = {};
+        if (newDisplayName != currentDisplayName) updates['name'] = newDisplayName;
+        if (newEmail != currentEmail) updates['email'] = newEmail;
 
-        // Update Firestore user data
-        await _firestore.collection('users').doc(currentUser?.uid).update({
-          'name': _displayNameController.text.trim(),
-          'email': _emailController.text.trim(),
-        });
+        if (updates.isNotEmpty) {
+          await _firestore.collection('users').doc(currentUser?.uid).update(updates);
+        }
 
-        // Update the UI and pass the updated data back
         setState(() {
-          isLoading = false; // Stop loading
+          isLoading = false;
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Profile updated successfully!')),
-        );
-
-        Navigator.pop(context, {
-          'name': _displayNameController.text.trim(),
-          'email': _emailController.text.trim(),
-        });
+        Navigator.pop(context);
       } on FirebaseAuthException catch (e) {
         setState(() {
-          isLoading = false; // Stop loading
+          isLoading = false;
         });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error: ${e.message}')),
@@ -140,6 +145,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       }
     }
   }
+
 
   @override
   Widget build(BuildContext context) {

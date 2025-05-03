@@ -1,4 +1,4 @@
-import 'package:activity_1/pages/login.dart';
+import 'pages/login.dart';
 import 'package:flutter/material.dart';
 import 'pages/search.dart';
 import 'pages/library.dart';
@@ -15,6 +15,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'guards/auth_guard.dart';
 
 void main() async {
   await Firebase.initializeApp(
@@ -39,12 +40,14 @@ class MoodyApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        '/': (context) => StartPage(),
+        '/': (context) => AuthGuard(child: HomePage()),
         '/signup1': (context) => SignUpPage1(),
         '/login': (context) => LoginPage(),
-        '/homepage': (context) => HomePage(),
+        '/homepage': (context) => AuthGuard(child: HomePage()),
         '/forgotpassword1': (context) => ForgotPasswordPage1(),
-        '/editprofile': (context) => EditProfilePage(),
+        '/editprofile': (context) => AuthGuard(child: EditProfilePage()),
+        '/settings': (context) => AuthGuard(child: SettingsPage()),
+        '/profile': (context) => AuthGuard(child: ProfilePage()),
       },
     );
   }
@@ -58,6 +61,29 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkEmailVerification();
+  }
+
+  Future<void> _checkEmailVerification() async {
+    User? user = _auth.currentUser;
+
+    if (user != null && user.emailVerified) {
+      DocumentSnapshot userDoc = await _firestore.collection('users').doc(user.uid).get();
+
+      if (userDoc.exists) {
+        String storedEmail = userDoc['email'] ?? '';
+
+        if (user.email != storedEmail) {
+          await _auth.signOut();
+          Navigator.pushReplacementNamed(context, '/login');
+        }
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -212,10 +238,17 @@ class _HomePageState extends State<HomePage> {
                       'Logout',
                       style: TextStyle(color: Colors.white, fontSize: 18),
                     ),
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => StartPage()),
-                    ),
+                    onTap: () async {
+                      try {
+                        await FirebaseAuth.instance.signOut();
+                        // Navigate to the login page after logout
+                        Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Error logging out: $e')),
+                        );
+                      }
+                    },
                   ),
                 ),
               ],
