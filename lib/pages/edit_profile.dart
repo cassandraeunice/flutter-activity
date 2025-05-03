@@ -17,32 +17,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
   String? _displayNameError;
   String? _emailError;
 
-  // Playlist switch states
-  Map<String, bool> _playlistSwitches = {};
-
   // Loading state
   bool isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    _initializePlaylists();
     _populateUserData();
-  }
-
-  void _initializePlaylists() {
-    List<String> playlistTitles = [
-      'Study Hub',
-      'On Repeat',
-      'Volume UPPP',
-      'carpool!!',
-      'focus time',
-      'stuck in January',
-    ];
-
-    for (var title in playlistTitles) {
-      _playlistSwitches[title] = true;
-    }
   }
 
   Future<void> _populateUserData() async {
@@ -146,7 +127,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -201,8 +181,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
               _buildTextField("Display Name", _displayNameController, _displayNameError),
               SizedBox(height: 16),
               _buildTextField("Email", _emailController, _emailError),
-              SizedBox(height: 16),
-              _buildPlaylistSection(),
               SizedBox(height: 30),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
@@ -264,64 +242,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
               ],
             ),
           ),
-      ],
-    );
-  }
-
-  Widget _buildPlaylistSection() {
-    List<Map<String, String>> playlists = [
-      {'image': 'assets/playlist/playlist1.jpg', 'title': 'Study Hub'},
-      {'image': 'assets/playlist/playlist2.jpg', 'title': 'On Repeat'},
-      {'image': 'assets/playlist/playlist3.png', 'title': 'Volume UPPP'},
-      {'image': 'assets/playlist/playlist4.jpg', 'title': 'carpool!!'},
-      {'image': 'assets/playlist/playlist5.jpg', 'title': 'focus time'},
-      {'image': 'assets/playlist/playlist6.jpg', 'title': 'stuck in January'},
-    ];
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "Public Playlists",
-          style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
-        ),
-        SizedBox(height: 10),
-        Column(
-          children: playlists.map((playlist) {
-            String title = playlist['title']!;
-            return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Image.asset(
-                        playlist['image']!,
-                        width: 50,
-                        height: 50,
-                      ),
-                      SizedBox(width: 10),
-                      Text(
-                        title,
-                        style: TextStyle(color: Colors.white, fontSize: 16),
-                      ),
-                    ],
-                  ),
-                  Switch(
-                    value: _playlistSwitches[title] ?? true,
-                    onChanged: (bool newValue) {
-                      setState(() {
-                        _playlistSwitches[title] = newValue;
-                      });
-                    },
-                    activeColor: Colors.green,
-                  ),
-                ],
-              ),
-            );
-          }).toList(),
-        ),
       ],
     );
   }

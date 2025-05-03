@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../pages/start_page.dart';
 
 class AuthGuard extends StatelessWidget {
   final Widget child;
@@ -17,9 +18,11 @@ class AuthGuard extends StatelessWidget {
           return Center(child: CircularProgressIndicator());
         }
         if (_auth.currentUser == null) {
-          // Redirect to login and clear navigation stack
-          Future.microtask(() => Navigator.pushNamedAndRemoveUntil(
-              context, '/login', (route) => false));
+          // Redirect to StartPage and clear navigation stack
+          Future.microtask(() => Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => StartPage()),
+                  (route) => false));
           return SizedBox.shrink();
         }
         return child;
