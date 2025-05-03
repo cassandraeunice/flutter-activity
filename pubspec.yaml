@@ -61,6 +61,7 @@ flutter:
   uses-material-design: true
 
   assets:
+    - assets/songs/
     - assets/sandy.jpg
     - assets/album/chromakopia.jpg
     - assets/category/freudian.jpg
