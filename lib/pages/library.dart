@@ -77,30 +77,30 @@ class _LibraryPageState extends State<LibraryPage> {
                   SizedBox(width: 10),
                   _buildCategoryChip('Artists'),
                   SizedBox(width: 10),
-                  _buildCategoryChip('Albums'),
-                  SizedBox(width: 10),
-                  _buildCategoryChip('Podcasts & Shows'),
+                  // _buildCategoryChip('Albums'),
+                  // SizedBox(width: 10),
+                  // _buildCategoryChip('Podcasts & Shows'),
                 ],
               ),
             ),
             SizedBox(height: 20),
-            Row(
-              children: [
-                Icon(
-                  Icons.music_note,
-                  color: Colors.white,
-                  size: 12,
-                ),
-                Text(
-                  "Recently Played",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
+            // Row(
+            //   children: [
+            //     // Icon(
+            //     //   Icons.music_note,
+            //     //   color: Colors.white,
+            //     //   size: 12,
+            //     // ),
+            //     // Text(
+            //     //   "Recently Played",
+            //     //   style: TextStyle(
+            //     //     color: Colors.white,
+            //     //     fontSize: 12,
+            //     //     fontWeight: FontWeight.bold,
+            //     //   ),
+            //     // ),
+            //   ],
+            // ),
             SizedBox(height: 20),
             _buildRecentlyPlayedItem('Liked Songs', 'Playlist - 58 songs', 'assets/playlist/liked.jpeg'),
             SizedBox(height: 16),

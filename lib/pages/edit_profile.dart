@@ -38,6 +38,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       }
     } catch (e) {
       // Handle errors if needed
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error loading user data')));
     }
   }
 
@@ -154,26 +155,28 @@ class _EditProfilePageState extends State<EditProfilePage> {
               Center(
                 child: Stack(
                   children: [
-                    CircleAvatar(
-                      backgroundImage: AssetImage('assets/sandy.jpg'),
-                      radius: 60,
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white,
-                        ),
-                        child: IconButton(
-                          icon: Icon(Icons.camera_alt, color: Colors.black),
-                          onPressed: () {
-                            // Add image upload functionality
-                          },
-                        ),
-                      ),
-                    ),
+                    // CircleAvatar(
+                    //   backgroundImage: AssetImage('assets/sandy.jpg'), // Replace with actual asset or image
+                    //   radius: 60,
+                    // ),
+                    // Positioned(
+                    //   bottom: 0,
+                    //   right: 0,
+                    //   child: Container(
+                    //     decoration: BoxDecoration(
+                    //       shape: BoxShape.circle,
+                    //       color: Colors.white,
+                    //     ),
+                    //     child: IconButton(
+                    //       icon: Icon(Icons.camera_alt, color: Colors.black),
+                    //       onPressed: () {
+                    //         // Add image upload functionality here
+                    //       },
+                    //     ),
+                    //   ),
+                    // ),
+                    // ],
+                    // ),
                   ],
                 ),
               ),
@@ -184,7 +187,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
               SizedBox(height: 30),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
+                  backgroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
@@ -195,7 +198,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     ? CircularProgressIndicator(color: Colors.white)
                     : Text(
                   "Save Changes",
-                  style: TextStyle(color: Colors.white, fontSize: 16),
+                  style: TextStyle(color: Colors.black, fontSize: 16),
                 ),
               ),
             ],

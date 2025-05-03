@@ -158,39 +158,39 @@ class _SignUpPage4State extends State<SignUpPage4> {
 
                 SizedBox(height: 20),
 
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    "Terms of Use",
-                    style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
-                  ),
-                ),
-                SizedBox(height: 10),
-
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    "By tapping on “Create account”, you agree to Moody’s Terms of Use.",
-                    style: TextStyle(color: Colors.white, fontSize: 12),
-                  ),
-                ),
-                SizedBox(height: 10),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    "Privacy Policy",
-                    style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
-                  ),
-                ),
-                SizedBox(height: 10),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    "To learn more about how Moody collects, uses, shares, and protects your personal data, please see the Privacy Policy.",
-                    style: TextStyle(color: Colors.white, fontSize: 12),
-                  ),
-                ),
-                SizedBox(height: 100),
+                // Align(
+                //   alignment: Alignment.centerLeft,
+                //   child: Text(
+                //     "Terms of Use",
+                //     style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                //   ),
+                // ),
+                // SizedBox(height: 10),
+                //
+                // Align(
+                //   alignment: Alignment.centerLeft,
+                //   child: Text(
+                //     "By tapping on “Create account”, you agree to Moody’s Terms of Use.",
+                //     style: TextStyle(color: Colors.white, fontSize: 12),
+                //   ),
+                // ),
+                // SizedBox(height: 10),
+                // Align(
+                //   alignment: Alignment.centerLeft,
+                //   child: Text(
+                //     "Privacy Policy",
+                //     style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                //   ),
+                // ),
+                // SizedBox(height: 10),
+          //       // Align(
+          //         alignment: Alignment.centerLeft,
+          //         child: Text(
+          //           "To learn more about how Moody collects, uses, shares, and protects your personal data, please see the Privacy Policy.",
+          //           style: TextStyle(color: Colors.white, fontSize: 12),
+          //         ),
+          //       ),
+          //       SizedBox(height: 100),
               ],
             ),
           ),

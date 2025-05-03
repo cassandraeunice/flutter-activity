@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
 
-class SearchPage extends StatelessWidget {
+class SearchPage extends StatefulWidget {
+  @override
+  _SearchPageState createState() => _SearchPageState();
+}
+
+class _SearchPageState extends State<SearchPage> {
+  // Controller for the search text field
+  TextEditingController _searchController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,7 +46,7 @@ class SearchPage extends StatelessWidget {
               ),
               SizedBox(height: 16),
 
-              // Search bar
+              // Search bar (editable text)
               Container(
                 height: 46,
                 decoration: BoxDecoration(
@@ -50,9 +58,20 @@ class SearchPage extends StatelessWidget {
                   children: [
                     Icon(Icons.search, color: Colors.black),
                     SizedBox(width: 10),
-                    Text(
-                      "Artists, songs, or podcasts",
-                      style: TextStyle(color: Colors.black, fontSize: 16),
+                    Expanded(
+                      child: TextField(
+                        controller: _searchController,  // Use the controller to track input
+                        style: TextStyle(color: Colors.black, fontSize: 16),
+                        decoration: InputDecoration(
+                          hintText: "Artists, songs, or podcasts",
+                          hintStyle: TextStyle(color: Colors.black54),
+                          border: InputBorder.none,  // Removes default border
+                        ),
+                        onChanged: (value) {
+                          // You can add logic here to handle search text changes
+                          print("Search query: $value");
+                        },
+                      ),
                     ),
                   ],
                 ),
@@ -114,21 +133,20 @@ class SearchPage extends StatelessWidget {
               ),
               SizedBox(height: 10),
               // Grid view section
-          SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            child: Column(
-              children: [
-                  Wrap(
-                    children: [
-                      _buildGenreCard("2024 Wrapped", 'assets/category/wrapped.jpg', Color(0xFFABBB6D)),
-                      _buildGenreCard("Podcasts", 'assets/category/podcast.jpg', Color(0xFF223160)),
-                      _buildGenreCard("Charts", 'assets/category/charts.jpg', Color(0xFF8768A7)),
-                      _buildGenreCard("Made for you", 'assets/category/made for you.jpg', Color(0xFF75A768)),
-
-                    ]
-                  )
-                ],
-                )
+              SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: Column(
+                  children: [
+                    Wrap(
+                        children: [
+                          _buildGenreCard("2024 Wrapped", 'assets/category/wrapped.jpg', Color(0xFFABBB6D)),
+                          _buildGenreCard("Podcasts", 'assets/category/podcast.jpg', Color(0xFF223160)),
+                          _buildGenreCard("Charts", 'assets/category/charts.jpg', Color(0xFF8768A7)),
+                          _buildGenreCard("Made for you", 'assets/category/made for you.jpg', Color(0xFF75A768)),
+                        ]
+                    )
+                  ],
+                ),
               ),
             ],
           ),

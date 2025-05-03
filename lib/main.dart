@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'pages/search.dart';
 import 'pages/library.dart';
 import 'pages/profile.dart';
-import 'pages/settings.dart';
+// import 'pages/settings.dart';
+import 'pages/playlist.dart';
+import 'pages/play.dart';
 import 'pages/start_page.dart';
 import 'pages/sign_up/sign_up1.dart';
 import 'pages/sign_up/sign_up2.dart';
@@ -46,8 +48,10 @@ class MoodyApp extends StatelessWidget {
         '/homepage': (context) => AuthGuard(child: HomePage()),
         '/forgotpassword1': (context) => ForgotPasswordPage1(),
         '/editprofile': (context) => AuthGuard(child: EditProfilePage()),
-        '/settings': (context) => AuthGuard(child: SettingsPage()),
+        // '/settings': (context) => AuthGuard(child: SettingsPage()),
         '/profile': (context) => AuthGuard(child: ProfilePage()),
+        '/playlist': (context) => AuthGuard(child: PlaylistPage()),
+        '/play': (context) => AuthGuard(child: PlayPage()),
       },
     );
   }
@@ -195,6 +199,36 @@ class _HomePageState extends State<HomePage> {
                       ),
                       ListTile(
                         leading: Icon(
+                          Icons.library_music,
+                          color: Colors.white,
+                          size: 30,
+                        ),
+                        title: Text(
+                          'Playlist',
+                          style: TextStyle(color: Colors.white, fontSize: 18),
+                        ),
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => PlaylistPage()),
+                        ),
+                      ),
+                      ListTile(
+                        leading: Icon(
+                          Icons.library_music,
+                          color: Colors.white,
+                          size: 30,
+                        ),
+                        title: Text(
+                          'Song',
+                          style: TextStyle(color: Colors.white, fontSize: 18),
+                        ),
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => PlayPage()),
+                        ),
+                      ),
+                      ListTile(
+                        leading: Icon(
                           Icons.search,
                           color: Colors.white,
                           size: 30,
@@ -206,21 +240,6 @@ class _HomePageState extends State<HomePage> {
                         onTap: () => Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) => SearchPage()),
-                        ),
-                      ),
-                      ListTile(
-                        leading: Icon(
-                          Icons.settings,
-                          color: Colors.white,
-                          size: 30,
-                        ),
-                        title: Text(
-                          'Settings',
-                          style: TextStyle(color: Colors.white, fontSize: 18),
-                        ),
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => SettingsPage()),
                         ),
                       ),
                     ],
@@ -271,7 +290,7 @@ class _HomePageState extends State<HomePage> {
               ),
               SizedBox(height: 10),
               Text(
-                "Recently Played",
+                "Recently Played Songs",
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: 16,
