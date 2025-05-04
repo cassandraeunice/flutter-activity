@@ -1,6 +1,28 @@
 import 'package:flutter/material.dart';
+import 'edit_playlist.dart';
 
-class PlaylistPage extends StatelessWidget {
+class PlaylistPage extends StatefulWidget {
+  @override
+  _PlaylistPageState createState() => _PlaylistPageState();
+}
+
+class _PlaylistPageState extends State<PlaylistPage> {
+  int? _currentlyPlayingIndex; // Stores which song is currently playing (null means none)
+
+  // Sample list of songs for search
+  List<String> songList = [
+    'Strawberries & Cigarettes',
+    'Angel Baby',
+    'Youth',
+    'The Good Side',
+    'Someone Like You',
+    'Blinding Lights',
+    'Stay',
+    'Levitating',
+  ];
+
+  List<String> filteredSongs = [];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -9,17 +31,9 @@ class PlaylistPage extends StatelessWidget {
         backgroundColor: Color(0xFF121212),
         elevation: 0,
         title: SizedBox.shrink(),
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 0),
-          child: IconButton(
-            icon: Icon(
-              Icons.arrow_back,
-              color: Colors.white,
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
         ),
       ),
       body: SingleChildScrollView(
@@ -41,32 +55,49 @@ class PlaylistPage extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(height: 8), // Space between image and text
-
-              // Study Hub, Cassandra, and Avatar in a single row
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
+              SizedBox(height: 8),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Study Hub',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 33,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(width: 20), // Space between 'Study Hub' and the avatar
-
-                  CircleAvatar(
-                    radius: 10,
-                    backgroundImage: AssetImage('assets/sandy.jpg'),
-                  ),
-                  SizedBox(width: 15), // Space between avatar and 'Cassandra' text
-
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
+                      Text(
+                        'Study Hub',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 33,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.add, color: Color(0xFFF94C57), size: 25),
+                            tooltip: 'Add Song',
+                            onPressed: () {
+                              _showAddSongDialog();
+                            },
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.edit, color: Color(0xFFF94C57), size: 20),
+                            tooltip: 'Edit Playlist',
+                            onPressed: () {
+                              _navigateToEditPlaylistPage();
+                            },
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 10),
+                  Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 12,
+                        backgroundImage: AssetImage('assets/defaultpic.jpg'),
+                      ),
+                      SizedBox(width: 10),
                       Text(
                         'Cassandra',
                         style: TextStyle(
@@ -74,62 +105,45 @@ class PlaylistPage extends StatelessWidget {
                           fontSize: 13,
                         ),
                       ),
-                      SizedBox(height: 4),
                     ],
                   ),
                 ],
               ),
-
-              // Header section for #, Title, Artist
-              SizedBox(height: 20), // Space before header section
+              SizedBox(height: 20),
               Row(
                 children: [
-                  // Adding spaces between each header element
-                  Text(
-                    '#',
-                    style: TextStyle(
-                      color: Color(0xFFB3B3B3), // Grey color for header text
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(width: 15), // Space between header elements
-                  Expanded( // This will help adjust space for the Title
-                    child: Text(
-                      'Title',
+                  Text('#',
                       style: TextStyle(
-                        color: Color(0xFFB3B3B3),
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                          color: Color(0xFFB3B3B3),
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold)),
+                  SizedBox(width: 15),
+                  Expanded(
+                    child: Text('Title',
+                        style: TextStyle(
+                            color: Color(0xFFB3B3B3),
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold)),
                   ),
-                  SizedBox(width: 15), // Space between header elements
-                  Expanded( // This will help adjust space for the Artist
-                    child: Text(
-                      'Artist',
-                      style: TextStyle(
-                        color: Color(0xFFB3B3B3),
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                  SizedBox(width: 15),
+                  Expanded(
+                    child: Text('Artist',
+                        style: TextStyle(
+                            color: Color(0xFFB3B3B3),
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold)),
                   ),
                 ],
               ),
-              SizedBox(height: 10), // Space below the header
-
-              // Content for songs
-              _buildSongRow('1', 'Strawberries & Cigarettes', 'Troye Sivan'),
-              SizedBox(height: 16), // Space between rows
-
-              _buildSongRow('2', 'Strawberries & Cigarettes', 'Troye Sivan'),
+              SizedBox(height: 10),
+              // Songs
+              _buildSongRow(0, 'Strawberries & Cigarettes', 'Troye Sivan'),
               SizedBox(height: 16),
-
-              _buildSongRow('3', 'Strawberries & Cigarettes', 'Troye Sivan'),
+              _buildSongRow(1, 'Angel Baby', 'Troye Sivan'),
               SizedBox(height: 16),
-
-              _buildSongRow('4', 'Strawberries & Cigarettes', 'Troye Sivan'),
+              _buildSongRow(2, 'Youth', 'Troye Sivan'),
+              SizedBox(height: 16),
+              _buildSongRow(3, 'The Good Side', 'Troye Sivan'),
             ],
           ),
         ),
@@ -137,67 +151,196 @@ class PlaylistPage extends StatelessWidget {
     );
   }
 
-  // Helper method to build the song row
-  Widget _buildSongRow(String number, String title, String artist) {
+  // Your existing code ...
+
+  Widget _buildSongRow(int index, String title, String artist) {
+    bool isPlaying = _currentlyPlayingIndex == index;
+
     return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        // Song number
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              number,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
+        Text('${index + 1}',
+            style: TextStyle(color: Colors.white, fontSize: 16)),
+        SizedBox(width: 20),
+        Expanded(
+          child: Text(title,
+              style: TextStyle(color: Colors.white, fontSize: 16)),
+        ),
+        SizedBox(width: 40),
+        Expanded(
+          child: Text(artist,
+              style: TextStyle(color: Colors.white, fontSize: 16)),
+        ),
+        IconButton(
+          icon: Icon(
+            isPlaying ? Icons.pause_circle_filled : Icons.play_circle_filled,
+            color: Color(0xFFF94C57),
+            size: 35,
+          ),
+          onPressed: () {
+            setState(() {
+              if (isPlaying) {
+                _currentlyPlayingIndex = null; // Stop playing
+              } else {
+                _currentlyPlayingIndex = index; // Start this song
+              }
+            });
+          },
+        ),
+        PopupMenuButton<String>(
+          icon: Icon(Icons.more_vert, color: Colors.white),
+          onSelected: (String choice) {
+            if (choice == 'delete') {
+              // Handle delete action
+              print('Delete song at index $index');
+            }
+          },
+          color: Colors.black,
+          itemBuilder: (BuildContext context) => [
+            PopupMenuItem<String>(
+              value: 'delete',
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.black,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                padding: EdgeInsets.symmetric(vertical: 3, horizontal: 5),
+                child: Text(
+                  'Delete',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                  ),
+                ),
               ),
             ),
           ],
-        ),
-        SizedBox(width: 20), // Space between number and title
-        // Song title
-        Expanded( // Allows the title to take up remaining space
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                ),
-              ),
-            ],
-          ),
-        ),
-        SizedBox(width: 40), // Space between title and artist
-        // Song artist
-        Expanded( // Allows the artist to take up remaining space
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                artist,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                ),
-              ),
-            ],
-          ),
-        ),
-        SizedBox(width: 20), // Space between artist and button
-        // Pause button at the end
-        IconButton(
-          icon: Icon(
-            Icons.pause_circle_filled,
-            color: Color(0xFFF94C57),
-            size: 40,
-          ),
-          onPressed: () {},
-        ),
+        )
       ],
+    );
+  }
+
+  // Method to navigate to the EditPlaylistPage
+  // Update this to pass the actual song data:
+  _navigateToEditPlaylistPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EditPlaylist(
+          initialName: songList[0], // Pass the song title (or modify to pass selected song)
+        ),
+      ),
+    );
+  }
+
+  // Show the add song dialog
+  void _showAddSongDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Color(0xFF121212),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+          title: Text(
+            'Add songs',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Search TextField with similar design as the main page
+              Container(
+                height: 46,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  children: [
+                    Icon(Icons.search, color: Colors.black),
+                    SizedBox(width: 10),
+                    Expanded(
+                      child: TextField(
+                        onChanged: (query) {
+                          setState(() {
+                            filteredSongs = songList
+                                .where((song) =>
+                                song.toLowerCase().contains(query.toLowerCase()))
+                                .toList();
+                          });
+                        },
+                        style: TextStyle(color: Colors.black, fontSize: 16),
+                        decoration: InputDecoration(
+                          hintText: 'Search songs...',
+                          hintStyle: TextStyle(color: Colors.black54),
+                          border: InputBorder.none, // Removes the border
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 10),
+              // Display filtered songs or a no results message
+              if (filteredSongs.isNotEmpty)
+                ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: filteredSongs.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text(
+                        filteredSongs[index],
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      onTap: () {
+                        // Handle song selection
+                        print('Song selected: ${filteredSongs[index]}');
+                        Navigator.pop(context); // Close dialog
+                      },
+                    );
+                  },
+                )
+              else
+                Center(
+                  child: Text(
+                    'No songs found',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+            ],
+          ),
+          actions: [
+            // Cancel button
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Close the dialog
+              },
+              child: Text(
+                'Cancel',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+            // Add button
+            TextButton(
+              onPressed: () {
+                // Optionally handle adding song
+                print("Add song button pressed.");
+                Navigator.pop(context); // Close the dialog
+              },
+              child: Text(
+                'Add',
+                style: TextStyle(color: Color(0xFFF94C57)),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

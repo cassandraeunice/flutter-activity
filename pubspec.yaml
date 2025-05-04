@@ -62,6 +62,7 @@ flutter:
 
   assets:
     - assets/songs/
+    - assets/defaultpic.jpg
     - assets/sandy.jpg
     - assets/album/chromakopia.jpg
     - assets/category/freudian.jpg

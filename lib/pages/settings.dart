@@ -68,7 +68,7 @@ class SettingsPage extends StatelessWidget {
                       children: [
                         CircleAvatar(
                           radius: 30,
-                          backgroundImage: AssetImage('assets/sandy.jpg'),
+                          backgroundImage: AssetImage('assets/defaultpic.jpg'),
                         ),
                         SizedBox(width: 10),
                         Column(
