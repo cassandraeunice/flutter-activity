@@ -36,10 +36,13 @@ class _CreatePlaylistState extends State<CreatePlaylist> {
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () {
+            // Back button: just pop the dialog without returning any data
+            Navigator.pop(context);
+          },
         ),
         title: Text(
-          "Give your playlist a name",
+          "Create playlist name",
           style: TextStyle(
             color: Colors.white,
             fontSize: 18,

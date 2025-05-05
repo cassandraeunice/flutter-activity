@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
+import 'add_song.dart'; // Ensure this file has AddSong defined
 
-class PlayPage extends StatelessWidget {
+class SongPage extends StatefulWidget {
+  @override
+  _SongPageState createState() => _SongPageState();
+}
+
+class _SongPageState extends State<SongPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,9 +47,9 @@ class PlayPage extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(height: 15), // Space between image and text
+              SizedBox(height: 15),
 
-              // Row for title and artist, with heart icon on the right side
+              // Title, artist, and heart icon
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -59,81 +65,74 @@ class PlayPage extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      SizedBox(height: 4), // Space between title and artist
+                      SizedBox(height: 4),
                       Text(
                         'Troye Sivan',
                         style: TextStyle(
-                          color: Colors.grey, // Grey color for the artist
-                          fontSize: 16, // Smaller font size for the artist name
+                          color: Colors.grey,
+                          fontSize: 16,
                         ),
                       ),
                     ],
                   ),
                   IconButton(
                     icon: Icon(
-                      Icons.favorite_border, // Heart icon (you can change this to filled if you want)
+                      Icons.favorite_border,
                       color: Colors.white,
                       size: 30,
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      // Open AddSong as a Dialog with the specific size 300x350
+                      showDialog(
+                        context: context,
+                        builder: (context) => Dialog(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          child: Container(
+                            height: 350,  // Set height to 350
+                            width: 300,   // Set width to 300
+                            child: AddSong(), // Show the AddSong widget inside the dialog
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),
 
-              // Add progress bar with timestamp
-              SizedBox(height: 20), // Space before the progress bar
+              SizedBox(height: 20),
               Row(
                 children: [
-                  Text(
-                    '0:45', // Current position timestamp (this would be dynamic in a real app)
-                    style: TextStyle(color: Colors.white, fontSize: 12),
-                  ),
+                  Text('0:45', style: TextStyle(color: Colors.white, fontSize: 12)),
                   Expanded(
                     child: Slider(
-                      value: 45.0, // This is the current position in seconds
+                      value: 45.0,
                       min: 0,
-                      max: 240, // Max time in seconds (4 minutes in this example)
-                      onChanged: (value) {
-                        // Implement progress tracking here
-                      },
+                      max: 240,
+                      onChanged: (value) {},
                       activeColor: Color(0xFFF94C57),
                       inactiveColor: Colors.grey,
                     ),
                   ),
-                  Text(
-                    '4:00', // Total duration of the song
-                    style: TextStyle(color: Colors.white, fontSize: 12),
-                  ),
+                  Text('4:00', style: TextStyle(color: Colors.white, fontSize: 12)),
                 ],
               ),
 
-              // Music control buttons in the same row
-              SizedBox(height: 20), // Space before buttons
+              SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   IconButton(
-                    icon: Icon(
-                      Icons.skip_previous,
-                      color: Color(0xFFF94C57),
-                      size: 40,
-                    ),
+                    icon: Icon(Icons.skip_previous, color: Color(0xFFF94C57), size: 40),
                     onPressed: () {},
                   ),
                   IconButton(
-                    icon: Icon(
-                      Icons.pause_circle_filled,
-                      color: Color(0xFFF94C57),
-                      size: 70,
-                    ),
+                    icon: Icon(Icons.pause_circle_filled, color: Color(0xFFF94C57), size: 70),
                     onPressed: () {},
                   ),
                   IconButton(
-                    icon: Icon(
-                      Icons.skip_next,
-                      color: Color(0xFFF94C57),
-                      size: 40,
-                    ),
+                    icon: Icon(Icons.skip_next, color: Color(0xFFF94C57), size: 40),
                     onPressed: () {},
                   ),
                 ],

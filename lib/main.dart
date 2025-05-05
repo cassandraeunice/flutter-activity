@@ -5,7 +5,7 @@ import 'pages/library.dart';
 import 'pages/profile.dart';
 // import 'pages/settings.dart';
 import 'pages/playlist.dart';
-import 'pages/play.dart';
+import 'pages/song.dart';
 import 'pages/start_page.dart';
 import 'pages/sign_up/sign_up1.dart';
 import 'pages/sign_up/sign_up2.dart';
@@ -51,7 +51,7 @@ class MoodyApp extends StatelessWidget {
         // '/settings': (context) => AuthGuard(child: SettingsPage()),
         '/profile': (context) => AuthGuard(child: ProfilePage()),
         '/playlist': (context) => AuthGuard(child: PlaylistPage()),
-        '/play': (context) => AuthGuard(child: PlayPage()),
+        '/song': (context) => AuthGuard(child: SongPage()),
       },
     );
   }
@@ -224,7 +224,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                         onTap: () => Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => PlayPage()),
+                          MaterialPageRoute(builder: (context) => SongPage()),
                         ),
                       ),
                       ListTile(

@@ -44,7 +44,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
             children: [
               Center(
                 child: Container(
-                  width: 350,
+                  width: 300,
                   height: 350,
                   decoration: BoxDecoration(
                     image: DecorationImage(
@@ -83,7 +83,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
                             icon: Icon(Icons.edit, color: Color(0xFFF94C57), size: 20),
                             tooltip: 'Edit Playlist',
                             onPressed: () {
-                              _navigateToEditPlaylistPage();
+                              _showEditPlaylistDialog();
                             },
                           ),
                         ],
@@ -219,16 +219,26 @@ class _PlaylistPageState extends State<PlaylistPage> {
     );
   }
 
-  // Method to navigate to the EditPlaylistPage
-  // Update this to pass the actual song data:
-  _navigateToEditPlaylistPage() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => EditPlaylist(
-          initialName: songList[0], // Pass the song title (or modify to pass selected song)
-        ),
-      ),
+  // Method to navigate to the EditPlaylistPage as a dialog
+  void _showEditPlaylistDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: Color(0xFF121212),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Container(
+            width: 300,
+            height: 350,
+            padding: EdgeInsets.all(20),
+            child: EditPlaylist(
+              initialName: songList[0], // Pass the song title (or modify to pass selected song)
+            ),
+          ),
+        );
+      },
     );
   }
 

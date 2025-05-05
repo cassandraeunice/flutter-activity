@@ -31,6 +31,7 @@ class _EditPlaylistState extends State<EditPlaylist> {
   void _onSavePressed() {
     _validateInput();
     if (_errors.isEmpty) {
+      // Save button: return the updated playlist name
       Navigator.pop(context, _playlistController.text);
     }
   }
@@ -43,7 +44,10 @@ class _EditPlaylistState extends State<EditPlaylist> {
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () {
+            // Back button: just pop the dialog without returning any data
+            Navigator.pop(context);
+          },
         ),
         title: Text(
           "Edit your playlist name",
