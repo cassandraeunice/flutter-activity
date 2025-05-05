@@ -61,7 +61,7 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/songs/
+    - assets/songs.json
     - assets/song_pictures/
     - assets/defaultpic.jpg
     - assets/sandy.jpg
