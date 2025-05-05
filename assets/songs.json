@@ -2,266 +2,319 @@
   {
     "title": "Angeleyes",
     "artist": "ABBA",
-    "file": "assets/songs/Angeleyes.mp3"
+    "file": "assets/songs/Angeleyes.mp3",
+    "image": "assets/song_pictures/Angeleyes.jpg"
   },
   {
     "title": "Dancing Queen",
     "artist": "ABBA",
-    "file": "assets/songs/Dancing Queen.mp3"
+    "file": "assets/songs/Dancing Queen.mp3",
+    "image": "assets/song_pictures/Dancing Queen.jpg"
   },
   {
     "title": "Gimme! Gimme! Gimme! (A Man After Midnight)",
     "artist": "ABBA",
-    "file": "assets/songs/Gimme! Gimme! Gimme! (A Man After Midnight).mp3"
+    "file": "assets/songs/Gimme! Gimme! Gimme! (A Man After Midnight).mp3",
+    "image": "assets/song_pictures/Gimme! Gimme! Gimme! (A Man After Midnight).jpg"
   },
   {
     "title": "Lay All Your Love On Me",
     "artist": "ABBA",
-    "file": "assets/songs/Lay All Your Love On Me.mp3"
+    "file": "assets/songs/Lay All Your Love On Me.mp3",
+    "image": "assets/song_pictures/Lay All Your Love On Me.jpg"
   },
   {
     "title": "Mamma Mia",
     "artist": "ABBA",
-    "file": "assets/songs/Mamma Mia.mp3"
+    "file": "assets/songs/Mamma Mia.mp3",
+    "image": "assets/song_pictures/Mamma Mia.jpg"
   },
   {
     "title": "Voulez-Vous",
     "artist": "ABBA",
-    "file": "assets/songs/Voulez-Vous.mp3"
+    "file": "assets/songs/Voulez-Vous.mp3",
+    "image": "assets/song_pictures/Voulez-Vous.jpg"
   },
   {
     "title": "One Dance",
     "artist": "Drake",
-    "file": "assets/songs/One Dance.mp3"
+    "file": "assets/songs/One Dance.mp3",
+    "image": "assets/song_pictures/One Dance.jpg"
   },
   {
     "title": "Rich Flex",
     "artist": "Drake",
-    "file": "assets/songs/Rich Flex.mp3"
+    "file": "assets/songs/Rich Flex.mp3",
+    "image": "assets/song_pictures/Rich Flex.jpg"
   },
   {
     "title": "Too Good",
     "artist": "Drake",
-    "file": "assets/songs/Too Good.mp3"
+    "file": "assets/songs/Too Good.mp3",
+    "image": "assets/song_pictures/Too Good.jpg"
   },
   {
     "title": "Jimmy Cooks",
     "artist": "Drake",
-    "file": "assets/songs/Jimmy Cooks.mp3"
+    "file": "assets/songs/Jimmy Cooks.mp3",
+    "image": "assets/song_pictures/Jimmy Cooks.jpg"
   },
   {
     "title": "NOKIA",
     "artist": "Drake",
-    "file": "assets/songs/NOKIA.mp3"
+    "file": "assets/songs/NOKIA.mp3",
+    "image": "assets/song_pictures/NOKIA.jpg"
   },
   {
     "title": "ANTIFRAGILE",
     "artist": "LE SSERAFIM",
-    "file": "assets/songs/ANTIFRAGILE.mp3"
+    "file": "assets/songs/ANTIFRAGILE.mp3",
+    "image": "assets/song_pictures/ANTIFRAGILE.jpg"
   },
   {
     "title": "Blue Flame",
     "artist": "LE SSERAFIM",
-    "file": "assets/songs/Blue Flame.mp3"
+    "file": "assets/songs/Blue Flame.mp3",
+    "image": "assets/song_pictures/Blue Flame.jpg"
   },
   {
     "title": "CRAZY",
     "artist": "LE SSERAFIM",
-    "file": "assets/songs/CRAZY.mp3"
+    "file": "assets/songs/CRAZY.mp3",
+    "image": "assets/song_pictures/CRAZY.jpg"
   },
   {
     "title": "HOT",
     "artist": "LE SSERAFIM",
-    "file": "assets/songs/HOT.mp3"
+    "file": "assets/songs/HOT.mp3",
+    "image": "assets/song_pictures/HOT.jpg"
   },
   {
     "title": "No-Return (Into the unknown)",
     "artist": "LE SSERAFIM",
-    "file": "assets/songs/No-Return (Into the unknown).mp3"
+    "file": "assets/songs/No-Return (Into the unknown).mp3",
+    "image": "assets/song_pictures/No-Return (Into the unknown).jpg"
   },
   {
     "title": "Perfect Night",
     "artist": "LE SSERAFIM",
-    "file": "assets/songs/Perfect Night.mp3"
+    "file": "assets/songs/Perfect Night.mp3",
+    "image": "assets/song_pictures/Perfect Night.jpg"
   },
   {
     "title": "ETA",
     "artist": "NewJeans",
-    "file": "assets/songs/ETA.mp3"
+    "file": "assets/songs/ETA.mp3",
+    "image": "assets/song_pictures/ETA.jpg"
   },
   {
     "title": "How Sweet",
     "artist": "NewJeans",
-    "file": "assets/songs/How Sweet.mp3"
+    "file": "assets/songs/How Sweet.mp3",
+    "image": "assets/song_pictures/How Sweet.jpg"
   },
   {
     "title": "Hype Boy",
     "artist": "NewJeans",
-    "file": "assets/songs/Hype Boy.mp3"
+    "file": "assets/songs/Hype Boy.mp3",
+    "image": "assets/song_pictures/Hype Boy.jpg"
   },
   {
     "title": "OMG",
     "artist": "NewJeans",
-    "file": "assets/songs/OMG.mp3"
+    "file": "assets/songs/OMG.mp3",
+    "image": "assets/song_pictures/OMG.jpg"
   },
   {
     "title": "Supernatural",
     "artist": "NewJeans",
-    "file": "assets/songs/Supernatural.mp3"
+    "file": "assets/songs/Supernatural.mp3",
+    "image": "assets/song_pictures/Supernatural.jpg"
   },
   {
     "title": "Espresso",
     "artist": "Sabrina Carpenter",
-    "file": "assets/songs/Espresso.mp3"
+    "file": "assets/songs/Espresso.mp3",
+    "image": "assets/song_pictures/Espresso.jpg"
   },
   {
     "title": "Feather",
     "artist": "Sabrina Carpenter",
-    "file": "assets/songs/Feather.mp3"
+    "file": "assets/songs/Feather.mp3",
+    "image": "assets/song_pictures/Feather.jpg"
   },
   {
     "title": "Juno",
     "artist": "Sabrina Carpenter",
-    "file": "assets/songs/Juno.mp3"
+    "file": "assets/songs/Juno.mp3",
+    "image": "assets/song_pictures/Juno.jpg"
   },
   {
     "title": "Nonsense",
     "artist": "Sabrina Carpenter",
-    "file": "assets/songs/Nonsense.mp3"
+    "file": "assets/songs/Nonsense.mp3",
+    "image": "assets/song_pictures/Nonsense.jpg"
   },
   {
     "title": "Taste",
     "artist": "Sabrina Carpenter",
-    "file": "assets/songs/Taste.mp3"
+    "file": "assets/songs/Taste.mp3",
+    "image": "assets/song_pictures/Taste.jpg"
   },
   {
     "title": "After Hours",
     "artist": "The Weeknd",
-    "file": "assets/songs/After Hours.mp3"
+    "file": "assets/songs/After Hours.mp3",
+    "image": "assets/song_pictures/After Hours.jpg"
   },
   {
     "title": "A Lonely Night",
     "artist": "The Weeknd",
-    "file": "assets/songs/A Lonely Night.mp3"
+    "file": "assets/songs/A Lonely Night.mp3",
+    "image": "assets/song_pictures/A Lonely Night.jpg"
   },
   {
     "title": "Blinding Lights",
     "artist": "The Weeknd",
-    "file": "assets/songs/Blinding Lights.mp3"
+    "file": "assets/songs/Blinding Lights.mp3",
+    "image": "assets/song_pictures/Blinding Lights.jpg"
   },
   {
     "title": "Die For You",
     "artist": "The Weeknd",
-    "file": "assets/songs/Die For You.mp3"
+    "file": "assets/songs/Die For You.mp3",
+    "image": "assets/song_pictures/Die For You.jpg"
   },
   {
     "title": "Is There Someone Else",
     "artist": "The Weeknd",
-    "file": "assets/songs/Is There Someone Else.mp3"
+    "file": "assets/songs/Is There Someone Else.mp3",
+    "image": "assets/song_pictures/Is There Someone Else.jpg"
   },
   {
     "title": "Moth To A Flame",
     "artist": "The Weeknd",
-    "file": "assets/songs/Moth To A Flame.mp3"
+    "file": "assets/songs/Moth To A Flame.mp3",
+    "image": "assets/song_pictures/Moth To A Flame.jpg"
   },
   {
     "title": "Out of Time",
     "artist": "The Weeknd",
-    "file": "assets/songs/Out of Time.mp3"
+    "file": "assets/songs/Out of Time.mp3",
+    "image": "assets/song_pictures/Out of Time.jpg"
   },
   {
     "title": "Save Your Tears",
     "artist": "The Weeknd",
-    "file": "assets/songs/Save Your Tears.mp3"
+    "file": "assets/songs/Save Your Tears.mp3",
+    "image": "assets/song_pictures/Save Your Tears.jpg"
   },
   {
     "title": "São Paulo",
     "artist": "The Weeknd",
-    "file": "assets/songs/São Paulo.mp3"
+    "file": "assets/songs/São Paulo.mp3",
+    "image": "assets/song_pictures/São Paulo.jpg"
   },
   {
     "title": "CRY FOR ME",
     "artist": "TWICE",
-    "file": "assets/songs/CRY FOR ME.mp3"
+    "file": "assets/songs/CRY FOR ME.mp3",
+    "image": "assets/song_pictures/CRY FOR ME.jpg"
   },
   {
     "title": "LIKEY",
     "artist": "TWICE",
-    "file": "assets/songs/LIKEY.mp3"
+    "file": "assets/songs/LIKEY.mp3",
+    "image": "assets/song_pictures/LIKEY.jpg"
   },
   {
     "title": "MOONLIGHT SUNRISE",
     "artist": "TWICE",
-    "file": "assets/songs/MOONLIGHT SUNRISE.mp3"
+    "file": "assets/songs/MOONLIGHT SUNRISE.mp3",
+    "image": "assets/song_pictures/MOONLIGHT SUNRISE.jpg"
   },
   {
     "title": "Strategy",
     "artist": "TWICE",
-    "file": "assets/songs/Strategy.mp3"
+    "file": "assets/songs/Strategy.mp3",
+    "image": "assets/song_pictures/Strategy.jpg"
   },
   {
     "title": "The Feels",
     "artist": "TWICE",
-    "file": "assets/songs/The Feels.mp3"
+    "file": "assets/songs/The Feels.mp3",
+    "image": "assets/song_pictures/The Feels.jpg"
   },
   {
     "title": "TT",
     "artist": "TWICE",
-    "file": "assets/songs/TT.mp3"
+    "file": "assets/songs/TT.mp3",
+    "image": "assets/song_pictures/TT.jpg"
   },
   {
     "title": "UP NO MORE",
     "artist": "TWICE",
-    "file": "assets/songs/UP NO MORE.mp3"
+    "file": "assets/songs/UP NO MORE.mp3",
+    "image": "assets/song_pictures/UP NO MORE.jpg"
   },
   {
     "title": "Grenade",
     "artist": "Bruno Mars",
-    "file": "assets/songs/Grenade.mp3"
+    "file": "assets/songs/Grenade.mp3",
+    "image": "assets/song_pictures/Grenade.jpg"
   },
   {
     "title": "It Will Rain",
     "artist": "Bruno Mars",
-    "file": "assets/songs/It Will Rain.mp3"
+    "file": "assets/songs/It Will Rain.mp3",
+    "image": "assets/song_pictures/It Will Rain.jpg"
   },
   {
     "title": "Locked Out Of Heaven",
     "artist": "Bruno Mars",
-    "file": "assets/songs/Locked Out Of Heaven.mp3"
+    "file": "assets/songs/Locked Out Of Heaven.mp3",
+    "image": "assets/song_pictures/Locked Out Of Heaven.jpg"
   },
   {
     "title": "Skate",
     "artist": "Bruno Mars",
-    "file": "assets/songs/Skate.mp3"
+    "file": "assets/songs/Skate.mp3",
+    "image": "assets/song_pictures/Skate.jpg"
   },
   {
     "title": "Smokin Out The Window",
     "artist": "Bruno Mars",
-    "file": "assets/songs/Smokin Out The Window.mp3"
+    "file": "assets/songs/Smokin Out The Window.mp3",
+    "image": "assets/song_pictures/Smokin Out The Window.jpg"
   },
   {
     "title": "Talking To The Moon",
     "artist": "Bruno Mars",
-    "file": "assets/songs/Talking To The Moon.mp3"
+    "file": "assets/songs/Talking To The Moon.mp3",
+    "image": "assets/song_pictures/Talking To The Moon.jpg"
   },
   {
     "title": "Too Good to Say Goodbye",
     "artist": "Bruno Mars",
-    "file": "assets/songs/Too Good to Say Goodbye.mp3"
+    "file": "assets/songs/Too Good to Say Goodbye.mp3",
+    "image": "assets/song_pictures/Too Good to Say Goodbye.jpg"
   },
   {
     "title": "Treasure",
     "artist": "Bruno Mars",
-    "file": "assets/songs/Treasure.mp3"
+    "file": "assets/songs/Treasure.mp3",
+    "image": "assets/song_pictures/Treasure.jpg"
   },
   {
     "title": "Versace on the Floor",
     "artist": "Bruno Mars",
-    "file": "assets/songs/Versace on the Floor.mp3"
+    "file": "assets/songs/Versace on the Floor.mp3",
+    "image": "assets/song_pictures/Versace on the Floor.jpg"
   },
   {
     "title": "When I Was Your Man",
     "artist": "Bruno Mars",
-    "file": "assets/songs/When I Was Your Man.mp3"
+    "file": "assets/songs/When I Was Your Man.mp3",
+    "image": "assets/song_pictures/When I Was Your Man.jpg"
   }
 ]
