@@ -299,6 +299,12 @@ class _LibraryPageState extends State<LibraryPage> {
   }
 
   Widget _buildArtistItem(String artist) {
+    // Find the first song by the artist to get the artist image
+    final artistImage = _songs.firstWhere(
+          (song) => song['artist'].toLowerCase() == artist.toLowerCase(),
+      orElse: () => {'artist_image': 'assets/defaultpic.jpg'},
+    )['artist_image'];
+
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -306,6 +312,7 @@ class _LibraryPageState extends State<LibraryPage> {
           MaterialPageRoute(
             builder: (context) => ArtistSongsPage(
               artist: artist,
+              image: artistImage, // Pass the artist image
               allSongs: _songs, // Pass all songs to filter in ArtistSongsPage
             ),
           ),
@@ -317,11 +324,7 @@ class _LibraryPageState extends State<LibraryPage> {
           children: [
             CircleAvatar(
               radius: 35,
-              backgroundColor: Colors.grey,
-              child: Text(
-                artist[0],
-                style: TextStyle(color: Colors.white, fontSize: 20),
-              ),
+              backgroundImage: AssetImage(artistImage ?? 'assets/defaultpic.jpg'),
             ),
             SizedBox(width: 10),
             Text(

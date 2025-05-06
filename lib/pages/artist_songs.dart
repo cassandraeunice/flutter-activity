@@ -60,7 +60,7 @@ class _ArtistSongsPageState extends State<ArtistSongsPage> {
                   widget.artist,
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 24,
+                    fontSize: 38,
                     fontWeight: FontWeight.bold,
                     shadows: [
                       Shadow(

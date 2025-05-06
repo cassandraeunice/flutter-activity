@@ -65,6 +65,7 @@ flutter:
     - assets/songs.json
     - assets/songs/
     - assets/song_pictures/
+    - assets/artist_pictures/
     - assets/defaultpic.jpg
     - assets/sandy.jpg
     - assets/album/chromakopia.jpg
