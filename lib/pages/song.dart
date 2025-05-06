@@ -47,14 +47,18 @@ class _SongPageState extends State<SongPage> {
   }
 
   void _playPause() async {
-    if (_isPlaying) {
-      await _audioPlayer.pause();
-    } else {
-      await _audioPlayer.play(AssetSource(widget.file));
+    try {
+      if (_isPlaying) {
+        await _audioPlayer.pause();
+      } else {
+        await _audioPlayer.play(AssetSource(widget.file));
+      }
+      setState(() {
+        _isPlaying = !_isPlaying;
+      });
+    } catch (e) {
+      print("Error playing audio: $e");
     }
-    setState(() {
-      _isPlaying = !_isPlaying;
-    });
   }
 
   @override

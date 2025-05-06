@@ -63,6 +63,7 @@ flutter:
 
   assets:
     - assets/songs.json
+    - assets/songs/
     - assets/song_pictures/
     - assets/defaultpic.jpg
     - assets/sandy.jpg
