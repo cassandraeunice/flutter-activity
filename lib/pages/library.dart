@@ -3,6 +3,8 @@ import 'create_playlist.dart';
 import 'edit_playlist.dart';
 import 'dart:convert';
 import 'package:flutter/services.dart';
+import 'song.dart';
+import 'artist_songs.dart';
 
 class LibraryPage extends StatefulWidget {
   @override
@@ -243,66 +245,94 @@ class _LibraryPageState extends State<LibraryPage> {
   }
 
   Widget _buildSongItem(Map<String, dynamic> song) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10.0),
-      child: Row(
-        children: [
-          Image.asset(
-            song['image'],
-            width: 67,
-            height: 67,
-          ),
-          SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  song['title'],
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                  ),
-                  maxLines: 2, // Allow up to 2 lines for long titles
-                  overflow: TextOverflow.ellipsis, // Add ellipsis if it exceeds 2 lines
-                ),
-                Text(
-                  song['artist'],
-                  style: TextStyle(
-                    color: Color(0xFFB3B3B3),
-                    fontSize: 12,
-                  ),
-                ),
-              ],
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => SongPage(
+              title: song['title'], // Pass the song title
+              artist: song['artist'], // Pass the song artist
+              image: song['image'], // Pass the song image
+              file: song['file'], // Pass the song file
             ),
           ),
-        ],
+        );
+      },
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 10.0),
+        child: Row(
+          children: [
+            Image.asset(
+              song['image'],
+              width: 67,
+              height: 67,
+            ),
+            SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    song['title'],
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Text(
+                    song['artist'],
+                    style: TextStyle(
+                      color: Color(0xFFB3B3B3),
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildArtistItem(String artist) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10.0),
-      child: Row(
-        children: [
-          CircleAvatar(
-            radius: 35,
-            backgroundColor: Colors.grey,
-            child: Text(
-              artist[0],
-              style: TextStyle(color: Colors.white, fontSize: 20),
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ArtistSongsPage(
+              artist: artist,
+              allSongs: _songs, // Pass all songs to filter in ArtistSongsPage
             ),
           ),
-          SizedBox(width: 10),
-          Text(
-            artist,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 16,
+        );
+      },
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 10.0),
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: 35,
+              backgroundColor: Colors.grey,
+              child: Text(
+                artist[0],
+                style: TextStyle(color: Colors.white, fontSize: 20),
+              ),
             ),
-          ),
-        ],
+            SizedBox(width: 10),
+            Text(
+              artist,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -317,39 +347,48 @@ class _LibraryPageState extends State<LibraryPage> {
             'Playlist',
             playlist['image'] ?? 'assets/defaultpic.jpg', // Default image
           ),
-          IconButton(
-            icon: Icon(Icons.edit, color: Colors.white),
-            onPressed: () async {
-              final result = await showDialog<String>(
-                context: context,
-                builder: (BuildContext context) {
-                  return Dialog(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16.0),
-                    ),
-                    child: Container(
-                      width: 300,
-                      height: 350,
-                      child: EditPlaylist(initialName: playlist['name'] ?? ''),
-                    ),
-                  );
-                },
-              );
-              if (result != null) {
+          Spacer(),
+          PopupMenuButton<String>(
+            icon: Icon(Icons.more_vert, color: Colors.white),
+            onSelected: (value) async {
+              if (value == 'Edit') {
+                final result = await showDialog<String>(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return Dialog(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16.0),
+                      ),
+                      child: Container(
+                        width: 300,
+                        height: 350,
+                        child: EditPlaylist(initialName: playlist['name'] ?? ''),
+                      ),
+                    );
+                  },
+                );
+                if (result != null) {
+                  setState(() {
+                    int index = _playlists.indexOf(playlist);
+                    _playlists[index]['name'] = result;
+                  });
+                }
+              } else if (value == 'Delete') {
                 setState(() {
-                  int index = _playlists.indexOf(playlist);
-                  _playlists[index]['name'] = result;
+                  _playlists.remove(playlist);
                 });
               }
             },
-          ),
-          IconButton(
-            icon: Icon(Icons.delete, color: Colors.white),
-            onPressed: () {
-              setState(() {
-                _playlists.remove(playlist);
-              });
-            },
+            itemBuilder: (BuildContext context) => [
+              PopupMenuItem(
+                value: 'Edit',
+                child: Text('Edit'),
+              ),
+              PopupMenuItem(
+                value: 'Delete',
+                child: Text('Delete'),
+              ),
+            ],
           ),
         ],
       ),

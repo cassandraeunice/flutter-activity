@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // For loading JSON file
 import 'song.dart';
+import 'add_song.dart';
 
 class SearchPage extends StatefulWidget {
   @override
@@ -158,15 +159,33 @@ class _SearchPageState extends State<SearchPage> {
                         song['artist'],
                         style: TextStyle(color: Colors.white54),
                       ),
+                      trailing: IconButton(
+                        icon: Icon(Icons.add, color: Colors.white),
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) => Dialog(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                              child: Container(
+                                height: 350,
+                                width: 300,
+                                child: AddSong(), // Display the AddSong widget
+                              ),
+                            ),
+                          );
+                        },
+                      ),
                       onTap: () {
                         Navigator.push(
-                            context,
-                              MaterialPageRoute(
-                                builder: (context) => SongPage(
-                                title: song['title'], // Pass the song title
-                                artist: song['artist'], // Pass the song artist
-                                image: song['image'], // Pass the song image
-                                file: song['file'], // Pass the song file
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SongPage(
+                              title: song['title'], // Pass the song title
+                              artist: song['artist'], // Pass the song artist
+                              image: song['image'], // Pass the song image
+                              file: song['file'], // Pass the song file
                             ),
                           ),
                         );
