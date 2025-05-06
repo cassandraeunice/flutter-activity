@@ -51,7 +51,14 @@ class MoodyApp extends StatelessWidget {
         // '/settings': (context) => AuthGuard(child: SettingsPage()),
         '/profile': (context) => AuthGuard(child: ProfilePage()),
         '/playlist': (context) => AuthGuard(child: PlaylistPage()),
-        '/song': (context) => AuthGuard(child: SongPage()),
+        '/song': (context) => AuthGuard(
+          child: SongPage(
+            title: '', // Provide default or placeholder values
+            artist: '',
+            image: '',
+            file: '',
+          ),
+        ),
       },
     );
   }
@@ -224,7 +231,14 @@ class _HomePageState extends State<HomePage> {
                         ),
                         onTap: () => Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => SongPage()),
+                          MaterialPageRoute(
+                            builder: (context) => SongPage(
+                              title: 'Sample Title', // Replace with actual data
+                              artist: 'Sample Artist',
+                              image: 'assets/sample.jpg',
+                              file: 'assets/sample.mp3',
+                            ),
+                          ),
                         ),
                       ),
                       ListTile(

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // For loading JSON file
+import 'song.dart';
 
 class SearchPage extends StatefulWidget {
   @override
@@ -133,13 +134,22 @@ class _SearchPageState extends State<SearchPage> {
                 SizedBox(height: 10),
                 // List view to show filtered songs
                 ListView.builder(
-                  shrinkWrap: true,  // To avoid taking up unnecessary space
+                  shrinkWrap: true, // To avoid taking up unnecessary space
                   physics: NeverScrollableScrollPhysics(), // Prevent scrolling if inside SingleChildScrollView
                   itemCount: filteredSongs.length,
                   itemBuilder: (context, index) {
                     final song = filteredSongs[index];
                     return ListTile(
                       contentPadding: EdgeInsets.zero,
+                      leading: ClipRRect(
+                        borderRadius: BorderRadius.zero, // Make the image square
+                        child: Image.asset(
+                          song['image'], // Use the image from the JSON
+                          width: 50, // Set the width of the image
+                          height: 50, // Set the height of the image
+                          fit: BoxFit.cover, // Ensure the image covers the square area
+                        ),
+                      ),
                       title: Text(
                         song['title'],
                         style: TextStyle(color: Colors.white),
@@ -149,12 +159,22 @@ class _SearchPageState extends State<SearchPage> {
                         style: TextStyle(color: Colors.white54),
                       ),
                       onTap: () {
-                        // Handle song tap (e.g., play song)
-                        print('Tapped on ${song['title']} by ${song['artist']}');
+                        Navigator.push(
+                            context,
+                              MaterialPageRoute(
+                                builder: (context) => SongPage(
+                                title: song['title'], // Pass the song title
+                                artist: song['artist'], // Pass the song artist
+                                image: song['image'], // Pass the song image
+                                file: song['file'], // Pass the song file
+                            ),
+                          ),
+                        );
                       },
                     );
                   },
                 ),
+                SizedBox(height: 16),
               ] else ...[
                 // Initial UI with genres and categories
                 Text(
