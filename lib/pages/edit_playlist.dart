@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 class EditPlaylist extends StatefulWidget {
   final String initialName;
@@ -12,6 +14,9 @@ class EditPlaylist extends StatefulWidget {
 class _EditPlaylistState extends State<EditPlaylist> {
   late TextEditingController _playlistController;
   final List<String> _errors = [];
+  File? _selectedImage;
+
+  final ImagePicker _picker = ImagePicker();
 
   @override
   void initState() {
@@ -28,11 +33,22 @@ class _EditPlaylistState extends State<EditPlaylist> {
     });
   }
 
+  Future<void> _pickImage() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _selectedImage = File(pickedFile.path);
+      });
+    }
+  }
+
   void _onSavePressed() {
     _validateInput();
     if (_errors.isEmpty) {
-      // Save button: return the updated playlist name
-      Navigator.pop(context, _playlistController.text);
+      Navigator.pop(context, {
+        'name': _playlistController.text,
+        'imagePath': _selectedImage?.path,
+      });
     }
   }
 
@@ -45,7 +61,6 @@ class _EditPlaylistState extends State<EditPlaylist> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-            // Back button: just pop the dialog without returning any data
             Navigator.pop(context);
           },
         ),
@@ -89,9 +104,33 @@ class _EditPlaylistState extends State<EditPlaylist> {
                 ),
               ),
             ),
+            SizedBox(height: 10),
+            GestureDetector(
+              onTap: _pickImage,
+              child: Container(
+                height: MediaQuery.of(context).size.height * 0.2,
+                width: MediaQuery.of(context).size.width * 0.8,
+                decoration: BoxDecoration(
+                  color: Colors.grey[700],
+                  borderRadius: BorderRadius.circular(5),
+                  image: _selectedImage != null
+                      ? DecorationImage(
+                    image: FileImage(_selectedImage!),
+                    fit: BoxFit.cover,
+                  )
+                      : null,
+                ),
+                child: _selectedImage == null
+                    ? Center(
+                  child: Text(
+                    "Tap to upload cover image",
+                    style: TextStyle(color: Colors.white70),
+                  ),
+                )
+                    : null,
+              ),
+            ),
             SizedBox(height: 5),
-
-            // Display errors if any
             if (_errors.isNotEmpty)
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -115,10 +154,7 @@ class _EditPlaylistState extends State<EditPlaylist> {
                   );
                 }).toList(),
               ),
-
             SizedBox(height: 10),
-
-            // Save Button
             Center(
               child: ElevatedButton(
                 onPressed: _onSavePressed,
@@ -137,7 +173,6 @@ class _EditPlaylistState extends State<EditPlaylist> {
                 ),
               ),
             ),
-            SizedBox(height: 10),
           ],
         ),
       ),

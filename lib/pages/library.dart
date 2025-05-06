@@ -94,9 +94,9 @@ class _LibraryPageState extends State<LibraryPage> {
                       borderRadius: BorderRadius.circular(16.0),
                     ),
                     child: Container(
-                      width: 300,
-                      height: 350,
-                      child: CreatePlaylist(), // Your CreatePlaylist widget here
+                      width: MediaQuery.of(context).size.width * 0.8,
+                      height: MediaQuery.of(context).size.height * 0.53,
+                      child: CreatePlaylist(),
                     ),
                   );
                 },
@@ -363,8 +363,8 @@ class _LibraryPageState extends State<LibraryPage> {
                         borderRadius: BorderRadius.circular(16.0),
                       ),
                       child: Container(
-                        width: 300,
-                        height: 350,
+                        width: MediaQuery.of(context).size.width * 0.8,
+                        height: MediaQuery.of(context).size.height * 0.53,
                         child: EditPlaylist(initialName: playlist['name'] ?? ''),
                       ),
                     );

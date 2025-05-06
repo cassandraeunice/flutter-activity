@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 class CreatePlaylist extends StatefulWidget {
   @override
@@ -8,6 +10,9 @@ class CreatePlaylist extends StatefulWidget {
 class _CreatePlaylistState extends State<CreatePlaylist> {
   final TextEditingController _playlistController = TextEditingController();
   final List<String> _errors = [];
+  File? _selectedImage;
+
+  final ImagePicker _picker = ImagePicker();
 
   void _validateInput() {
     setState(() {
@@ -15,7 +20,19 @@ class _CreatePlaylistState extends State<CreatePlaylist> {
       if (_playlistController.text.isEmpty) {
         _errors.add("Playlist name cannot be empty.");
       }
+      if (_selectedImage == null) {
+        _errors.add("Please select a playlist cover image.");
+      }
     });
+  }
+
+  Future<void> _pickImage() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _selectedImage = File(pickedFile.path);
+      });
+    }
   }
 
   void _onCreatePressed() {
@@ -23,7 +40,7 @@ class _CreatePlaylistState extends State<CreatePlaylist> {
     if (_errors.isEmpty) {
       Navigator.pop(context, {
         'name': _playlistController.text,
-        'imagePath': 'assets/playlist/playlist2.jpg'
+        'image': _selectedImage!.path,
       });
     }
   }
@@ -37,7 +54,6 @@ class _CreatePlaylistState extends State<CreatePlaylist> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-            // Back button: just pop the dialog without returning any data
             Navigator.pop(context);
           },
         ),
@@ -81,9 +97,33 @@ class _CreatePlaylistState extends State<CreatePlaylist> {
                 ),
               ),
             ),
+            SizedBox(height: 10),
+            GestureDetector(
+              onTap: _pickImage,
+              child: Container(
+                height: MediaQuery.of(context).size.height * 0.2, // 20% of screen height
+                width: MediaQuery.of(context).size.width * 0.8,  // 80% of screen width
+                decoration: BoxDecoration(
+                  color: Colors.grey[700],
+                  borderRadius: BorderRadius.circular(5),
+                  image: _selectedImage != null
+                      ? DecorationImage(
+                    image: FileImage(_selectedImage!),
+                    fit: BoxFit.cover,
+                  )
+                      : null,
+                ),
+                child: _selectedImage == null
+                    ? Center(
+                  child: Text(
+                    "Tap to upload cover image",
+                    style: TextStyle(color: Colors.white70),
+                  ),
+                )
+                    : null,
+              ),
+            ),
             SizedBox(height: 5),
-
-            // Display errors if any
             if (_errors.isNotEmpty)
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -107,10 +147,7 @@ class _CreatePlaylistState extends State<CreatePlaylist> {
                   );
                 }).toList(),
               ),
-
             SizedBox(height: 10),
-
-            // Create Button
             Center(
               child: ElevatedButton(
                 onPressed: _onCreatePressed,
@@ -129,7 +166,6 @@ class _CreatePlaylistState extends State<CreatePlaylist> {
                 ),
               ),
             ),
-            SizedBox(height: 10),
           ],
         ),
       ),
