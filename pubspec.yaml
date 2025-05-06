@@ -37,6 +37,7 @@ dependencies:
   fl_chart: ^0.64.0
   audioplayers: ^6.4.0
   image_picker: ^0.8.9
+  file_picker: ^5.2.7
 
 dev_dependencies:
   flutter_test:

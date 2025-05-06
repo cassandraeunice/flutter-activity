@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:file_picker/file_picker.dart';
 import 'add_song.dart';
 
 class SongPage extends StatefulWidget {
@@ -51,11 +52,29 @@ class _SongPageState extends State<SongPage> {
       if (_isPlaying) {
         await _audioPlayer.pause();
       } else {
-        await _audioPlayer.play(AssetSource(widget.file));
+        String? filePath;
+        if (widget.file.isNotEmpty) {
+          filePath = widget.file;
+        } else {
+          final result = await FilePicker.platform.pickFiles(
+            type: FileType.custom,
+            allowedExtensions: ['mp3'],
+          );
+          if (result != null && result.files.single.path != null) {
+            filePath = result.files.single.path!;
+          }
+        }
+
+        if (filePath != null) {
+          await _audioPlayer.setSourceDeviceFile(filePath);
+          await _audioPlayer.play(DeviceFileSource(filePath));
+          setState(() {
+            _isPlaying = true;
+          });
+        } else {
+          print("No file selected.");
+        }
       }
-      setState(() {
-        _isPlaying = !_isPlaying;
-      });
     } catch (e) {
       print("Error playing audio: $e");
     }
