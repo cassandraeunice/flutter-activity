@@ -14,7 +14,7 @@ class LibraryPage extends StatefulWidget {
 class _LibraryPageState extends State<LibraryPage> {
   List<Map<String, String>> _playlists = [];
   List<Map<String, dynamic>> _songs = [];
-  String _selectedCategory = 'All';
+  String _selectedCategory = 'Songs';
 
   @override
   void initState() {
@@ -130,53 +130,26 @@ class _LibraryPageState extends State<LibraryPage> {
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
-                    _buildCategoryChip('All'),
+                    _buildCategoryChip('Songs'),
                     SizedBox(width: 8),
                     _buildCategoryChip('Artists'),
-                    SizedBox(width: 8),
-                    _buildCategoryChip('Songs'),
                     SizedBox(width: 8),
                     _buildCategoryChip('Playlists'),
                   ],
                 ),
               ),
               SizedBox(height: 20),
-              if (_selectedCategory == 'All' || _selectedCategory == 'Songs') ...[
+              if (_selectedCategory == 'Songs') ...[
                 _buildSongList(),
               ],
-              if (_selectedCategory == 'All' || _selectedCategory == 'Artists') ...[
+              if (_selectedCategory == 'Artists') ...[
                 ..._getUniqueArtists().map((artist) => _buildArtistItem(artist)).toList(),
               ],
-              if (_selectedCategory == 'All' || _selectedCategory == 'Playlists') ...[
+              if (_selectedCategory == 'Playlists') ...[
                 ..._playlists.map((_playlists) => _buildPlaylistItem(_playlists)).toList(),
               ],
             ],
           ),
-          if (_selectedCategory == 'All' || _selectedCategory == 'Songs')
-            Positioned(
-              right: 0,
-              top: 50,
-              bottom: 50,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: _alphabet.map((letter) {
-                  return GestureDetector(
-                    onTap: () => _scrollToLetter(letter),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 2.0),
-                      child: Text(
-                        letter,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  );
-                }).toList(),
-              ),
-            ),
         ],
       ),
     );
