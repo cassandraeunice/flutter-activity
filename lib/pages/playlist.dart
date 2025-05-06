@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'edit_playlist.dart';
 
 class PlaylistPage extends StatefulWidget {
@@ -7,21 +9,23 @@ class PlaylistPage extends StatefulWidget {
 }
 
 class _PlaylistPageState extends State<PlaylistPage> {
-  int? _currentlyPlayingIndex; // Stores which song is currently playing (null means none)
+  int? _currentlyPlayingIndex;
+  List<Map<String, dynamic>> allSongs = [];
+  List<Map<String, dynamic>> playlistSongs = [];
 
-  // Sample list of songs for search
-  List<String> songList = [
-    'Strawberries & Cigarettes',
-    'Angel Baby',
-    'Youth',
-    'The Good Side',
-    'Someone Like You',
-    'Blinding Lights',
-    'Stay',
-    'Levitating',
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _loadSongs();
+  }
 
-  List<String> filteredSongs = [];
+  Future<void> _loadSongs() async {
+    final String response = await rootBundle.loadString('assets/songs.json');
+    final List<dynamic> data = json.decode(response);
+    setState(() {
+      allSongs = List<Map<String, dynamic>>.from(data);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,16 +79,12 @@ class _PlaylistPageState extends State<PlaylistPage> {
                           IconButton(
                             icon: Icon(Icons.add, color: Color(0xFFF94C57), size: 25),
                             tooltip: 'Add Song',
-                            onPressed: () {
-                              _showAddSongDialog();
-                            },
+                            onPressed: _showAddSongDialog,
                           ),
                           IconButton(
                             icon: Icon(Icons.edit, color: Color(0xFFF94C57), size: 20),
                             tooltip: 'Edit Playlist',
-                            onPressed: () {
-                              _showEditPlaylistDialog();
-                            },
+                            onPressed: _showEditPlaylistDialog,
                           ),
                         ],
                       ),
@@ -117,7 +117,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
                           color: Color(0xFFB3B3B3),
                           fontSize: 16,
                           fontWeight: FontWeight.bold)),
-                  SizedBox(width: 15),
+                  SizedBox(width: 30),
                   Expanded(
                     child: Text('Title',
                         style: TextStyle(
@@ -125,7 +125,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
                             fontSize: 16,
                             fontWeight: FontWeight.bold)),
                   ),
-                  SizedBox(width: 15),
+                  SizedBox(width: 0),
                   Expanded(
                     child: Text('Artist',
                         style: TextStyle(
@@ -136,22 +136,28 @@ class _PlaylistPageState extends State<PlaylistPage> {
                 ],
               ),
               SizedBox(height: 10),
-              // Songs
-              _buildSongRow(0, 'Strawberries & Cigarettes', 'Troye Sivan'),
-              SizedBox(height: 16),
-              _buildSongRow(1, 'Angel Baby', 'Troye Sivan'),
-              SizedBox(height: 16),
-              _buildSongRow(2, 'Youth', 'Troye Sivan'),
-              SizedBox(height: 16),
-              _buildSongRow(3, 'The Good Side', 'Troye Sivan'),
+              playlistSongs.isNotEmpty
+                  ? ListView.builder(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                itemCount: playlistSongs.length,
+                itemBuilder: (context, index) {
+                  var song = playlistSongs[index];
+                  return _buildSongRow(index, song['title'], song['artist']);
+                },
+              )
+                  : Center(
+                child: Text(
+                  'No songs in playlist',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
             ],
           ),
         ),
       ),
     );
   }
-
-  // Your existing code ...
 
   Widget _buildSongRow(int index, String title, String artist) {
     bool isPlaying = _currentlyPlayingIndex == index;
@@ -160,12 +166,12 @@ class _PlaylistPageState extends State<PlaylistPage> {
       children: [
         Text('${index + 1}',
             style: TextStyle(color: Colors.white, fontSize: 16)),
-        SizedBox(width: 20),
+        SizedBox(width: 30),
         Expanded(
           child: Text(title,
               style: TextStyle(color: Colors.white, fontSize: 16)),
         ),
-        SizedBox(width: 40),
+        SizedBox(width: 85),
         Expanded(
           child: Text(artist,
               style: TextStyle(color: Colors.white, fontSize: 16)),
@@ -178,11 +184,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
           ),
           onPressed: () {
             setState(() {
-              if (isPlaying) {
-                _currentlyPlayingIndex = null; // Stop playing
-              } else {
-                _currentlyPlayingIndex = index; // Start this song
-              }
+              _currentlyPlayingIndex = isPlaying ? null : index;
             });
           },
         ),
@@ -190,27 +192,18 @@ class _PlaylistPageState extends State<PlaylistPage> {
           icon: Icon(Icons.more_vert, color: Colors.white),
           onSelected: (String choice) {
             if (choice == 'delete') {
-              // Handle delete action
-              print('Delete song at index $index');
+              setState(() {
+                playlistSongs.removeAt(index);
+              });
             }
           },
           color: Colors.black,
           itemBuilder: (BuildContext context) => [
             PopupMenuItem<String>(
               value: 'delete',
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.black,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                padding: EdgeInsets.symmetric(vertical: 3, horizontal: 5),
-                child: Text(
-                  'Delete',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                  ),
-                ),
+              child: Text(
+                'Delete',
+                style: TextStyle(color: Colors.white),
               ),
             ),
           ],
@@ -219,7 +212,6 @@ class _PlaylistPageState extends State<PlaylistPage> {
     );
   }
 
-  // Method to navigate to the EditPlaylistPage as a dialog
   void _showEditPlaylistDialog() {
     showDialog(
       context: context,
@@ -230,11 +222,12 @@ class _PlaylistPageState extends State<PlaylistPage> {
             borderRadius: BorderRadius.circular(8),
           ),
           child: Container(
-            width: 300,
-            height: 350,
             padding: EdgeInsets.all(20),
+            constraints: BoxConstraints(
+              maxHeight: 500, // Set a reasonable max height for the dialog
+            ),
             child: EditPlaylist(
-              initialName: songList[0], // Pass the song title (or modify to pass selected song)
+              initialName: playlistSongs.isNotEmpty ? playlistSongs[0]['title'] : '',
             ),
           ),
         );
@@ -242,113 +235,86 @@ class _PlaylistPageState extends State<PlaylistPage> {
     );
   }
 
-  // Show the add song dialog
+
+
   void _showAddSongDialog() {
-    showDialog(
+    showModalBottomSheet(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: Color(0xFF121212),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-          title: Text(
-            'Add songs',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Search TextField with similar design as the main page
-              Container(
-                height: 46,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
-                  children: [
-                    Icon(Icons.search, color: Colors.black),
-                    SizedBox(width: 10),
-                    Expanded(
-                      child: TextField(
-                        onChanged: (query) {
-                          setState(() {
-                            filteredSongs = songList
-                                .where((song) =>
-                                song.toLowerCase().contains(query.toLowerCase()))
-                                .toList();
-                          });
-                        },
-                        style: TextStyle(color: Colors.black, fontSize: 16),
-                        decoration: InputDecoration(
-                          hintText: 'Search songs...',
-                          hintStyle: TextStyle(color: Colors.black54),
-                          border: InputBorder.none, // Removes the border
-                        ),
-                      ),
+      backgroundColor: Color(0xFF1E1E1E),
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        TextEditingController searchController = TextEditingController();
+        List<Map<String, dynamic>> searchResults = List.from(allSongs);
+
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setModalState) {
+            return Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    height: 5,
+                    width: 40,
+                    margin: EdgeInsets.only(bottom: 12),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[600],
+                      borderRadius: BorderRadius.circular(2.5),
                     ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 10),
-              // Display filtered songs or a no results message
-              if (filteredSongs.isNotEmpty)
-                ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: filteredSongs.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text(
-                        filteredSongs[index],
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      onTap: () {
-                        // Handle song selection
-                        print('Song selected: ${filteredSongs[index]}');
-                        Navigator.pop(context); // Close dialog
-                      },
-                    );
-                  },
-                )
-              else
-                Center(
-                  child: Text(
-                    'No songs found',
-                    style: TextStyle(color: Colors.white),
                   ),
-                ),
-            ],
-          ),
-          actions: [
-            // Cancel button
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context); // Close the dialog
-              },
-              child: Text(
-                'Cancel',
-                style: TextStyle(color: Colors.white),
+                  TextField(
+                    controller: searchController,
+                    onChanged: (query) {
+                      setModalState(() {
+                        searchResults = allSongs
+                            .where((song) =>
+                        song['title'].toLowerCase().contains(query.toLowerCase()) ||
+                            song['artist'].toLowerCase().contains(query.toLowerCase()))
+                            .toList();
+                      });
+                    },
+                    style: TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                      hintText: 'Search songs...',
+                      hintStyle: TextStyle(color: Colors.white70),
+                      filled: true,
+                      fillColor: Color(0xFF2A2A2A),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      prefixIcon: Icon(Icons.search, color: Colors.white),
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  SizedBox(
+                    height: 300,
+                    child: ListView.builder(
+                      itemCount: searchResults.length,
+                      itemBuilder: (context, index) {
+                        final song = searchResults[index];
+                        return ListTile(
+                          title: Text(song['title'], style: TextStyle(color: Colors.white)),
+                          subtitle: Text(song['artist'], style: TextStyle(color: Colors.white60)),
+                          onTap: () {
+                            setState(() {
+                              playlistSongs.add({
+                                'title': song['title'],
+                                'artist': song['artist'],
+                              });
+                            });
+                            Navigator.pop(context);
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
-            ),
-            // Add button
-            TextButton(
-              onPressed: () {
-                // Optionally handle adding song
-                print("Add song button pressed.");
-                Navigator.pop(context); // Close the dialog
-              },
-              child: Text(
-                'Add',
-                style: TextStyle(color: Color(0xFFF94C57)),
-              ),
-            ),
-          ],
+            );
+          },
         );
       },
     );
