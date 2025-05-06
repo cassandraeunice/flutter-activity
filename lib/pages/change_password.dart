@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class ChangePasswordPage extends StatefulWidget {
   @override
@@ -6,15 +7,102 @@ class ChangePasswordPage extends StatefulWidget {
 }
 
 class _ChangePasswordPageState extends State<ChangePasswordPage> {
-  bool _isOldPasswordVisible = false;
-  bool _isNewPasswordVisible = false;
-  bool _isConfirmPasswordVisible = false;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  final TextEditingController _oldPasswordController = TextEditingController();
+  final TextEditingController _currentPasswordController = TextEditingController();
   final TextEditingController _newPasswordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
 
-  bool isLoading = false;
+  String? _currentPasswordError;
+  String? _newPasswordError;
+  String? _confirmPasswordError;
+
+  bool _isLoading = false;
+
+  final RegExp passwordUppercase = RegExp(r'[A-Z]');
+  final RegExp passwordNumber = RegExp(r'[0-9]');
+  final RegExp passwordSpecialChar = RegExp(r'[@$!%*?&]');
+
+  void _validateInputs() async {
+    setState(() {
+      _currentPasswordError = null;
+      _newPasswordError = null;
+      _confirmPasswordError = null;
+    });
+
+    String currentPassword = _currentPasswordController.text.trim();
+    String newPassword = _newPasswordController.text.trim();
+    String confirmPassword = _confirmPasswordController.text.trim();
+
+    if (currentPassword.isEmpty) {
+      _currentPasswordError = "Current password is required.";
+    }
+
+    if (newPassword.isEmpty) {
+      _newPasswordError = "New password is required.";
+    } else {
+      if (newPassword.length < 8) {
+        _newPasswordError = "At least 8 characters.";
+      } else if (!passwordUppercase.hasMatch(newPassword)) {
+        _newPasswordError = "At least 1 uppercase letter (A-Z).";
+      } else if (!passwordNumber.hasMatch(newPassword)) {
+        _newPasswordError = "At least 1 number (0-9).";
+      } else if (!passwordSpecialChar.hasMatch(newPassword)) {
+        _newPasswordError = "At least 1 special character (@\$!%*?&).";
+      }
+    }
+
+    if (confirmPassword.isEmpty) {
+      _confirmPasswordError = "Confirm password is required.";
+    } else if (newPassword != confirmPassword) {
+      _confirmPasswordError = "Passwords do not match.";
+    }
+
+    if (_currentPasswordError == null &&
+        _newPasswordError == null &&
+        _confirmPasswordError == null) {
+      setState(() {
+        _isLoading = true;
+      });
+
+      try {
+        User? user = _auth.currentUser;
+
+        // Reauthenticate user
+        AuthCredential credential = EmailAuthProvider.credential(
+          email: user!.email!,
+          password: currentPassword,
+        );
+        await user.reauthenticateWithCredential(credential);
+
+        // Update password
+        await user.updatePassword(newPassword);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Password updated successfully.')),
+        );
+        Navigator.pop(context);
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'wrong-password') {
+          setState(() {
+            _currentPasswordError = "Incorrect current password.";
+          });
+        } else if (e.code == 'invalid-credential') {
+          setState(() {
+            _currentPasswordError = "Incorrect current password.";
+          });
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error: ${e.message}')),
+          );
+        }
+      } finally {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,19 +123,18 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
         ),
       ),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SizedBox(height: 20),
-              _buildTextField("Old Password", _oldPasswordController, _isOldPasswordVisible),
-              SizedBox(height: 20), // Equal height between text fields
-              _buildTextField("New Password", _newPasswordController, _isNewPasswordVisible),
-              SizedBox(height: 20), // Equal height between text fields
-              _buildTextField("Confirm Password", _confirmPasswordController, _isConfirmPasswordVisible),
-              SizedBox(height: 30),
-              ElevatedButton(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildPasswordField("Current Password", _currentPasswordController, _currentPasswordError),
+            SizedBox(height: 16),
+            _buildPasswordField("New Password", _newPasswordController, _newPasswordError),
+            SizedBox(height: 16),
+            _buildPasswordField("Confirm Password", _confirmPasswordController, _confirmPasswordError),
+            SizedBox(height: 30),
+            Center(
+              child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
@@ -55,29 +142,28 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                   ),
                   padding: EdgeInsets.symmetric(horizontal: 50, vertical: 12),
                 ),
-                onPressed: isLoading ? null : _onSaveChangesPressed,
-                child: isLoading
-                    ? CircularProgressIndicator(color: Colors.white)
+                onPressed: _isLoading ? null : _validateInputs,
+                child: _isLoading
+                    ? CircularProgressIndicator(color: Colors.black)
                     : Text(
                   "Save Changes",
                   style: TextStyle(color: Colors.black, fontSize: 16),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  // Password text field with toggle visibility
-  Widget _buildTextField(String label, TextEditingController controller, bool isPasswordVisible) {
+  Widget _buildPasswordField(String label, TextEditingController controller, String? errorText) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         TextField(
           controller: controller,
-          obscureText: !isPasswordVisible,
+          obscureText: true,
           style: TextStyle(color: Colors.white),
           decoration: InputDecoration(
             labelText: label,
@@ -92,44 +178,23 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
               borderRadius: BorderRadius.circular(5),
               borderSide: BorderSide(color: Colors.white),
             ),
-            suffixIcon: IconButton(
-              icon: Icon(
-                isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                color: Colors.white,
-              ),
-              onPressed: () {
-                setState(() {
-                  if (label == "Old Password") {
-                    _isOldPasswordVisible = !_isOldPasswordVisible;
-                  } else if (label == "New Password") {
-                    _isNewPasswordVisible = !_isNewPasswordVisible;
-                  } else if (label == "Confirm Password") {
-                    _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
-                  }
-                });
-              },
-            ),
           ),
         ),
+        if (errorText != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 5),
+            child: Row(
+              children: [
+                Icon(Icons.error_outline, color: Colors.red, size: 16),
+                SizedBox(width: 5),
+                Text(
+                  errorText,
+                  style: TextStyle(color: Colors.red, fontSize: 14),
+                ),
+              ],
+            ),
+          ),
       ],
     );
-  }
-
-  void _onSaveChangesPressed() {
-    // You can add your password change logic here
-    // This is where you would call the backend to update the password
-    setState(() {
-      isLoading = true;
-    });
-
-    // Simulating the password update process
-    Future.delayed(Duration(seconds: 2), () {
-      setState(() {
-        isLoading = false;
-      });
-      // Show success message or navigate back
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Password changed successfully')));
-      Navigator.pop(context);
-    });
   }
 }
