@@ -270,17 +270,17 @@ class _SongPageState extends State<SongPage> {
               ),
             ),
           ),
-          MiniPlayer(
-            title: widget.title,
-            image: widget.image,
-            isPlaying: _isPlaying,
-            onPlayPause: _playPause,
-            onTap: () {
-              // Expand the song page or navigate to full player
-            },
-            onNext: _nextTrack, // Connect to the _nextTrack method
-            onPrevious: _prevTrack, // Connect to the _prevTrack method
-          ),
+          // MiniPlayer(
+          //   title: widget.title,
+          //   image: widget.image,
+          //   isPlaying: _isPlaying,
+          //   onPlayPause: _playPause,
+          //   onTap: () {
+          //     // Expand the song page or navigate to full player
+          //   },
+          //   onNext: _nextTrack, // Connect to the _nextTrack method
+          //   onPrevious: _prevTrack, // Connect to the _prevTrack method
+          // ),
         ],
       ),
     );
