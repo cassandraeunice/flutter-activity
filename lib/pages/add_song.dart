@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'create_playlist.dart';
 
 class AddSong extends StatefulWidget {
   @override
@@ -6,12 +7,22 @@ class AddSong extends StatefulWidget {
 }
 
 class _AddSongState extends State<AddSong> {
-  final List<Map<String, String>> _playlists = [
-    {'name': 'Playlist 1', 'image': 'assets/playlist/playlist1.jpg', 'songs': '12 songs'},
-    {'name': 'Playlist 2', 'image': 'assets/playlist/playlist2.jpg', 'songs': '8 songs'},
+  List<Map<String, String>> _playlists = [
+    {'name': 'Study Hub', 'image': 'assets/playlist/playlist1.jpg', 'songs': '4 songs'},
+    {'name': 'On Repeat', 'image': 'assets/playlist/playlist2.jpg', 'songs': '2 songs'},
+    {'name': 'volume UPP', 'image': 'assets/playlist/playlist3.png', 'songs': '2 songs'},
+    {'name': 'carpool!!', 'image': 'assets/playlist/playlist4.jpg', 'songs': '3 songs'},
+    {'name': 'focus time', 'image': 'assets/playlist/playlist5.jpg', 'songs': '5 songs'},
+    {'name': 'stuck in January', 'image': 'assets/playlist/playlist6.jpg', 'songs': '6 songs'},
   ];
 
   List<String> _selectedPlaylists = [];
+
+  void _addNewPlaylist(Map<String, String> newPlaylist) {
+    setState(() {
+      _playlists.add(newPlaylist);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,9 +59,8 @@ class _AddSongState extends State<AddSong> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // List of playlists with checkboxes
-            Expanded(
+            Flexible(
               child: SingleChildScrollView(
-                scrollDirection: Axis.vertical,
                 child: Column(
                   children: _playlists.map((playlist) {
                     return Padding(
@@ -77,7 +87,6 @@ class _AddSongState extends State<AddSong> {
                             ],
                           ),
                           Spacer(),
-                          // Custom Checkbox with border color changes
                           GestureDetector(
                             onTap: () {
                               setState(() {
@@ -147,6 +156,7 @@ class _AddSongState extends State<AddSong> {
           ],
         ),
       ),
+
     );
   }
 }

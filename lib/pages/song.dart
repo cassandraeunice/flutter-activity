@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:file_picker/file_picker.dart';
 import 'mini_player.dart';
+import 'add_song.dart'; // Import AddSong screen
 
 class SongPage extends StatefulWidget {
   final String title;
@@ -135,6 +136,37 @@ class _SongPageState extends State<SongPage> {
     }
   }
 
+  void _showAddSongDialog() async {
+    // Show AddSong as a dialog box with smaller size
+    final selectedPlaylists = await showDialog<List<String>>(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.0),
+          ),
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          child: Container(
+            height: 350,
+            width: 300,
+            child: AddSong(), // Use AddSong screen here
+          ),
+        );
+      },
+    );
+
+    // Check if any playlists were selected
+    if (selectedPlaylists != null && selectedPlaylists.isNotEmpty) {
+      // Show confirmation or process the selected playlists
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Song added to ${selectedPlaylists.length} playlist(s)')),
+      );
+      // You can now update the UI or the song data based on the selected playlists
+      print('Selected Playlists: $selectedPlaylists');
+    }
+  }
+
   @override
   void dispose() {
     _audioPlayer.dispose();
@@ -207,7 +239,7 @@ class _SongPageState extends State<SongPage> {
                       ),
                       IconButton(
                         icon: Icon(Icons.favorite_border, color: Colors.white, size: 30),
-                        onPressed: () {},
+                        onPressed: _showAddSongDialog, // Show the dialog on heart icon click
                       ),
                     ],
                   ),
@@ -234,9 +266,9 @@ class _SongPageState extends State<SongPage> {
                               });
                             }
                           },
-                          activeColor: Color(0xFFF94C57),
+                          activeColor: Colors.white,
                           inactiveColor: Colors.grey,
-                        )
+                        ),
                       ),
                       Text(
                         _formatDuration(_totalDuration),
@@ -249,19 +281,19 @@ class _SongPageState extends State<SongPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       IconButton(
-                        icon: Icon(Icons.skip_previous, color: Color(0xFFF94C57), size: 40),
+                        icon: Icon(Icons.skip_previous, color: Colors.white, size: 40),
                         onPressed: _prevTrack,
                       ),
                       IconButton(
                         icon: Icon(
                           _isPlaying ? Icons.pause_circle_filled : Icons.play_circle_fill,
-                          color: Color(0xFFF94C57),
+                          color: Colors.white,
                           size: 70,
                         ),
                         onPressed: _playPause,
                       ),
                       IconButton(
-                        icon: Icon(Icons.skip_next, color: Color(0xFFF94C57), size: 40),
+                        icon: Icon(Icons.skip_next, color: Colors.white, size: 40),
                         onPressed: _nextTrack,
                       ),
                     ],
@@ -270,17 +302,6 @@ class _SongPageState extends State<SongPage> {
               ),
             ),
           ),
-          // MiniPlayer(
-          //   title: widget.title,
-          //   image: widget.image,
-          //   isPlaying: _isPlaying,
-          //   onPlayPause: _playPause,
-          //   onTap: () {
-          //     // Expand the song page or navigate to full player
-          //   },
-          //   onNext: _nextTrack, // Connect to the _nextTrack method
-          //   onPrevious: _prevTrack, // Connect to the _prevTrack method
-          // ),
         ],
       ),
     );
