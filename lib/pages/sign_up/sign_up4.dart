@@ -108,6 +108,7 @@ class _SignUpPage4State extends State<SignUpPage4> {
                 TextField(
                   controller: _nameController,
                   style: TextStyle(color: Colors.white),
+                  maxLength: 30,
                   decoration: InputDecoration(
                     filled: true,
                     fillColor: Color(0xFF777777),

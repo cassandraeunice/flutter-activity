@@ -116,6 +116,7 @@ class _SignUpPage1State extends State<SignUpPage1> {
             TextField(
               controller: _emailController,
               style: TextStyle(color: Colors.white),
+              maxLength: 120,
               decoration: InputDecoration(
                 labelStyle: TextStyle(color: Colors.white70),
                 filled: true,

@@ -95,7 +95,7 @@ class _SignUpPage2State extends State<SignUpPage2> {
               "Create a password",
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 20,
+                fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -105,6 +105,7 @@ class _SignUpPage2State extends State<SignUpPage2> {
             TextField(
               controller: _passwordController,
               obscureText: !_isPasswordVisible,
+              maxLength: 64,
               style: TextStyle(color: Colors.white),
               decoration: InputDecoration(
                 filled: true,
@@ -174,6 +175,7 @@ class _SignUpPage2State extends State<SignUpPage2> {
               controller: _confirmPasswordController,
               obscureText: !_isConfirmPasswordVisible,
               style: TextStyle(color: Colors.white),
+              maxLength: 64,
               decoration: InputDecoration(
                 filled: true,
                 fillColor: Color(0xFF777777),

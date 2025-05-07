@@ -109,6 +109,7 @@ class _ForgotPassword1State extends State<ForgotPasswordPage1> {
             TextField(
               controller: _emailController,
               style: TextStyle(color: Colors.white),
+              maxLength: 120,
               decoration: InputDecoration(
                 filled: true,
                 fillColor: Color(0xFF777777),

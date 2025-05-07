@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
+
 
 class LoginPage extends StatefulWidget {
   @override
@@ -25,14 +27,14 @@ class _LoginPageState extends State<LoginPage> {
     String email = _emailController.text.trim();
     String password = _passwordController.text.trim();
 
-    // Validate email
     if (email.isEmpty) {
       _emailErrors.add("Email is required");
+    } else if (email.length > 64) {
+      _emailErrors.add("Email must not exceed 64 characters");
     } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+$').hasMatch(email)) {
       _emailErrors.add("Enter a valid email format (e.g., user@example.com)");
     }
 
-    // Validate password
     if (password.isEmpty) {
       _passwordErrors.add("Password is required");
     }
@@ -43,22 +45,14 @@ class _LoginPageState extends State<LoginPage> {
       });
 
       try {
-        // Sign in with Firebase Authentication
         UserCredential userCredential = await _auth.signInWithEmailAndPassword(
           email: email,
           password: password,
         );
-
-        // Navigate to the homepage on successful login
         Navigator.pushNamed(context, '/homepage');
       } on FirebaseAuthException catch (e) {
-        print("FirebaseAuthException: ${e.code}"); // Log the error code for debugging
         setState(() {
-          if (e.code == 'user-not-found' || e.code == 'wrong-password') {
-            _passwordErrors.add("Invalid email or password.");
-          } else {
-            _passwordErrors.add("Invalid email or password.");
-          }
+          _passwordErrors.add("Invalid email or password.");
         });
       } finally {
         setState(() {
@@ -106,6 +100,7 @@ class _LoginPageState extends State<LoginPage> {
             // Email Field
             TextField(
               controller: _emailController,
+              maxLength: 120,
               style: TextStyle(color: Colors.white),
               decoration: InputDecoration(
                 labelText: "Email",
@@ -118,16 +113,13 @@ class _LoginPageState extends State<LoginPage> {
                   borderRadius: BorderRadius.circular(5),
                 ),
                 suffixIcon: Icon(Icons.email, color: Colors.white),
+                counterText: '', // Hides character counter
               ),
             ),
             SizedBox(height: 5),
 
-            // Email Validation Errors
-            _emailErrors.isNotEmpty
-                ? Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: _emailErrors
-                  .map((error) => Padding(
+            if (_emailErrors.isNotEmpty)
+              ..._emailErrors.map((error) => Padding(
                 padding: const EdgeInsets.only(left: 10, top: 2),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -143,10 +135,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ],
                 ),
-              ))
-                  .toList(),
-            )
-                : SizedBox(),
+              )),
 
             SizedBox(height: 15),
 
@@ -154,6 +143,7 @@ class _LoginPageState extends State<LoginPage> {
             TextField(
               controller: _passwordController,
               obscureText: !_isPasswordVisible,
+              maxLength: 64,
               style: TextStyle(color: Colors.white),
               decoration: InputDecoration(
                 labelText: "Password",
@@ -176,16 +166,13 @@ class _LoginPageState extends State<LoginPage> {
                     });
                   },
                 ),
+                counterText: '',
               ),
             ),
             SizedBox(height: 5),
 
-            // Password Validation Errors
-            _passwordErrors.isNotEmpty
-                ? Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: _passwordErrors
-                  .map((error) => Padding(
+            if (_passwordErrors.isNotEmpty)
+              ..._passwordErrors.map((error) => Padding(
                 padding: const EdgeInsets.only(left: 10, top: 2),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -201,10 +188,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ],
                 ),
-              ))
-                  .toList(),
-            )
-                : SizedBox(),
+              )),
 
             SizedBox(height: 30),
 

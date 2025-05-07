@@ -89,6 +89,7 @@ class _EditPlaylistState extends State<EditPlaylist> {
             TextField(
               controller: _playlistController,
               style: TextStyle(color: Colors.white),
+              maxLength: 50,
               decoration: InputDecoration(
                 labelText: "Playlist Name",
                 labelStyle: TextStyle(color: Colors.white70),

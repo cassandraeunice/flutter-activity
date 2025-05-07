@@ -105,6 +105,7 @@ class _SearchPageState extends State<SearchPage> {
                     Expanded(
                       child: TextField(
                         controller: _searchController,
+                        maxLength: 120,
                         style: TextStyle(color: Colors.black, fontSize: 16),
                         decoration: InputDecoration(
                           hintText: "Artists, songs, or podcasts",

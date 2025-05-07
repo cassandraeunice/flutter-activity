@@ -154,6 +154,7 @@ class _CreatePlaylistState extends State<CreatePlaylist> {
               TextField(
                 controller: _playlistController,
                 style: TextStyle(color: Colors.white),
+                maxLength: 50,
                 decoration: InputDecoration(
                   labelText: "Playlist Name",
                   labelStyle: TextStyle(color: Colors.white70),

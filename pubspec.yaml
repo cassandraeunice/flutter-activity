@@ -52,6 +52,7 @@ dev_dependencies:
   firebase_storage: ^12.4.5
   image: ^4.1.7
 
+
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
@@ -99,6 +100,8 @@ flutter:
     - assets/album/oasis.jpg
     - assets/album/realityclub.jpg
     - assets/background/start.png
+    - assets/background/moodystart.png
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

@@ -215,6 +215,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         TextField(
           controller: controller,
           style: TextStyle(color: Colors.white),
+          maxLength: 50,
           decoration: InputDecoration(
             labelText: label,
             labelStyle: TextStyle(color: Colors.white70),

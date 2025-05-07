@@ -25,11 +25,15 @@ class _SignUpPage3State extends State<SignUpPage3> {
       if (phone.isEmpty) {
         phoneErrors.add("Phone number is required.");
       } else {
-        if (phone.length < 10) {
-          phoneErrors.add("Phone number must be 10 digits.");
+        if (phone.length < 11) {
+          phoneErrors.add("Phone number must be 11 digits.");
         }
         if (!RegExp(r'^[0-9]+$').hasMatch(phone)) {
           phoneErrors.add("Only numbers are allowed.");
+        }
+        // Check if phone starts with "09"
+        if (!phone.startsWith("09")) {
+          phoneErrors.add("Phone number must start with '09'.");
         }
       }
 
@@ -125,7 +129,7 @@ class _SignUpPage3State extends State<SignUpPage3> {
               keyboardType: TextInputType.phone,
               inputFormatters: [
                 FilteringTextInputFormatter.digitsOnly,
-                LengthLimitingTextInputFormatter(10),
+                LengthLimitingTextInputFormatter(11),
               ],
               style: TextStyle(color: Colors.white),
               decoration: InputDecoration(
