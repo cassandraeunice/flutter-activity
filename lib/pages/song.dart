@@ -8,12 +8,16 @@ class SongPage extends StatefulWidget {
   final String artist;
   final String image;
   final String file;
+  final List<Map<String, dynamic>> songs;
+  final int currentIndex;
 
   SongPage({
     required this.title,
     required this.artist,
     required this.image,
     required this.file,
+    required this.songs,
+    required this.currentIndex,
   });
 
   @override
@@ -29,22 +33,37 @@ class _SongPageState extends State<SongPage> {
   @override
   void initState() {
     super.initState();
+
+    // Listen for changes in the total duration of the audio
     _audioPlayer.onDurationChanged.listen((duration) {
-      setState(() {
-        _totalDuration = duration;
-      });
+      if (mounted) {
+        setState(() {
+          _totalDuration = duration;
+        });
+      }
     });
+
+    // Listen for changes in the current position of the audio
     _audioPlayer.onPositionChanged.listen((position) {
-      setState(() {
-        _currentPosition = position;
-      });
+      if (mounted) {
+        setState(() {
+          _currentPosition = position;
+        });
+      }
     });
+
+    // Reset the state when the audio finishes playing
     _audioPlayer.onPlayerComplete.listen((_) {
-      setState(() {
-        _isPlaying = false;
-        _currentPosition = Duration.zero;
-      });
+      if (mounted) {
+        setState(() {
+          _isPlaying = false;
+          _currentPosition = Duration.zero;
+        });
+      }
     });
+
+    // Load the audio file
+    _audioPlayer.setSourceDeviceFile(widget.file);
   }
 
   void _playPause() async {
@@ -73,6 +92,46 @@ class _SongPageState extends State<SongPage> {
       }
     } catch (e) {
       print("Error in play/pause: $e");
+    }
+  }
+
+  void _nextTrack() async {
+    if (widget.currentIndex < widget.songs.length - 1) {
+      final nextSong = widget.songs[widget.currentIndex + 1];
+      await Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SongPage(
+            title: nextSong['title'],
+            artist: nextSong['artist'],
+            image: nextSong['image'],
+            file: nextSong['file'],
+            songs: widget.songs,
+            currentIndex: widget.currentIndex + 1,
+          ),
+        ),
+      );
+      _playPause(); // Automatically play the next track
+    }
+  }
+
+  void _prevTrack() async {
+    if (widget.currentIndex > 0) {
+      final prevSong = widget.songs[widget.currentIndex - 1];
+      await Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SongPage(
+            title: prevSong['title'],
+            artist: prevSong['artist'],
+            image: prevSong['image'],
+            file: prevSong['file'],
+            songs: widget.songs,
+            currentIndex: widget.currentIndex - 1,
+          ),
+        ),
+      );
+      _playPause(); // Automatically play the previous track
     }
   }
 
@@ -159,17 +218,21 @@ class _SongPageState extends State<SongPage> {
                         child: Slider(
                           value: _currentPosition.inSeconds.toDouble(),
                           min: 0,
-                          max: _totalDuration.inSeconds.toDouble(),
+                          max: _totalDuration.inSeconds.toDouble() > 0
+                              ? _totalDuration.inSeconds.toDouble()
+                              : 1, // Prevent division by zero
                           onChanged: (value) async {
                             final position = Duration(seconds: value.toInt());
                             await _audioPlayer.seek(position);
-                            setState(() {
-                              _currentPosition = position;
-                            });
+                            if (mounted) {
+                              setState(() {
+                                _currentPosition = position;
+                              });
+                            }
                           },
                           activeColor: Color(0xFFF94C57),
                           inactiveColor: Colors.grey,
-                        ),
+                        )
                       ),
                       Text(
                         _formatDuration(_totalDuration),
@@ -183,7 +246,7 @@ class _SongPageState extends State<SongPage> {
                     children: [
                       IconButton(
                         icon: Icon(Icons.skip_previous, color: Color(0xFFF94C57), size: 40),
-                        onPressed: () {},
+                        onPressed: _prevTrack,
                       ),
                       IconButton(
                         icon: Icon(
@@ -195,7 +258,7 @@ class _SongPageState extends State<SongPage> {
                       ),
                       IconButton(
                         icon: Icon(Icons.skip_next, color: Color(0xFFF94C57), size: 40),
-                        onPressed: () {},
+                        onPressed: _nextTrack,
                       ),
                     ],
                   ),

@@ -182,10 +182,12 @@ class _SearchPageState extends State<SearchPage> {
                           context,
                           MaterialPageRoute(
                             builder: (context) => SongPage(
-                              title: song['title'], // Pass the song title
-                              artist: song['artist'], // Pass the song artist
-                              image: song['image'], // Pass the song image
-                              file: song['file'], // Pass the song file
+                              title: song['title'],
+                              artist: song['artist'],
+                              image: song['image'],
+                              file: song['file'],
+                              songs: allSongs, // Pass the list of all songs
+                              currentIndex: allSongs.indexOf(song), // Pass the current song index
                             ),
                           ),
                         );
