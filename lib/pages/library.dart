@@ -389,7 +389,7 @@ class _LibraryPageState extends State<LibraryPage> {
   Widget _buildRecentlyPlayedItem(String title, String subtitle, String imagePath) {
     return Row(
       children: [
-        imagePath.startsWith('/') // Check if the imagePath is a file path
+        imagePath.startsWith('/assets/playlist_cover') // Check if the imagePath is a file path
             ? Image.file(
           File(imagePath),
           width: 67,
