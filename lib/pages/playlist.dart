@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'edit_playlist.dart';
 
 class PlaylistPage extends StatefulWidget {
@@ -15,18 +16,20 @@ class PlaylistPage extends StatefulWidget {
   _PlaylistPageState createState() => _PlaylistPageState();
 }
 
-
 class _PlaylistPageState extends State<PlaylistPage> {
   int? _currentlyPlayingIndex;
   List<Map<String, dynamic>> allSongs = [];
-  List<Map<String, dynamic>> playlistSongs = [];
+  List<dynamic> playlistSongs = [];
   String? _updatedPlaylistName;
+  String? playlistId;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   @override
   void initState() {
     super.initState();
     _updatedPlaylistName = widget.playlistName;
     _loadSongs();
+    _loadPlaylistFromFirestore();
   }
 
   Future<void> _loadSongs() async {
@@ -34,6 +37,55 @@ class _PlaylistPageState extends State<PlaylistPage> {
     final List<dynamic> data = json.decode(response);
     setState(() {
       allSongs = List<Map<String, dynamic>>.from(data);
+    });
+  }
+
+  Future<void> _loadPlaylistFromFirestore() async {
+    // Find the playlist by name (or use ID if available)
+    final query = await _firestore
+        .collection('playlists')
+        .where('name', isEqualTo: widget.playlistName)
+        .limit(1)
+        .get();
+
+    if (query.docs.isNotEmpty) {
+      final doc = query.docs.first;
+      setState(() {
+        playlistId = doc.id;
+        playlistSongs = doc['songs'] ?? [];
+      });
+    }
+  }
+
+  Future<void> _addSongToPlaylist(Map<String, dynamic> song) async {
+    if (playlistId == null) return;
+
+    // Prevent duplicates by checking song_id
+    if (playlistSongs.any((s) => s['song_id'] == song['song_id'])) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Song already in playlist')),
+      );
+      return;
+    }
+
+    setState(() {
+      playlistSongs.add(song);
+    });
+
+    await _firestore.collection('playlists').doc(playlistId).update({
+      'songs': playlistSongs,
+    });
+  }
+
+  Future<void> _removeSongFromPlaylist(int index) async {
+    if (playlistId == null) return;
+
+    setState(() {
+      playlistSongs.removeAt(index);
+    });
+
+    await _firestore.collection('playlists').doc(playlistId).update({
+      'songs': playlistSongs,
     });
   }
 
@@ -194,9 +246,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
           icon: Icon(Icons.more_vert, color: Colors.white),
           onSelected: (String choice) {
             if (choice == 'delete') {
-              setState(() {
-                playlistSongs.removeAt(index);
-              });
+              _removeSongFromPlaylist(index);
             }
           },
           color: Colors.black,
@@ -211,6 +261,88 @@ class _PlaylistPageState extends State<PlaylistPage> {
           ],
         )
       ],
+    );
+  }
+
+  void _showAddSongDialog() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Color(0xFF1E1E1E),
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        TextEditingController searchController = TextEditingController();
+        List<Map<String, dynamic>> searchResults = List.from(allSongs);
+
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setModalState) {
+            return Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    height: 5,
+                    width: 40,
+                    margin: EdgeInsets.only(bottom: 12),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[600],
+                      borderRadius: BorderRadius.circular(2.5),
+                    ),
+                  ),
+                  TextField(
+                    controller: searchController,
+                    onChanged: (query) {
+                      setModalState(() {
+                        searchResults = allSongs
+                            .where((song) =>
+                        song['title']
+                            .toLowerCase()
+                            .contains(query.toLowerCase()) ||
+                            song['artist']
+                                .toLowerCase()
+                                .contains(query.toLowerCase()))
+                            .toList();
+                      });
+                    },
+                    style: TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                      hintText: 'Search songs...',
+                      hintStyle: TextStyle(color: Colors.white70),
+                      filled: true,
+                      fillColor: Color(0xFF2A2A2A),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      prefixIcon: Icon(Icons.search, color: Colors.white),
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  SizedBox(
+                    height: 300,
+                    child: ListView.builder(
+                      itemCount: searchResults.length,
+                      itemBuilder: (context, index) {
+                        final song = searchResults[index];
+                        return ListTile(
+                          title: Text(song['title'], style: TextStyle(color: Colors.white)),
+                          subtitle: Text(song['artist'], style: TextStyle(color: Colors.white60)),
+                          onTap: () async {
+                            await _addSongToPlaylist(song);
+                            Navigator.pop(context);
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
     );
   }
 
@@ -308,89 +440,6 @@ class _PlaylistPageState extends State<PlaylistPage> {
                     ),
                   ],
                 ),
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
-
-  void _showAddSongDialog() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Color(0xFF1E1E1E),
-      isScrollControlled: true,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) {
-        TextEditingController searchController = TextEditingController();
-        List<Map<String, dynamic>> searchResults = List.from(allSongs);
-
-        return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setModalState) {
-            return Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    height: 5,
-                    width: 40,
-                    margin: EdgeInsets.only(bottom: 12),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[600],
-                      borderRadius: BorderRadius.circular(2.5),
-                    ),
-                  ),
-                  TextField(
-                    controller: searchController,
-                    onChanged: (query) {
-                      setModalState(() {
-                        searchResults = allSongs
-                            .where((song) =>
-                        song['title'].toLowerCase().contains(query.toLowerCase()) ||
-                            song['artist'].toLowerCase().contains(query.toLowerCase()))
-                            .toList();
-                      });
-                    },
-                    style: TextStyle(color: Colors.white),
-                    decoration: InputDecoration(
-                      hintText: 'Search songs...',
-                      hintStyle: TextStyle(color: Colors.white70),
-                      filled: true,
-                      fillColor: Color(0xFF2A2A2A),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      prefixIcon: Icon(Icons.search, color: Colors.white),
-                    ),
-                  ),
-                  SizedBox(height: 16),
-                  SizedBox(
-                    height: 300,
-                    child: ListView.builder(
-                      itemCount: searchResults.length,
-                      itemBuilder: (context, index) {
-                        final song = searchResults[index];
-                        return ListTile(
-                          title: Text(song['title'], style: TextStyle(color: Colors.white)),
-                          subtitle: Text(song['artist'], style: TextStyle(color: Colors.white60)),
-                          onTap: () {
-                            setState(() {
-                              playlistSongs.add({
-                                'title': song['title'],
-                                'artist': song['artist'],
-                              });
-                            });
-                            Navigator.pop(context);
-                          },
-                        );
-                      },
-                    ),
-                  ),
-                ],
               ),
             );
           },

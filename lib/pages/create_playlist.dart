@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart'; // Import path_provider
+import 'package:flutter/foundation.dart'; // Import for kIsWeb
 
 class CreatePlaylist extends StatefulWidget {
   @override
@@ -10,9 +15,12 @@ class CreatePlaylist extends StatefulWidget {
 class _CreatePlaylistState extends State<CreatePlaylist> {
   final TextEditingController _playlistController = TextEditingController();
   final List<String> _errors = [];
-  File? _selectedImage;
+  XFile? _pickedFile; // Use XFile from image_picker
+  bool _isCreating = false;
 
   final ImagePicker _picker = ImagePicker();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   void _validateInput() {
     setState(() {
@@ -24,21 +32,88 @@ class _CreatePlaylistState extends State<CreatePlaylist> {
   }
 
   Future<void> _pickImage() async {
-    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      setState(() {
-        _selectedImage = File(pickedFile.path);
-      });
+    final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    setState(() {
+      _pickedFile = pickedFile;
+    });
+  }
+
+  Future<String?> _saveImageLocally(XFile pickedFile, String playlistId) async {
+    if (kIsWeb) {
+      // Local saving not supported on web using path_provider
+      print("Saving locally is not supported on web.");
+      return null;
+    }
+
+    try {
+      final Directory appDocDir = await getApplicationDocumentsDirectory();
+      final Directory playlistPicturesDir = Directory(path.join(appDocDir.parent.path, 'playlist_pictures'));
+
+      // Create the directory if it doesn't exist
+      if (!await playlistPicturesDir.exists()) {
+        await playlistPicturesDir.create(recursive: true);
+      }
+
+      final String fileName = 'playlist_cover_${playlistId}_${DateTime.now().millisecondsSinceEpoch}.png';
+      final String savedPath = path.join(playlistPicturesDir.path, fileName);
+
+      final File imageFile = File(pickedFile.path);
+      await imageFile.copy(savedPath);
+
+      return savedPath;
+    } catch (e) {
+      print("Error saving image locally: $e");
+      return null;
     }
   }
 
-  void _onCreatePressed() {
+  Future<void> _createPlaylist() async {
     _validateInput();
     if (_errors.isEmpty) {
-      Navigator.pop(context, {
-        'name': _playlistController.text,
-        'image': _selectedImage?.path ?? 'assets/defaultpic.jpg',
+      setState(() {
+        _isCreating = true;
       });
+
+      try {
+        final String userId = _auth.currentUser?.uid ?? '';
+        if (userId.isEmpty) {
+          throw Exception("User not authenticated");
+        }
+
+        // Step 1: Create playlist without imagePath initially
+        final playlistRef = await _firestore.collection('playlists').add({
+          'name': _playlistController.text,
+          'userId': userId,
+          'createdAt': FieldValue.serverTimestamp(),
+          'songs': [],
+        });
+
+        final playlistId = playlistRef.id;
+        String? localImagePath;
+
+        // Step 2: Save the image locally (if picked and not on web)
+        if (!kIsWeb && _pickedFile != null) {
+          localImagePath = await _saveImageLocally(_pickedFile!, playlistId);
+        }
+
+        // Step 3: Update Firestore with the image path
+        await _firestore.collection('playlists').doc(playlistId).update({
+          'imagePath': localImagePath ?? 'assets/defaultpic.jpg', // Use local path or default
+        });
+
+        Navigator.pop(context, {
+          'name': _playlistController.text,
+          'image': localImagePath ?? 'assets/defaultpic.jpg',
+        });
+      } catch (e) {
+        setState(() {
+          _errors.add("Error creating playlist: ${e.toString()}");
+        });
+      } finally {
+        setState(() {
+          _isCreating = false;
+        });
+      }
     }
   }
 
@@ -65,107 +140,111 @@ class _CreatePlaylistState extends State<CreatePlaylist> {
         centerTitle: true,
       ),
       body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Colors.grey[800]!, Colors.grey[600]!],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.grey[800]!, Colors.grey[600]!],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
           ),
-        ),
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TextField(
-              controller: _playlistController,
-              style: TextStyle(color: Colors.white),
-              decoration: InputDecoration(
-                labelText: "Playlist Name",
-                labelStyle: TextStyle(color: Colors.white70),
-                filled: true,
-                fillColor: Color(0xFF777777),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(5),
-                  borderSide: BorderSide.none,
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Color(0xFF777777)),
-                  borderRadius: BorderRadius.circular(5),
-                ),
-              ),
-            ),
-            SizedBox(height: 10),
-            GestureDetector(
-              onTap: _pickImage,
-              child: Container(
-                height: MediaQuery.of(context).size.height * 0.2,
-                width: MediaQuery.of(context).size.width * 0.8,
-                decoration: BoxDecoration(
-                  color: Colors.grey[700],
-                  borderRadius: BorderRadius.circular(5),
-                  image: DecorationImage(
-                    image: _selectedImage != null
-                        ? FileImage(_selectedImage!)
-                        : AssetImage('assets/defaultpic.jpg') as ImageProvider,
-                    fit: BoxFit.cover,
+          padding: EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TextField(
+                controller: _playlistController,
+                style: TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  labelText: "Playlist Name",
+                  labelStyle: TextStyle(color: Colors.white70),
+                  filled: true,
+                  fillColor: Color(0xFF777777),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(5),
+                    borderSide: BorderSide.none,
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Color(0xFF777777)),
+                    borderRadius: BorderRadius.circular(5),
                   ),
                 ),
-                child: _selectedImage == null
-                    ? Center(
-                  child: Text(
-                    "Tap to upload cover image",
-                    style: TextStyle(color: Colors.white70),
-                  ),
-                )
-                    : null,
               ),
-            ),
-            SizedBox(height: 5),
-            if (_errors.isNotEmpty)
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: _errors.map((error) {
-                  return Padding(
-                    padding: const EdgeInsets.only(left: 10, top: 2),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Icon(Icons.error_outline, color: Colors.red, size: 16),
-                        SizedBox(width: 5),
-                        Expanded(
-                          child: Text(
-                            error,
-                            style: TextStyle(color: Colors.red, fontSize: 14),
-                            softWrap: true,
-                          ),
-                        ),
-                      ],
+              SizedBox(height: 10),
+              GestureDetector(
+                onTap: _pickImage,
+                child: Container(
+                  height: MediaQuery.of(context).size.height * 0.2,
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[700],
+                    borderRadius: BorderRadius.circular(5),
+                    image: _pickedFile != null
+                        ? DecorationImage(
+                      fit: BoxFit.cover,
+                      image: kIsWeb
+                          ? NetworkImage(_pickedFile!.path) // Display blob for web preview
+                          : FileImage(File(_pickedFile!.path)), // Display local file for mobile preview
+                    )
+                        : null,
+                  ),
+                  child: _pickedFile == null
+                      ? Center(
+                    child: Text(
+                      "Tap to upload cover image",
+                      style: TextStyle(color: Colors.white70),
                     ),
-                  );
-                }).toList(),
-              ),
-            SizedBox(height: 10),
-            Center(
-              child: ElevatedButton(
-                onPressed: _onCreatePressed,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  minimumSize: Size(200, 50),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                  )
+                      : null,
                 ),
-                child: Text(
-                  'Create',
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
+              ),
+              SizedBox(height: 5),
+              if (_errors.isNotEmpty)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: _errors.map((error) {
+                    return Padding(
+                      padding: const EdgeInsets.only(left: 10, top: 2),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(Icons.error_outline, color: Colors.red, size: 16),
+                          SizedBox(width: 5),
+                          Expanded(
+                            child: Text(
+                              error,
+                              style: TextStyle(color: Colors.red, fontSize: 14),
+                              softWrap: true,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                ),
+              SizedBox(height: 10),
+              Center(
+                child: ElevatedButton(
+                  onPressed: _isCreating ? null : _createPlaylist,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    minimumSize: Size(200, 50),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30)),
+                  ),
+                  child: _isCreating
+                      ? CircularProgressIndicator(color: Colors.black)
+                      : Text(
+                    'Create',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
-        ),
-      ),
+            ],
+          )),
     );
   }
 }

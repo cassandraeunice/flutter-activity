@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'create_playlist.dart';
 import 'edit_playlist.dart';
 import 'dart:convert';
-import 'dart:io';
 import 'package:flutter/services.dart';
 import 'song.dart';
 import 'artist_songs.dart';
 import 'playlist.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:io';
 
 class LibraryPage extends StatefulWidget {
   @override
@@ -14,14 +16,18 @@ class LibraryPage extends StatefulWidget {
 }
 
 class _LibraryPageState extends State<LibraryPage> {
-  List<Map<String, String>> _playlists = [];
+  List<Map<String, dynamic>> _playlists = [];
   List<Map<String, dynamic>> _songs = [];
   String _selectedCategory = 'Songs';
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  bool _isLoadingPlaylists = false;
 
   @override
   void initState() {
     super.initState();
     _loadSongs();
+    _loadUserPlaylists();
   }
 
   Future<void> _loadSongs() async {
@@ -29,12 +35,14 @@ class _LibraryPageState extends State<LibraryPage> {
     final List<dynamic> data = json.decode(response);
     setState(() {
       _songs = List<Map<String, dynamic>>.from(data)
-        ..sort((a, b) => a['title'].toLowerCase().compareTo(b['title'].toLowerCase()));
+        ..sort((a, b) =>
+            a['title'].toLowerCase().compareTo(b['title'].toLowerCase()));
     });
   }
 
   final ScrollController _scrollController = ScrollController();
-  final List<String> _alphabet = List.generate(26, (index) => String.fromCharCode(65 + index));
+  final List<String> _alphabet =
+      List.generate(26, (index) => String.fromCharCode(65 + index));
 
   void _scrollToLetter(String letter) {
     Map<String, List<Map<String, dynamic>>> groupedSongs = {};
@@ -50,13 +58,51 @@ class _LibraryPageState extends State<LibraryPage> {
       double offset = 0.0;
       for (var key in groupedSongs.keys) {
         if (key == letter) break;
-        offset += (groupedSongs[key]!.length * 80) + 40; // Approximate height of items and headers
+        offset += (groupedSongs[key]!.length * 80) +
+            40; // Approximate height of items and headers
       }
+
       _scrollController.animateTo(
         offset,
         duration: Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
+    }
+  }
+
+  Future<void> _loadUserPlaylists() async {
+    setState(() {
+      _isLoadingPlaylists = true;
+    });
+
+    try {
+      final String userId = _auth.currentUser?.uid ?? '';
+      if (userId.isEmpty) return;
+      // Query Firestore for playlists belonging to current user
+      final QuerySnapshot playlistsSnapshot = await _firestore
+          .collection('playlists')
+          .where('userId', isEqualTo: userId)
+          .orderBy('createdAt', descending: true)
+          .get();
+      setState(() {
+        _playlists = playlistsSnapshot.docs.map((doc) {
+          final data = doc.data() as Map<String, dynamic>;
+
+          return {
+            'id': doc.id,
+            'name': data['name'] ?? 'Unnamed Playlist',
+            'image': data['imagePath'] ?? 'assets/defaultpic.jpg',
+            'userId': data['userId'],
+            'songs': data['songs'] ?? [],
+          };
+        }).toList();
+      });
+    } catch (e) {
+      print("Error loading playlists: $e");
+    } finally {
+      setState(() {
+        _isLoadingPlaylists = false;
+      });
     }
   }
 
@@ -68,17 +114,14 @@ class _LibraryPageState extends State<LibraryPage> {
         backgroundColor: Color(0xFF121212),
         elevation: 0,
         title: SizedBox.shrink(),
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 0),
-          child: IconButton(
-            icon: Icon(
-              Icons.arrow_back,
-              color: Colors.white,
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back,
+            color: Colors.white,
           ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
         actions: [
           IconButton(
@@ -105,9 +148,7 @@ class _LibraryPageState extends State<LibraryPage> {
               );
 
               if (result != null) {
-                setState(() {
-                  _playlists.add(result);
-                });
+                _loadUserPlaylists();
               }
             },
           )
@@ -117,7 +158,8 @@ class _LibraryPageState extends State<LibraryPage> {
         children: [
           ListView(
             controller: _scrollController,
-            padding: const EdgeInsets.only(left: 15.0, bottom: 15.0, right: 15.0),
+            padding:
+                const EdgeInsets.only(left: 15.0, bottom: 15.0, right: 15.0),
             children: [
               Text(
                 "Your Library",
@@ -145,10 +187,22 @@ class _LibraryPageState extends State<LibraryPage> {
                 _buildSongList(),
               ],
               if (_selectedCategory == 'Artists') ...[
-                ..._getUniqueArtists().map((artist) => _buildArtistItem(artist)).toList(),
+                ..._getUniqueArtists()
+                    .map((artist) => _buildArtistItem(artist))
+                    .toList(),
               ],
               if (_selectedCategory == 'Playlists') ...[
-                ..._playlists.map((_playlists) => _buildPlaylistItem(_playlists)).toList(),
+                _isLoadingPlaylists
+                    ? Center(child: CircularProgressIndicator())
+                    : _playlists.isEmpty
+                        ? Center(
+                            child: Text('No playlists found',
+                                style: TextStyle(color: Colors.white)))
+                        : Column(
+                            children: _playlists
+                                .map((playlist) => _buildPlaylistItem(playlist))
+                                .toList(),
+                          ),
               ],
             ],
           ),
@@ -187,11 +241,14 @@ class _LibraryPageState extends State<LibraryPage> {
 
   Widget _buildSongList() {
     Map<String, List<Map<String, dynamic>>> groupedSongs = {};
+
     for (var song in _songs) {
       String firstLetter = song['title'][0].toUpperCase();
+
       if (!groupedSongs.containsKey(firstLetter)) {
         groupedSongs[firstLetter] = [];
       }
+
       groupedSongs[firstLetter]!.add(song);
     }
 
@@ -226,10 +283,10 @@ class _LibraryPageState extends State<LibraryPage> {
           context,
           MaterialPageRoute(
             builder: (context) => SongPage(
-              title: song['title'], // Pass the song title
-              artist: song['artist'], // Pass the song artist
-              image: song['image'], // Pass the song image
-              file: song['file'], // Pass the song file
+              title: song['title'],
+              artist: song['artist'],
+              image: song['image'],
+              file: song['file'],
             ),
           ),
         );
@@ -242,6 +299,9 @@ class _LibraryPageState extends State<LibraryPage> {
               song['image'],
               width: 67,
               height: 67,
+              errorBuilder: (context, error, stackTrace) {
+                return Icon(Icons.music_note, color: Colors.grey, size: 67);
+              },
             ),
             SizedBox(width: 10),
             Expanded(
@@ -275,8 +335,9 @@ class _LibraryPageState extends State<LibraryPage> {
 
   Widget _buildArtistItem(String artist) {
     // Find the first song by the artist to get the artist image
+
     final artistImage = _songs.firstWhere(
-          (song) => song['artist'].toLowerCase() == artist.toLowerCase(),
+      (song) => song['artist'].toLowerCase() == artist.toLowerCase(),
       orElse: () => {'artist_image': 'assets/defaultpic.jpg'},
     )['artist_image'];
 
@@ -287,8 +348,8 @@ class _LibraryPageState extends State<LibraryPage> {
           MaterialPageRoute(
             builder: (context) => ArtistSongsPage(
               artist: artist,
-              image: artistImage, // Pass the artist image
-              allSongs: _songs, // Pass all songs to filter in ArtistSongsPage
+              image: artistImage,
+              allSongs: _songs,
             ),
           ),
         );
@@ -299,7 +360,8 @@ class _LibraryPageState extends State<LibraryPage> {
           children: [
             CircleAvatar(
               radius: 35,
-              backgroundImage: AssetImage(artistImage ?? 'assets/defaultpic.jpg'),
+              backgroundImage: AssetImage(artistImage),
+              onBackgroundImageError: (exception, stackTrace) {},
             ),
             SizedBox(width: 10),
             Text(
@@ -315,7 +377,7 @@ class _LibraryPageState extends State<LibraryPage> {
     );
   }
 
-  Widget _buildPlaylistItem(Map<String, String> playlist) {
+  Widget _buildPlaylistItem(Map<String, dynamic> playlist) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -326,7 +388,11 @@ class _LibraryPageState extends State<LibraryPage> {
               playlistImage: playlist['image'] ?? 'assets/defaultpic.jpg',
             ),
           ),
-        );
+        ).then((_) {
+          // Refresh playlists when returning from the playlist page
+
+          _loadUserPlaylists();
+        });
       },
       child: Padding(
         padding: const EdgeInsets.only(bottom: 10.0),
@@ -342,7 +408,7 @@ class _LibraryPageState extends State<LibraryPage> {
               icon: Icon(Icons.more_vert, color: Colors.white),
               onSelected: (value) async {
                 if (value == 'Edit') {
-                  final result = await showDialog<String>(
+                  final result = await showDialog<Map<String, String>>(
                     context: context,
                     builder: (BuildContext context) {
                       return Dialog(
@@ -352,33 +418,53 @@ class _LibraryPageState extends State<LibraryPage> {
                         child: Container(
                           width: MediaQuery.of(context).size.width * 0.8,
                           height: MediaQuery.of(context).size.height * 0.53,
-                          child: EditPlaylist(initialName: playlist['name'] ?? ''),
+                          child:
+                              EditPlaylist(initialName: playlist['name'] ?? ''),
                         ),
                       );
                     },
                   );
+
                   if (result != null) {
-                    setState(() {
-                      int index = _playlists.indexOf(playlist);
-                      _playlists[index]['name'] = result;
-                    });
+                    try {
+                      await _firestore
+                          .collection('playlists')
+                          .doc(playlist['id'])
+                          .update({
+                        'name': result['name'],
+                        if (result['imagePath'] != null)
+                          'imagePath': result['imagePath'],
+                      });
+
+                      _loadUserPlaylists();
+                    } catch (e) {
+                      print("Error updating playlist: $e");
+                    }
                   }
                 } else if (value == 'Delete') {
-                  setState(() {
-                    _playlists.remove(playlist);
-                  });
+                  try {
+                    await _firestore
+                        .collection('playlists')
+                        .doc(playlist['id'])
+                        .delete();
+
+                    _loadUserPlaylists();
+                  } catch (e) {
+                    print("Error deleting playlist: $e");
+                  }
                 }
               },
               itemBuilder: (BuildContext context) => [
                 PopupMenuItem(
                   value: 'Edit',
-                  child: Text('Edit'),
+                  child: Text('Edit', style: TextStyle(color: Colors.white)),
                 ),
                 PopupMenuItem(
                   value: 'Delete',
-                  child: Text('Delete'),
+                  child: Text('Delete', style: TextStyle(color: Colors.white)),
                 ),
               ],
+              color: Colors.black,
             ),
           ],
         ),
@@ -386,26 +472,42 @@ class _LibraryPageState extends State<LibraryPage> {
     );
   }
 
-  Widget _buildRecentlyPlayedItem(String title, String subtitle, String imagePath) {
+  Widget _buildRecentlyPlayedItem(
+      String title, String subtitle, String imagePath) {
+    bool isFilePath =
+        imagePath.startsWith('/') || imagePath.startsWith('file://');
+
     return Row(
       children: [
-        imagePath.startsWith('/assets/playlist_cover') // Check if the imagePath is a file path
-            ? Image.file(
-          File(imagePath),
-          width: 67,
-          height: 67,
-          errorBuilder: (context, error, stackTrace) {
-            return Icon(Icons.broken_image, color: Colors.grey, size: 67);
-          },
-        )
-            : Image.asset(
-          imagePath,
-          width: 67,
-          height: 67,
-          errorBuilder: (context, error, stackTrace) {
-            return Icon(Icons.broken_image, color: Colors.grey, size: 67);
-          },
-        ),
+        if (isFilePath)
+          Container(
+            width: 67,
+            height: 67,
+            child: Image.file(
+              File(imagePath),
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return Image.asset(
+                  'assets/defaultpic.jpg',
+                  width: 67,
+                  height: 67,
+                );
+              },
+            ),
+          )
+        else
+          Image.asset(
+            imagePath,
+            width: 67,
+            height: 67,
+            errorBuilder: (context, error, stackTrace) {
+              return Image.asset(
+                'assets/defaultpic.jpg',
+                width: 67,
+                height: 67,
+              );
+            },
+          ),
         SizedBox(width: 10),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -425,10 +527,7 @@ class _LibraryPageState extends State<LibraryPage> {
   }
 
   List<String> _getUniqueArtists() {
-    return _songs
-        .map((song) => song['artist'] as String)
-        .toSet()
-        .toList()
+    return _songs.map((song) => song['artist'] as String).toSet().toList()
       ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
   }
 }
