@@ -18,6 +18,9 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   String? _confirmPasswordError;
 
   bool _isLoading = false;
+  bool _isCurrentPasswordVisible = false;
+  bool _isNewPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
 
   final RegExp passwordUppercase = RegExp(r'[A-Z]');
   final RegExp passwordNumber = RegExp(r'[0-9]');
@@ -127,11 +130,23 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildPasswordField("Current Password", _currentPasswordController, _currentPasswordError),
+            _buildPasswordField("Current Password", _currentPasswordController, _currentPasswordError, _isCurrentPasswordVisible, (value) {
+              setState(() {
+                _isCurrentPasswordVisible = value;
+              });
+            }),
             SizedBox(height: 16),
-            _buildPasswordField("New Password", _newPasswordController, _newPasswordError),
+            _buildPasswordField("New Password", _newPasswordController, _newPasswordError, _isNewPasswordVisible, (value) {
+              setState(() {
+                _isNewPasswordVisible = value;
+              });
+            }),
             SizedBox(height: 16),
-            _buildPasswordField("Confirm Password", _confirmPasswordController, _confirmPasswordError),
+            _buildPasswordField("Confirm Password", _confirmPasswordController, _confirmPasswordError, _isConfirmPasswordVisible, (value) {
+              setState(() {
+                _isConfirmPasswordVisible = value;
+              });
+            }),
             SizedBox(height: 30),
             Center(
               child: ElevatedButton(
@@ -157,13 +172,13 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     );
   }
 
-  Widget _buildPasswordField(String label, TextEditingController controller, String? errorText) {
+  Widget _buildPasswordField(String label, TextEditingController controller, String? errorText, bool isPasswordVisible, Function(bool) toggleVisibility) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         TextField(
           controller: controller,
-          obscureText: true,
+          obscureText: !isPasswordVisible,
           style: TextStyle(color: Colors.white),
           decoration: InputDecoration(
             labelText: label,
@@ -177,6 +192,15 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(5),
               borderSide: BorderSide(color: Colors.white),
+            ),
+            suffixIcon: IconButton(
+              icon: Icon(
+                isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                color: Colors.white70,
+              ),
+              onPressed: () {
+                toggleVisibility(!isPasswordVisible);
+              },
             ),
           ),
         ),

@@ -124,38 +124,26 @@ class _PlaylistPageState extends State<PlaylistPage> {
                 ),
               ),
               SizedBox(height: 8),
-              Text(
-                _updatedPlaylistName ?? widget.playlistName,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 33,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,  // Align icons to the right
                 children: [
-                  CircleAvatar(
-                    radius: 12,
-                    backgroundImage: AssetImage('assets/defaultpic.jpg'),
-                  ),
-                  SizedBox(width: 10),
                   Text(
-                    'Cassandra',
+                    _updatedPlaylistName ?? widget.playlistName,
                     style: TextStyle(
-                      color: Color(0xFFF94C57),
-                      fontSize: 13,
+                      color: Colors.white,
+                      fontSize: 33,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                  Spacer(),
                   Row(
                     children: [
                       IconButton(
-                        icon: Icon(Icons.add, color: Color(0xFFF94C57), size: 25),
+                        icon: Icon(Icons.add, color: Colors.white, size: 25),  // White color for the icon
                         tooltip: 'Add Song',
                         onPressed: _showAddSongDialog,
                       ),
                       IconButton(
-                        icon: Icon(Icons.edit, color: Color(0xFFF94C57), size: 20),
+                        icon: Icon(Icons.edit, color: Colors.white, size: 20),  // White color for the icon
                         tooltip: 'Edit Playlist',
                         onPressed: _showEditPlaylistDialog,
                       ),
@@ -233,7 +221,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
         IconButton(
           icon: Icon(
             isPlaying ? Icons.pause_circle_filled : Icons.play_circle_filled,
-            color: Color(0xFFF94C57),
+            color: Colors.white,
             size: 35,
           ),
           onPressed: () {
@@ -431,12 +419,14 @@ class _PlaylistPageState extends State<PlaylistPage> {
                         Navigator.pop(context);
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFFF94C57),
+                        backgroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      child: Text("Save Changes"),
+                      child: Text("Save Changes",
+                          style: TextStyle(color: Colors.black),
+                    ),
                     ),
                   ],
                 ),
