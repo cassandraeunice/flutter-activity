@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:file_picker/file_picker.dart';
-import 'add_song.dart';
+import 'mini_player.dart';
 
 class SongPage extends StatefulWidget {
   final String title;
@@ -51,32 +51,28 @@ class _SongPageState extends State<SongPage> {
     try {
       if (_isPlaying) {
         await _audioPlayer.pause();
-      } else {
-        String? filePath;
-        if (widget.file.isNotEmpty) {
-          filePath = widget.file;
-        } else {
-          final result = await FilePicker.platform.pickFiles(
-            type: FileType.custom,
-            allowedExtensions: ['mp3'],
-          );
-          if (result != null && result.files.single.path != null) {
-            filePath = result.files.single.path!;
-          }
+        if (mounted) {
+          setState(() {
+            _isPlaying = false;
+          });
         }
+      } else {
+        String? filePath = widget.file.isNotEmpty ? widget.file : null;
 
         if (filePath != null) {
           await _audioPlayer.setSourceDeviceFile(filePath);
-          await _audioPlayer.play(DeviceFileSource(filePath));
-          setState(() {
-            _isPlaying = true;
-          });
+          await _audioPlayer.resume(); // Use resume to start playback
+          if (mounted) {
+            setState(() {
+              _isPlaying = true;
+            });
+          }
         } else {
-          print("No file selected.");
+          print("No file selected or file path is empty.");
         }
       }
     } catch (e) {
-      print("Error playing audio: $e");
+      print("Error in play/pause: $e");
     }
   }
 
@@ -100,124 +96,126 @@ class _SongPageState extends State<SongPage> {
           },
         ),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(15.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: 350,
-                  height: 350,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage(widget.image),
-                      fit: BoxFit.cover,
-                    ),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-              ),
-              SizedBox(height: 15),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.title,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
+                  Center(
+                    child: Container(
+                      width: 350,
+                      height: 350,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage(widget.image),
+                          fit: BoxFit.cover,
                         ),
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                      SizedBox(height: 4),
-                      Text(
-                        widget.artist,
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 16,
-                        ),
+                    ),
+                  ),
+                  SizedBox(height: 15),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.title,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            widget.artist,
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.favorite_border, color: Colors.white, size: 30),
+                        onPressed: () {},
                       ),
                     ],
                   ),
-                  IconButton(
-                    icon: Icon(Icons.favorite_border, color: Colors.white, size: 30),
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) => Dialog(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                          child: Container(
-                            height: 350,
-                            width: 300,
-                            child: AddSong(),
-                          ),
+                  SizedBox(height: 20),
+                  Row(
+                    children: [
+                      Text(
+                        _formatDuration(_currentPosition),
+                        style: TextStyle(color: Colors.white, fontSize: 12),
+                      ),
+                      Expanded(
+                        child: Slider(
+                          value: _currentPosition.inSeconds.toDouble(),
+                          min: 0,
+                          max: _totalDuration.inSeconds.toDouble(),
+                          onChanged: (value) async {
+                            final position = Duration(seconds: value.toInt());
+                            await _audioPlayer.seek(position);
+                            setState(() {
+                              _currentPosition = position;
+                            });
+                          },
+                          activeColor: Color(0xFFF94C57),
+                          inactiveColor: Colors.grey,
                         ),
-                      );
-                    },
+                      ),
+                      Text(
+                        _formatDuration(_totalDuration),
+                        style: TextStyle(color: Colors.white, fontSize: 12),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.skip_previous, color: Color(0xFFF94C57), size: 40),
+                        onPressed: () {},
+                      ),
+                      IconButton(
+                        icon: Icon(
+                          _isPlaying ? Icons.pause_circle_filled : Icons.play_circle_fill,
+                          color: Color(0xFFF94C57),
+                          size: 70,
+                        ),
+                        onPressed: _playPause,
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.skip_next, color: Color(0xFFF94C57), size: 40),
+                        onPressed: () {},
+                      ),
+                    ],
                   ),
                 ],
               ),
-              SizedBox(height: 20),
-              Row(
-                children: [
-                  Text(
-                    _formatDuration(_currentPosition),
-                    style: TextStyle(color: Colors.white, fontSize: 12),
-                  ),
-                  Expanded(
-                    child: Slider(
-                      value: _currentPosition.inSeconds.toDouble(),
-                      min: 0,
-                      max: _totalDuration.inSeconds.toDouble(),
-                      onChanged: (value) async {
-                        final position = Duration(seconds: value.toInt());
-                        await _audioPlayer.seek(position);
-                        setState(() {
-                          _currentPosition = position;
-                        });
-                      },
-                      activeColor: Color(0xFFF94C57),
-                      inactiveColor: Colors.grey,
-                    ),
-                  ),
-                  Text(
-                    _formatDuration(_totalDuration),
-                    style: TextStyle(color: Colors.white, fontSize: 12),
-                  ),
-                ],
-              ),
-              SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.skip_previous, color: Color(0xFFF94C57), size: 40),
-                    onPressed: () {},
-                  ),
-                  IconButton(
-                    icon: Icon(
-                      _isPlaying ? Icons.pause_circle_filled : Icons.play_circle_fill,
-                      color: Color(0xFFF94C57),
-                      size: 70,
-                    ),
-                    onPressed: _playPause,
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.skip_next, color: Color(0xFFF94C57), size: 40),
-                    onPressed: () {},
-                  ),
-                ],
-              ),
-            ],
+            ),
           ),
-        ),
+          MiniPlayer(
+            title: widget.title,
+            image: widget.image,
+            isPlaying: _isPlaying,
+            onPlayPause: _playPause,
+            onTap: () {
+              // Expand the song page or navigate to full player
+            },
+            onNext: () {
+              // Handle next song logic
+            },
+          ),
+        ],
       ),
     );
   }
