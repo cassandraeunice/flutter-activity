@@ -253,9 +253,15 @@ class _PlaylistPageState extends State<PlaylistPage> {
                       onTap: () async {
                         final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
                         if (pickedFile != null) {
+                          final newPath = 'assets/playlist_cover/${pickedFile.name}';
+                          final newFile = File(newPath);
+
+                          // Copy the file to the assets directory
+                          await File(pickedFile.path).copy(newFile.path);
+
                           setState(() {
-                            selectedImage = File(pickedFile.path);
-                            updatedImage = pickedFile.path;
+                            selectedImage = newFile;
+                            updatedImage = newPath;
                           });
                         }
                       },
@@ -288,7 +294,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
                     ElevatedButton(
                       onPressed: () {
                         setState(() {
-                          _updatedPlaylistName = nameController.text; // Update the state variable
+                          _updatedPlaylistName = nameController.text;
                         });
                         Navigator.pop(context);
                       },
