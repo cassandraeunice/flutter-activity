@@ -287,6 +287,8 @@ class _LibraryPageState extends State<LibraryPage> {
               artist: song['artist'],
               image: song['image'],
               file: song['file'],
+              songs: _songs, // Pass the list of all songs
+              currentIndex: _songs.indexOf(song), // Pass the current song index
             ),
           ),
         );

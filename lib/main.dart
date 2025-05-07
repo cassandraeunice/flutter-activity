@@ -62,6 +62,8 @@ class MoodyApp extends StatelessWidget {
             artist: '',
             image: '',
             file: '',
+            songs: [], // Provide an empty list or a default list of songs
+            currentIndex: 0, // Provide a default index
           ),
         ),
       },
@@ -247,6 +249,8 @@ class _HomePageState extends State<HomePage> {
                               artist: 'Sample Artist',
                               image: 'assets/sample.jpg',
                               file: 'assets/sample.mp3',
+                              songs: [], // Provide an empty list or the actual list of songs
+                              currentIndex: 0, // Provide the appropriate index
                             ),
                           ),
                         ),

@@ -90,6 +90,8 @@ class _ArtistSongsPageState extends State<ArtistSongsPage> {
                           artist: song['artist'],
                           image: song['image'],
                           file: song['file'],
+                          songs: _artistSongs, // Pass the artist's songs
+                          currentIndex: _artistSongs.indexOf(song),
                         ),
                       ),
                     );
