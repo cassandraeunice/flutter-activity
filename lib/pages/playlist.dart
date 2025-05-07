@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:audioplayers/audioplayers.dart';  // Import the audioplayers package
 import 'edit_playlist.dart';
 
 class PlaylistPage extends StatefulWidget {
@@ -23,6 +24,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
   String? _updatedPlaylistName;
   String? playlistId;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final AudioPlayer _audioPlayer = AudioPlayer(); // AudioPlayer instance
 
   @override
   void initState() {
@@ -41,7 +43,6 @@ class _PlaylistPageState extends State<PlaylistPage> {
   }
 
   Future<void> _loadPlaylistFromFirestore() async {
-    // Find the playlist by name (or use ID if available)
     final query = await _firestore
         .collection('playlists')
         .where('name', isEqualTo: widget.playlistName)
@@ -60,7 +61,6 @@ class _PlaylistPageState extends State<PlaylistPage> {
   Future<void> _addSongToPlaylist(Map<String, dynamic> song) async {
     if (playlistId == null) return;
 
-    // Prevent duplicates by checking song_id
     if (playlistSongs.any((s) => s['song_id'] == song['song_id'])) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Song already in playlist')),
@@ -87,6 +87,28 @@ class _PlaylistPageState extends State<PlaylistPage> {
     await _firestore.collection('playlists').doc(playlistId).update({
       'songs': playlistSongs,
     });
+  }
+
+  // Play or Pause functionality
+  void _playPause(int index, String audioFilePath) async {
+    if (_currentlyPlayingIndex == index) {
+      await _audioPlayer.pause();
+      setState(() {
+        _currentlyPlayingIndex = null;
+      });
+    } else {
+      await _audioPlayer.stop(); // Stop any currently playing song
+      await _audioPlayer.play(DeviceFileSource(audioFilePath)); // Play the new song
+      setState(() {
+        _currentlyPlayingIndex = index;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _audioPlayer.dispose();  // Dispose of the audio player when the widget is disposed
+    super.dispose();
   }
 
   @override
@@ -125,7 +147,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
               ),
               SizedBox(height: 8),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,  // Align icons to the right
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     _updatedPlaylistName ?? widget.playlistName,
@@ -138,12 +160,12 @@ class _PlaylistPageState extends State<PlaylistPage> {
                   Row(
                     children: [
                       IconButton(
-                        icon: Icon(Icons.add, color: Colors.white, size: 25),  // White color for the icon
+                        icon: Icon(Icons.add, color: Colors.white, size: 25),
                         tooltip: 'Add Song',
                         onPressed: _showAddSongDialog,
                       ),
                       IconButton(
-                        icon: Icon(Icons.edit, color: Colors.white, size: 20),  // White color for the icon
+                        icon: Icon(Icons.edit, color: Colors.white, size: 20),
                         tooltip: 'Edit Playlist',
                         onPressed: _showEditPlaylistDialog,
                       ),
@@ -185,7 +207,14 @@ class _PlaylistPageState extends State<PlaylistPage> {
                 itemCount: playlistSongs.length,
                 itemBuilder: (context, index) {
                   var song = playlistSongs[index];
-                  return _buildSongRow(index, song['title'], song['artist']);
+                  bool isPlaying = _currentlyPlayingIndex == index;
+                  return _buildSongRow(
+                    index,
+                    song['title'],
+                    song['artist'],
+                    song['file'], // The file path to the audio
+                    isPlaying,
+                  );
                 },
               )
                   : Center(
@@ -201,9 +230,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
     );
   }
 
-  Widget _buildSongRow(int index, String title, String artist) {
-    bool isPlaying = _currentlyPlayingIndex == index;
-
+  Widget _buildSongRow(int index, String title, String artist, String audioFilePath, bool isPlaying) {
     return Row(
       children: [
         Text('${index + 1}',
@@ -225,9 +252,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
             size: 35,
           ),
           onPressed: () {
-            setState(() {
-              _currentlyPlayingIndex = isPlaying ? null : index;
-            });
+            _playPause(index, audioFilePath);
           },
         ),
         PopupMenuButton<String>(
@@ -252,6 +277,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
     );
   }
 
+  // Show Add Song dialog
   void _showAddSongDialog() {
     showModalBottomSheet(
       context: context,
@@ -334,6 +360,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
     );
   }
 
+  // Show Edit Playlist dialog
   void _showEditPlaylistDialog() {
     TextEditingController nameController = TextEditingController(text: _updatedPlaylistName);
     File? selectedImage;
@@ -376,7 +403,6 @@ class _PlaylistPageState extends State<PlaylistPage> {
                           final newPath = 'assets/playlist_cover/${pickedFile.name}';
                           final newFile = File(newPath);
 
-                          // Copy the file to the assets directory
                           await File(pickedFile.path).copy(newFile.path);
 
                           setState(() {
@@ -425,8 +451,8 @@ class _PlaylistPageState extends State<PlaylistPage> {
                         ),
                       ),
                       child: Text("Save Changes",
-                          style: TextStyle(color: Colors.black),
-                    ),
+                        style: TextStyle(color: Colors.black),
+                      ),
                     ),
                   ],
                 ),
