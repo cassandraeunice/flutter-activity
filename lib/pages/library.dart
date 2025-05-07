@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'create_playlist.dart';
 import 'edit_playlist.dart';
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/services.dart';
 import 'song.dart';
 import 'artist_songs.dart';
+import 'playlist.dart';
 
 class LibraryPage extends StatefulWidget {
   @override
@@ -314,59 +316,72 @@ class _LibraryPageState extends State<LibraryPage> {
   }
 
   Widget _buildPlaylistItem(Map<String, String> playlist) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10.0),
-      child: Row(
-        children: [
-          _buildRecentlyPlayedItem(
-            playlist['name'] ?? 'Unknown Playlist', // Default value
-            'Playlist',
-            playlist['image'] ?? 'assets/defaultpic.jpg', // Default image
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PlaylistPage(
+              playlistName: playlist['name'] ?? 'Unknown Playlist',
+              playlistImage: playlist['image'] ?? 'assets/defaultpic.jpg',
+            ),
           ),
-          Spacer(),
-          PopupMenuButton<String>(
-            icon: Icon(Icons.more_vert, color: Colors.white),
-            onSelected: (value) async {
-              if (value == 'Edit') {
-                final result = await showDialog<String>(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return Dialog(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16.0),
-                      ),
-                      child: Container(
-                        width: MediaQuery.of(context).size.width * 0.8,
-                        height: MediaQuery.of(context).size.height * 0.53,
-                        child: EditPlaylist(initialName: playlist['name'] ?? ''),
-                      ),
-                    );
-                  },
-                );
-                if (result != null) {
+        );
+      },
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 10.0),
+        child: Row(
+          children: [
+            _buildRecentlyPlayedItem(
+              playlist['name'] ?? 'Unknown Playlist',
+              'Playlist',
+              playlist['image'] ?? 'assets/defaultpic.jpg',
+            ),
+            Spacer(),
+            PopupMenuButton<String>(
+              icon: Icon(Icons.more_vert, color: Colors.white),
+              onSelected: (value) async {
+                if (value == 'Edit') {
+                  final result = await showDialog<String>(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return Dialog(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16.0),
+                        ),
+                        child: Container(
+                          width: MediaQuery.of(context).size.width * 0.8,
+                          height: MediaQuery.of(context).size.height * 0.53,
+                          child: EditPlaylist(initialName: playlist['name'] ?? ''),
+                        ),
+                      );
+                    },
+                  );
+                  if (result != null) {
+                    setState(() {
+                      int index = _playlists.indexOf(playlist);
+                      _playlists[index]['name'] = result;
+                    });
+                  }
+                } else if (value == 'Delete') {
                   setState(() {
-                    int index = _playlists.indexOf(playlist);
-                    _playlists[index]['name'] = result;
+                    _playlists.remove(playlist);
                   });
                 }
-              } else if (value == 'Delete') {
-                setState(() {
-                  _playlists.remove(playlist);
-                });
-              }
-            },
-            itemBuilder: (BuildContext context) => [
-              PopupMenuItem(
-                value: 'Edit',
-                child: Text('Edit'),
-              ),
-              PopupMenuItem(
-                value: 'Delete',
-                child: Text('Delete'),
-              ),
-            ],
-          ),
-        ],
+              },
+              itemBuilder: (BuildContext context) => [
+                PopupMenuItem(
+                  value: 'Edit',
+                  child: Text('Edit'),
+                ),
+                PopupMenuItem(
+                  value: 'Delete',
+                  child: Text('Delete'),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -374,7 +389,16 @@ class _LibraryPageState extends State<LibraryPage> {
   Widget _buildRecentlyPlayedItem(String title, String subtitle, String imagePath) {
     return Row(
       children: [
-        Image.asset(
+        imagePath.startsWith('/') // Check if the imagePath is a file path
+            ? Image.file(
+          File(imagePath),
+          width: 67,
+          height: 67,
+          errorBuilder: (context, error, stackTrace) {
+            return Icon(Icons.broken_image, color: Colors.grey, size: 67);
+          },
+        )
+            : Image.asset(
           imagePath,
           width: 67,
           height: 67,

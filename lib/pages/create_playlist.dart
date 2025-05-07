@@ -20,9 +20,6 @@ class _CreatePlaylistState extends State<CreatePlaylist> {
       if (_playlistController.text.isEmpty) {
         _errors.add("Playlist name cannot be empty.");
       }
-      if (_selectedImage == null) {
-        _errors.add("Please select a playlist cover image.");
-      }
     });
   }
 
@@ -40,7 +37,7 @@ class _CreatePlaylistState extends State<CreatePlaylist> {
     if (_errors.isEmpty) {
       Navigator.pop(context, {
         'name': _playlistController.text,
-        'image': _selectedImage!.path,
+        'image': _selectedImage?.path ?? 'assets/defaultpic.jpg',
       });
     }
   }
@@ -101,17 +98,17 @@ class _CreatePlaylistState extends State<CreatePlaylist> {
             GestureDetector(
               onTap: _pickImage,
               child: Container(
-                height: MediaQuery.of(context).size.height * 0.2, // 20% of screen height
-                width: MediaQuery.of(context).size.width * 0.8,  // 80% of screen width
+                height: MediaQuery.of(context).size.height * 0.2,
+                width: MediaQuery.of(context).size.width * 0.8,
                 decoration: BoxDecoration(
                   color: Colors.grey[700],
                   borderRadius: BorderRadius.circular(5),
-                  image: _selectedImage != null
-                      ? DecorationImage(
-                    image: FileImage(_selectedImage!),
+                  image: DecorationImage(
+                    image: _selectedImage != null
+                        ? FileImage(_selectedImage!)
+                        : AssetImage('assets/defaultpic.jpg') as ImageProvider,
                     fit: BoxFit.cover,
-                  )
-                      : null,
+                  ),
                 ),
                 child: _selectedImage == null
                     ? Center(

@@ -1,21 +1,31 @@
 import 'dart:convert';
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'edit_playlist.dart';
 
 class PlaylistPage extends StatefulWidget {
+  final String playlistName;
+  final String playlistImage;
+
+  PlaylistPage({required this.playlistName, required this.playlistImage});
+
   @override
   _PlaylistPageState createState() => _PlaylistPageState();
 }
+
 
 class _PlaylistPageState extends State<PlaylistPage> {
   int? _currentlyPlayingIndex;
   List<Map<String, dynamic>> allSongs = [];
   List<Map<String, dynamic>> playlistSongs = [];
+  String? _updatedPlaylistName;
 
   @override
   void initState() {
     super.initState();
+    _updatedPlaylistName = widget.playlistName;
     _loadSongs();
   }
 
@@ -52,7 +62,9 @@ class _PlaylistPageState extends State<PlaylistPage> {
                   height: 350,
                   decoration: BoxDecoration(
                     image: DecorationImage(
-                      image: AssetImage('assets/album/clairo.jpg'),
+                      image: widget.playlistImage.startsWith('/')
+                          ? FileImage(File(widget.playlistImage))
+                          : AssetImage(widget.playlistImage) as ImageProvider,
                       fit: BoxFit.cover,
                     ),
                     borderRadius: BorderRadius.circular(10),
@@ -60,50 +72,40 @@ class _PlaylistPageState extends State<PlaylistPage> {
                 ),
               ),
               SizedBox(height: 8),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              Text(
+                _updatedPlaylistName ?? widget.playlistName,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 33,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Row(
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Study Hub',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 33,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          IconButton(
-                            icon: Icon(Icons.add, color: Color(0xFFF94C57), size: 25),
-                            tooltip: 'Add Song',
-                            onPressed: _showAddSongDialog,
-                          ),
-                          IconButton(
-                            icon: Icon(Icons.edit, color: Color(0xFFF94C57), size: 20),
-                            tooltip: 'Edit Playlist',
-                            onPressed: _showEditPlaylistDialog,
-                          ),
-                        ],
-                      ),
-                    ],
+                  CircleAvatar(
+                    radius: 12,
+                    backgroundImage: AssetImage('assets/defaultpic.jpg'),
                   ),
-                  SizedBox(height: 10),
+                  SizedBox(width: 10),
+                  Text(
+                    'Cassandra',
+                    style: TextStyle(
+                      color: Color(0xFFF94C57),
+                      fontSize: 13,
+                    ),
+                  ),
+                  Spacer(),
                   Row(
                     children: [
-                      CircleAvatar(
-                        radius: 12,
-                        backgroundImage: AssetImage('assets/defaultpic.jpg'),
+                      IconButton(
+                        icon: Icon(Icons.add, color: Color(0xFFF94C57), size: 25),
+                        tooltip: 'Add Song',
+                        onPressed: _showAddSongDialog,
                       ),
-                      SizedBox(width: 10),
-                      Text(
-                        'Cassandra',
-                        style: TextStyle(
-                          color: Color(0xFFF94C57),
-                          fontSize: 13,
-                        ),
+                      IconButton(
+                        icon: Icon(Icons.edit, color: Color(0xFFF94C57), size: 20),
+                        tooltip: 'Edit Playlist',
+                        onPressed: _showEditPlaylistDialog,
                       ),
                     ],
                   ),
@@ -213,29 +215,100 @@ class _PlaylistPageState extends State<PlaylistPage> {
   }
 
   void _showEditPlaylistDialog() {
+    TextEditingController nameController = TextEditingController(text: _updatedPlaylistName);
+    File? selectedImage;
+    String updatedImage = widget.playlistImage;
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return Dialog(
-          backgroundColor: Color(0xFF121212),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Container(
-            padding: EdgeInsets.all(20),
-            constraints: BoxConstraints(
-              maxHeight: 500, // Set a reasonable max height for the dialog
-            ),
-            child: EditPlaylist(
-              initialName: playlistSongs.isNotEmpty ? playlistSongs[0]['title'] : '',
-            ),
-          ),
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return Dialog(
+              backgroundColor: Color(0xFF121212),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Container(
+                padding: EdgeInsets.all(20),
+                constraints: BoxConstraints(maxHeight: 500),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextField(
+                      controller: nameController,
+                      style: TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        labelText: "Playlist Name",
+                        labelStyle: TextStyle(color: Colors.white70),
+                        filled: true,
+                        fillColor: Color(0xFF2A2A2A),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    GestureDetector(
+                      onTap: () async {
+                        final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+                        if (pickedFile != null) {
+                          setState(() {
+                            selectedImage = File(pickedFile.path);
+                            updatedImage = pickedFile.path;
+                          });
+                        }
+                      },
+                      child: Container(
+                        height: 150,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[700],
+                          borderRadius: BorderRadius.circular(10),
+                          image: DecorationImage(
+                            image: selectedImage != null
+                                ? FileImage(selectedImage!)
+                                : widget.playlistImage.startsWith('/')
+                                ? FileImage(File(widget.playlistImage))
+                                : AssetImage(widget.playlistImage) as ImageProvider,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        child: selectedImage == null
+                            ? Center(
+                          child: Text(
+                            "Tap to change cover image",
+                            style: TextStyle(color: Colors.white70),
+                          ),
+                        )
+                            : null,
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          _updatedPlaylistName = nameController.text; // Update the state variable
+                        });
+                        Navigator.pop(context);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFFF94C57),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: Text("Save Changes"),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
         );
       },
     );
   }
-
-
 
   void _showAddSongDialog() {
     showModalBottomSheet(

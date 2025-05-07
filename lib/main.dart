@@ -50,7 +50,12 @@ class MoodyApp extends StatelessWidget {
         '/editprofile': (context) => AuthGuard(child: EditProfilePage()),
         // '/settings': (context) => AuthGuard(child: SettingsPage()),
         '/profile': (context) => AuthGuard(child: ProfilePage()),
-        '/playlist': (context) => AuthGuard(child: PlaylistPage()),
+        '/playlist': (context) => AuthGuard(
+          child: PlaylistPage(
+            playlistName: 'Default Playlist', // Provide a default name
+            playlistImage: 'assets/defaultpic.jpg', // Provide a default image
+          ),
+        ),
         '/song': (context) => AuthGuard(
           child: SongPage(
             title: '', // Provide default or placeholder values
@@ -216,7 +221,12 @@ class _HomePageState extends State<HomePage> {
                         ),
                         onTap: () => Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => PlaylistPage()),
+                          MaterialPageRoute(
+                            builder: (context) => PlaylistPage(
+                              playlistName: 'Sample Playlist', // Replace with actual data
+                              playlistImage: 'assets/defaultpic.jpg', // Replace with actual data
+                            ),
+                          ),
                         ),
                       ),
                       ListTile(

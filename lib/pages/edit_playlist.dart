@@ -113,12 +113,12 @@ class _EditPlaylistState extends State<EditPlaylist> {
                 decoration: BoxDecoration(
                   color: Colors.grey[700],
                   borderRadius: BorderRadius.circular(5),
-                  image: _selectedImage != null
-                      ? DecorationImage(
-                    image: FileImage(_selectedImage!),
+                  image: DecorationImage(
+                    image: _selectedImage != null
+                        ? FileImage(_selectedImage!)
+                        : AssetImage('assets/defaultpic.jpg') as ImageProvider,
                     fit: BoxFit.cover,
-                  )
-                      : null,
+                  ),
                 ),
                 child: _selectedImage == null
                     ? Center(
