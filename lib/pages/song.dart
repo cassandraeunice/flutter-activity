@@ -180,26 +180,30 @@ class _SongPageState extends State<SongPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            widget.title,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              widget.title,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              maxLines: 2, // Limit to 2 lines
+                              overflow: TextOverflow.ellipsis, // Add ellipsis for overflow
                             ),
-                          ),
-                          SizedBox(height: 4),
-                          Text(
-                            widget.artist,
-                            style: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 16,
+                            SizedBox(height: 4),
+                            Text(
+                              widget.artist,
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 16,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                       IconButton(
                         icon: Icon(Icons.favorite_border, color: Colors.white, size: 30),
