@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // For loading JSON file
 import 'song.dart';
 import 'add_song.dart';
+import 'artist_songs.dart';
 
 class SearchPage extends StatefulWidget {
   @override
@@ -15,6 +16,7 @@ class _SearchPageState extends State<SearchPage> {
 
   List<Map<String, dynamic>> allSongs = [];
   List<Map<String, dynamic>> filteredSongs = [];
+  List<String> filteredArtists = []; // Add a list to store filtered artists
 
   @override
   void initState() {
@@ -38,6 +40,7 @@ class _SearchPageState extends State<SearchPage> {
     setState(() {
       if (query.isEmpty) {
         filteredSongs = List.from(allSongs); // Show all songs if query is empty
+        filteredArtists = []; // Clear filtered artists
       } else {
         filteredSongs = allSongs.where((song) {
           final titleLower = song['title'].toLowerCase();
@@ -47,6 +50,13 @@ class _SearchPageState extends State<SearchPage> {
           // Filter based on title or artist matching the query
           return titleLower.contains(queryLower) || artistLower.contains(queryLower);
         }).toList();
+
+        // Filter unique artists matching the query
+        filteredArtists = allSongs
+            .map((song) => song['artist'] as String)
+            .where((artist) => artist.toLowerCase().contains(query.toLowerCase()))
+            .toSet()
+            .toList();
       }
     });
   }
@@ -113,7 +123,7 @@ class _SearchPageState extends State<SearchPage> {
                           border: InputBorder.none,
                         ),
                         onChanged: (value) {
-                          _filterSongs(value); // Filter songs based on search query
+                          _filterSongs(value); // Filter songs and artists based on search query
                         },
                       ),
                     ),
@@ -123,80 +133,133 @@ class _SearchPageState extends State<SearchPage> {
 
               SizedBox(height: 16),
 
-              // Display songs only if user starts typing
+              // Display results only if user starts typing
               if (_searchController.text.isNotEmpty) ...[
-                // Songs Section (Display filtered songs here)
-                Text(
-                  "Songs",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
+                // Artists Section
+                if (filteredArtists.isNotEmpty) ...[
+                  Text(
+                    "Artists",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                    ),
                   ),
-                ),
-                SizedBox(height: 10),
-                // List view to show filtered songs
-                ListView.builder(
-                  shrinkWrap: true, // To avoid taking up unnecessary space
-                  physics: NeverScrollableScrollPhysics(), // Prevent scrolling if inside SingleChildScrollView
-                  itemCount: filteredSongs.length,
-                  itemBuilder: (context, index) {
-                    final song = filteredSongs[index];
-                    return ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      leading: ClipRRect(
-                        borderRadius: BorderRadius.zero, // Make the image square
-                        child: Image.asset(
-                          song['image'], // Use the image from the JSON
-                          width: 50, // Set the width of the image
-                          height: 50, // Set the height of the image
-                          fit: BoxFit.cover, // Ensure the image covers the square area
+                  SizedBox(height: 10),
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: filteredArtists.length,
+                    itemBuilder: (context, index) {
+                      final artist = filteredArtists[index];
+                      return ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        leading: CircleAvatar(
+                          backgroundImage: AssetImage(
+                            allSongs.firstWhere(
+                                  (song) => song['artist'] == artist,
+                              orElse: () => {'artist_image': 'assets/defaultpic.jpg'},
+                            )['artist_image'],
+                          ),
+                          radius: 25,
                         ),
-                      ),
-                      title: Text(
-                        song['title'],
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      subtitle: Text(
-                        song['artist'],
-                        style: TextStyle(color: Colors.white54),
-                      ),
-                      trailing: IconButton(
-                        icon: Icon(Icons.add, color: Colors.white),
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (context) => Dialog(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10.0),
-                              ),
-                              child: Container(
-                                height: 350,
-                                width: 300,
-                                child: AddSong(), // Display the AddSong widget
+                        title: Text(
+                          artist,
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ArtistSongsPage(
+                                artist: artist,
+                                image: allSongs.firstWhere(
+                                      (song) => song['artist'] == artist,
+                                  orElse: () => {'artist_image': 'assets/defaultpic.jpg'},
+                                )['artist_image'],
+                                allSongs: allSongs,
                               ),
                             ),
                           );
                         },
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => SongPage(
-                              title: song['title'],
-                              artist: song['artist'],
-                              image: song['image'],
-                              file: song['file'],
-                              songs: allSongs, // Pass the list of all songs
-                              currentIndex: allSongs.indexOf(song), // Pass the current song index
-                            ),
+                      );
+                    },
+                  ),
+                  SizedBox(height: 16),
+                ],
+
+                // Songs Section
+                if (filteredSongs.isNotEmpty) ...[
+                  Text(
+                    "Songs",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: filteredSongs.length,
+                    itemBuilder: (context, index) {
+                      final song = filteredSongs[index];
+                      return ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        leading: ClipRRect(
+                          borderRadius: BorderRadius.zero,
+                          child: Image.asset(
+                            song['image'],
+                            width: 50,
+                            height: 50,
+                            fit: BoxFit.cover,
                           ),
-                        );
-                      },
-                    );
-                  },
-                ),
-                SizedBox(height: 16),
+                        ),
+                        title: Text(
+                          song['title'],
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        subtitle: Text(
+                          song['artist'],
+                          style: TextStyle(color: Colors.white54),
+                        ),
+                        trailing: IconButton(
+                          icon: Icon(Icons.add, color: Colors.white),
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) => Dialog(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
+                                child: Container(
+                                  height: 350,
+                                  width: 300,
+                                  child: AddSong(song: song),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => SongPage(
+                                title: song['title'],
+                                artist: song['artist'],
+                                image: song['image'],
+                                file: song['file'],
+                                songs: allSongs,
+                                currentIndex: allSongs.indexOf(song),
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  ),
+                  SizedBox(height: 16),
+                ],
               ] else ...[
                 // Initial UI with genres and categories
                 Text(
@@ -332,3 +395,4 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 }
+

@@ -1,27 +1,64 @@
 import 'package:flutter/material.dart';
-import 'create_playlist.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AddSong extends StatefulWidget {
+  final Map<String, dynamic> song;
+  AddSong({required this.song});
+
   @override
   _AddSongState createState() => _AddSongState();
 }
 
 class _AddSongState extends State<AddSong> {
-  List<Map<String, String>> _playlists = [
-    {'name': 'Study Hub', 'image': 'assets/playlist/playlist1.jpg', 'songs': '4 songs'},
-    {'name': 'On Repeat', 'image': 'assets/playlist/playlist2.jpg', 'songs': '2 songs'},
-    {'name': 'volume UPP', 'image': 'assets/playlist/playlist3.png', 'songs': '2 songs'},
-    {'name': 'carpool!!', 'image': 'assets/playlist/playlist4.jpg', 'songs': '3 songs'},
-    {'name': 'focus time', 'image': 'assets/playlist/playlist5.jpg', 'songs': '5 songs'},
-    {'name': 'stuck in January', 'image': 'assets/playlist/playlist6.jpg', 'songs': '6 songs'},
-  ];
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  List<Map<String, dynamic>> _playlists = [];
+  List<String> _selectedPlaylistIds = [];
+  bool _loading = true;
 
-  List<String> _selectedPlaylists = [];
+  @override
+  void initState() {
+    super.initState();
+    _fetchEligiblePlaylists();
+  }
 
-  void _addNewPlaylist(Map<String, String> newPlaylist) {
+  Future<void> _fetchEligiblePlaylists() async {
+    final userId = _auth.currentUser?.uid ?? '';
+    final songFile = widget.song['file'];
+    final snapshot = await _firestore
+        .collection('playlists')
+        .where('userId', isEqualTo: userId)
+        .get();
+
+    final eligible = snapshot.docs.where((doc) {
+      final data = doc.data() as Map<String, dynamic>;
+      final List<dynamic> songs = data['songs'] ?? [];
+      // Filter out playlists that already contain the song
+      return !songs.any((s) => s['file'] == songFile);
+    }).map((doc) {
+      final data = doc.data() as Map<String, dynamic>;
+      return {
+        'id': doc.id,
+        'name': data['name'] ?? 'Unnamed Playlist',
+        'image': data['imagePath'] ?? 'assets/defaultpic.jpg',
+        'songs': data['songs'] ?? [],
+      };
+    }).toList();
+
     setState(() {
-      _playlists.add(newPlaylist);
+      _playlists = eligible;
+      _loading = false;
     });
+  }
+
+  Future<void> _addSongToSelectedPlaylists() async {
+    for (final playlist in _playlists.where((p) => _selectedPlaylistIds.contains(p['id']))) {
+      await _firestore.collection('playlists').doc(playlist['id']).update({
+        'songs': FieldValue.arrayUnion([widget.song])
+      });
+    }
+    Navigator.pop(context, _selectedPlaylistIds);
   }
 
   @override
@@ -46,7 +83,9 @@ class _AddSongState extends State<AddSong> {
         ),
         centerTitle: true,
       ),
-      body: Container(
+      body: _loading
+          ? Center(child: CircularProgressIndicator())
+          : Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [Colors.grey[800]!, Colors.grey[600]!],
@@ -58,9 +97,15 @@ class _AddSongState extends State<AddSong> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // List of playlists with checkboxes
             Flexible(
-              child: SingleChildScrollView(
+              child: _playlists.isEmpty
+                  ? Center(
+                child: Text(
+                  'No eligible playlists found',
+                  style: TextStyle(color: Colors.white),
+                ),
+              )
+                  : SingleChildScrollView(
                 child: Column(
                   children: _playlists.map((playlist) {
                     return Padding(
@@ -68,7 +113,7 @@ class _AddSongState extends State<AddSong> {
                       child: Row(
                         children: [
                           Image.asset(
-                            playlist['image']!,
+                            playlist['image'],
                             width: 50,
                             height: 50,
                           ),
@@ -77,11 +122,11 @@ class _AddSongState extends State<AddSong> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                playlist['name']!,
+                                playlist['name'],
                                 style: TextStyle(color: Colors.white),
                               ),
                               Text(
-                                playlist['songs']!,
+                                '${(playlist['songs'] as List).length} songs',
                                 style: TextStyle(color: Colors.grey),
                               ),
                             ],
@@ -90,10 +135,10 @@ class _AddSongState extends State<AddSong> {
                           GestureDetector(
                             onTap: () {
                               setState(() {
-                                if (_selectedPlaylists.contains(playlist['name'])) {
-                                  _selectedPlaylists.remove(playlist['name']);
+                                if (_selectedPlaylistIds.contains(playlist['id'])) {
+                                  _selectedPlaylistIds.remove(playlist['id']);
                                 } else {
-                                  _selectedPlaylists.add(playlist['name']!);
+                                  _selectedPlaylistIds.add(playlist['id']);
                                 }
                               });
                             },
@@ -102,7 +147,7 @@ class _AddSongState extends State<AddSong> {
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(5),
                                 border: Border.all(
-                                  color: _selectedPlaylists.contains(playlist['name'])
+                                  color: _selectedPlaylistIds.contains(playlist['id'])
                                       ? Colors.black
                                       : Colors.white,
                                   width: 2,
@@ -110,7 +155,7 @@ class _AddSongState extends State<AddSong> {
                               ),
                               child: Padding(
                                 padding: const EdgeInsets.all(4.0),
-                                child: _selectedPlaylists.contains(playlist['name'])
+                                child: _selectedPlaylistIds.contains(playlist['id'])
                                     ? Container(
                                   width: 20,
                                   height: 20,
@@ -137,26 +182,20 @@ class _AddSongState extends State<AddSong> {
                 ),
               ),
             ),
-
-            // Done Button
             Align(
               alignment: Alignment.centerRight,
               child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context, _selectedPlaylists);
-                  print('Selected Playlists: $_selectedPlaylists');
-                },
+                onPressed: _selectedPlaylistIds.isEmpty ? null : _addSongToSelectedPlaylists,
                 child: Text('Done'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,  // White background
-                  foregroundColor: Colors.black,        // Black text color
+                  backgroundColor: Colors.white,
+                  foregroundColor: Colors.black,
                 ),
               ),
             ),
           ],
         ),
       ),
-
     );
   }
 }

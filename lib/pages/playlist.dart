@@ -4,8 +4,10 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:audioplayers/audioplayers.dart';  // Import the audioplayers package
+import 'package:audioplayers/audioplayers.dart'; // Import the audioplayers package
 import 'edit_playlist.dart';
+import 'artist_songs.dart';
+import 'song.dart';
 
 class PlaylistPage extends StatefulWidget {
   final String playlistName;
@@ -98,7 +100,8 @@ class _PlaylistPageState extends State<PlaylistPage> {
       });
     } else {
       await _audioPlayer.stop(); // Stop any currently playing song
-      await _audioPlayer.play(DeviceFileSource(audioFilePath)); // Play the new song
+      await _audioPlayer
+          .play(DeviceFileSource(audioFilePath)); // Play the new song
       setState(() {
         _currentlyPlayingIndex = index;
       });
@@ -107,7 +110,8 @@ class _PlaylistPageState extends State<PlaylistPage> {
 
   @override
   void dispose() {
-    _audioPlayer.dispose();  // Dispose of the audio player when the widget is disposed
+    _audioPlayer
+        .dispose(); // Dispose of the audio player when the widget is disposed
     super.dispose();
   }
 
@@ -202,27 +206,27 @@ class _PlaylistPageState extends State<PlaylistPage> {
               SizedBox(height: 10),
               playlistSongs.isNotEmpty
                   ? ListView.builder(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                itemCount: playlistSongs.length,
-                itemBuilder: (context, index) {
-                  var song = playlistSongs[index];
-                  bool isPlaying = _currentlyPlayingIndex == index;
-                  return _buildSongRow(
-                    index,
-                    song['title'],
-                    song['artist'],
-                    song['file'], // The file path to the audio
-                    isPlaying,
-                  );
-                },
-              )
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: playlistSongs.length,
+                      itemBuilder: (context, index) {
+                        var song = playlistSongs[index];
+                        bool isPlaying = _currentlyPlayingIndex == index;
+                        return _buildSongRow(
+                          index,
+                          song['title'],
+                          song['artist'],
+                          song['file'], // The file path to the audio
+                          isPlaying,
+                        );
+                      },
+                    )
                   : Center(
-                child: Text(
-                  'No songs in playlist',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
+                      child: Text(
+                        'No songs in playlist',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
             ],
           ),
         ),
@@ -230,50 +234,99 @@ class _PlaylistPageState extends State<PlaylistPage> {
     );
   }
 
-  Widget _buildSongRow(int index, String title, String artist, String audioFilePath, bool isPlaying) {
-    return Row(
-      children: [
-        Text('${index + 1}',
-            style: TextStyle(color: Colors.white, fontSize: 16)),
-        SizedBox(width: 30),
-        Expanded(
-          child: Text(title,
-              style: TextStyle(color: Colors.white, fontSize: 16)),
-        ),
-        SizedBox(width: 85),
-        Expanded(
-          child: Text(artist,
-              style: TextStyle(color: Colors.white, fontSize: 16)),
-        ),
-        IconButton(
-          icon: Icon(
-            isPlaying ? Icons.pause_circle_filled : Icons.play_circle_filled,
-            color: Colors.white,
-            size: 35,
-          ),
-          onPressed: () {
-            _playPause(index, audioFilePath);
-          },
-        ),
-        PopupMenuButton<String>(
-          icon: Icon(Icons.more_vert, color: Colors.white),
-          onSelected: (String choice) {
-            if (choice == 'delete') {
-              _removeSongFromPlaylist(index);
-            }
-          },
-          color: Colors.black,
-          itemBuilder: (BuildContext context) => [
-            PopupMenuItem<String>(
-              value: 'delete',
-              child: Text(
-                'Delete',
-                style: TextStyle(color: Colors.white),
+  Widget _buildSongRow(int index, String title, String artist,
+      String audioFilePath, bool isPlaying) {
+
+    final song = allSongs.firstWhere(
+          (s) => s['title'] == title && s['artist'] == artist,
+      orElse: () => {},
+    );
+
+    final artistImage = allSongs.firstWhere(
+          (song) => song['artist'].toLowerCase() == artist.toLowerCase(),
+      orElse: () => {'artist_image': 'assets/defaultpic.jpg'},
+    )['artist_image'];
+
+    return GestureDetector(
+      onTap: () {
+        if (song.isNotEmpty) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => SongPage(
+                title: song['title'],
+                artist: song['artist'],
+                image: song['image'],
+                file: song['file'],
+                songs: playlistSongs.cast<Map<String, dynamic>>(),
+                currentIndex: index,
               ),
             ),
-          ],
-        )
-      ],
+          );
+        }
+      },
+      child: Row(
+        children: [
+          Text('${index + 1}', style: TextStyle(color: Colors.white, fontSize: 16)),
+          SizedBox(width: 30),
+          Expanded(
+            child: Text(title, style: TextStyle(color: Colors.white, fontSize: 16)),
+          ),
+          SizedBox(width: 85),
+          Expanded(
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ArtistSongsPage(
+                      artist: artist,
+                      image: artistImage,
+                      allSongs: allSongs,
+                    ),
+                  ),
+                );
+              },
+              child: Text(
+                artist,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  decoration: TextDecoration.underline,
+                ),
+              ),
+            ),
+          ),
+          IconButton(
+            icon: Icon(
+              isPlaying ? Icons.pause_circle_filled : Icons.play_circle_filled,
+              color: Colors.white,
+              size: 35,
+            ),
+            onPressed: () {
+              _playPause(index, audioFilePath);
+            },
+          ),
+          PopupMenuButton<String>(
+            icon: Icon(Icons.more_vert, color: Colors.white),
+            onSelected: (String choice) {
+              if (choice == 'delete') {
+                _removeSongFromPlaylist(index);
+              }
+            },
+            color: Colors.black,
+            itemBuilder: (BuildContext context) => [
+              PopupMenuItem<String>(
+                value: 'delete',
+                child: Text(
+                  'Delete',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
@@ -312,12 +365,12 @@ class _PlaylistPageState extends State<PlaylistPage> {
                       setModalState(() {
                         searchResults = allSongs
                             .where((song) =>
-                        song['title']
-                            .toLowerCase()
-                            .contains(query.toLowerCase()) ||
-                            song['artist']
-                                .toLowerCase()
-                                .contains(query.toLowerCase()))
+                                song['title']
+                                    .toLowerCase()
+                                    .contains(query.toLowerCase()) ||
+                                song['artist']
+                                    .toLowerCase()
+                                    .contains(query.toLowerCase()))
                             .toList();
                       });
                     },
@@ -341,8 +394,10 @@ class _PlaylistPageState extends State<PlaylistPage> {
                       itemBuilder: (context, index) {
                         final song = searchResults[index];
                         return ListTile(
-                          title: Text(song['title'], style: TextStyle(color: Colors.white)),
-                          subtitle: Text(song['artist'], style: TextStyle(color: Colors.white60)),
+                          title: Text(song['title'],
+                              style: TextStyle(color: Colors.white)),
+                          subtitle: Text(song['artist'],
+                              style: TextStyle(color: Colors.white60)),
                           onTap: () async {
                             await _addSongToPlaylist(song);
                             Navigator.pop(context);
@@ -361,106 +416,60 @@ class _PlaylistPageState extends State<PlaylistPage> {
   }
 
   // Show Edit Playlist dialog
-  void _showEditPlaylistDialog() {
-    TextEditingController nameController = TextEditingController(text: _updatedPlaylistName);
-    File? selectedImage;
-    String updatedImage = widget.playlistImage;
-
-    showDialog(
+  void _showEditPlaylistDialog() async {
+    final result = await showDialog<Map<String, String>>(
       context: context,
       builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return Dialog(
-              backgroundColor: Color(0xFF121212),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Container(
-                padding: EdgeInsets.all(20),
-                constraints: BoxConstraints(maxHeight: 500),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    TextField(
-                      controller: nameController,
-                      style: TextStyle(color: Colors.white),
-                      decoration: InputDecoration(
-                        labelText: "Playlist Name",
-                        labelStyle: TextStyle(color: Colors.white70),
-                        filled: true,
-                        fillColor: Color(0xFF2A2A2A),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    GestureDetector(
-                      onTap: () async {
-                        final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
-                        if (pickedFile != null) {
-                          final newPath = 'assets/playlist_cover/${pickedFile.name}';
-                          final newFile = File(newPath);
-
-                          await File(pickedFile.path).copy(newFile.path);
-
-                          setState(() {
-                            selectedImage = newFile;
-                            updatedImage = newPath;
-                          });
-                        }
-                      },
-                      child: Container(
-                        height: 150,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[700],
-                          borderRadius: BorderRadius.circular(10),
-                          image: DecorationImage(
-                            image: selectedImage != null
-                                ? FileImage(selectedImage!)
-                                : widget.playlistImage.startsWith('/')
-                                ? FileImage(File(widget.playlistImage))
-                                : AssetImage(widget.playlistImage) as ImageProvider,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        child: selectedImage == null
-                            ? Center(
-                          child: Text(
-                            "Tap to change cover image",
-                            style: TextStyle(color: Colors.white70),
-                          ),
-                        )
-                            : null,
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          _updatedPlaylistName = nameController.text;
-                        });
-                        Navigator.pop(context);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      child: Text("Save Changes",
-                        style: TextStyle(color: Colors.black),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16.0),
+          ),
+          child: Container(
+            width: MediaQuery.of(context).size.width * 0.8,
+            height: MediaQuery.of(context).size.height * 0.53,
+            child: EditPlaylist(
+              initialName: _updatedPlaylistName ?? widget.playlistName,
+              initialImagePath: widget.playlistImage,
+              playlistId: playlistId!, // Assuming playlistId is not null here
+            ),
+          ),
         );
       },
     );
+
+    // Process the result from the EditPlaylist screen
+    if (result != null) {
+      String? newName = result['name'];
+      String? newImagePath = result['imagePath'];
+
+      if (newName != null || newImagePath != null) {
+        try {
+          Map<String, dynamic> updateData = {};
+          if (newName != null) {
+            updateData['name'] = newName;
+            setState(() {
+              _updatedPlaylistName = newName;
+            });
+          }
+          if (newImagePath != null && newImagePath != widget.playlistImage) {
+            updateData['imagePath'] = newImagePath;
+          }
+
+          if (updateData.isNotEmpty && playlistId != null) {
+            await _firestore
+                .collection('playlists')
+                .doc(playlistId)
+                .update(updateData);
+            // Optionally, you might want to refresh the playlist data here
+            // _loadPlaylistFromFirestore();
+          }
+        } catch (e) {
+          print("Error updating playlist: $e");
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to update playlist')),
+          );
+        }
+      }
+    }
   }
 }

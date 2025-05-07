@@ -141,7 +141,7 @@ class _ArtistSongsPageState extends State<ArtistSongsPage> {
                                 child: Container(
                                   height: 350,
                                   width: 300,
-                                  child: AddSong(), // Display the AddSong widget
+                                  child: AddSong(song: song), // Display the AddSong widget
                                 ),
                               ),
                             );

@@ -23,6 +23,38 @@ class _LibraryPageState extends State<LibraryPage> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   bool _isLoadingPlaylists = false;
 
+  List<String> _getArtistsFromPlaylists() {
+    final Set<String> artistSet = {};
+    for (var playlist in _playlists) {
+      final List<dynamic> songs = playlist['songs'] ?? [];
+      for (var song in songs) {
+        if (song['artist'] != null) {
+          artistSet.add(song['artist'] as String);
+        }
+      }
+    }
+    final artists = artistSet.toList();
+    artists.sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+    return artists;
+  }
+
+  List<Map<String, dynamic>> _getSongsFromPlaylists() {
+    final Map<String, Map<String, dynamic>> uniqueSongs = {};
+    for (var playlist in _playlists) {
+      final List<dynamic> songs = playlist['songs'] ?? [];
+      for (var song in songs) {
+        // Use the file path as a unique key
+        if (song['file'] != null) {
+          uniqueSongs[song['file']] = Map<String, dynamic>.from(song);
+        }
+      }
+    }
+    // Sort by title
+    final songsList = uniqueSongs.values.toList();
+    songsList.sort((a, b) => a['title'].toLowerCase().compareTo(b['title'].toLowerCase()));
+    return songsList;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -184,10 +216,10 @@ class _LibraryPageState extends State<LibraryPage> {
               ),
               SizedBox(height: 20),
               if (_selectedCategory == 'Songs') ...[
-                _buildSongList(),
+                _buildSongList(_getSongsFromPlaylists()),
               ],
               if (_selectedCategory == 'Artists') ...[
-                ..._getUniqueArtists()
+                ..._getArtistsFromPlaylists()
                     .map((artist) => _buildArtistItem(artist))
                     .toList(),
               ],
@@ -239,16 +271,13 @@ class _LibraryPageState extends State<LibraryPage> {
     );
   }
 
-  Widget _buildSongList() {
+  Widget _buildSongList(List<Map<String, dynamic>> songs) {
     Map<String, List<Map<String, dynamic>>> groupedSongs = {};
-
-    for (var song in _songs) {
+    for (var song in songs) {
       String firstLetter = song['title'][0].toUpperCase();
-
       if (!groupedSongs.containsKey(firstLetter)) {
         groupedSongs[firstLetter] = [];
       }
-
       groupedSongs[firstLetter]!.add(song);
     }
 
@@ -380,6 +409,7 @@ class _LibraryPageState extends State<LibraryPage> {
   }
 
   Widget _buildPlaylistItem(Map<String, dynamic> playlist) {
+    final songCount = (playlist['songs'] as List?)?.length ?? 0;
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -391,8 +421,6 @@ class _LibraryPageState extends State<LibraryPage> {
             ),
           ),
         ).then((_) {
-          // Refresh playlists when returning from the playlist page
-
           _loadUserPlaylists();
         });
       },
@@ -402,7 +430,7 @@ class _LibraryPageState extends State<LibraryPage> {
           children: [
             _buildRecentlyPlayedItem(
               playlist['name'] ?? 'Unknown Playlist',
-              'Playlist',
+              '$songCount songs', // <-- Show song count here
               playlist['image'] ?? 'assets/defaultpic.jpg',
             ),
             Spacer(),
@@ -420,8 +448,11 @@ class _LibraryPageState extends State<LibraryPage> {
                         child: Container(
                           width: MediaQuery.of(context).size.width * 0.8,
                           height: MediaQuery.of(context).size.height * 0.53,
-                          child:
-                              EditPlaylist(initialName: playlist['name'] ?? ''),
+                          child: EditPlaylist(
+                            initialName: playlist['name'] ?? '',
+                            initialImagePath: playlist['image'],
+                            playlistId: playlist['id'],
+                          ),
                         ),
                       );
                     },

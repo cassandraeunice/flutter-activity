@@ -1,11 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart';
+import 'package:flutter/foundation.dart';
 
 class EditPlaylist extends StatefulWidget {
   final String initialName;
+  final String? initialImagePath;
+  final String playlistId;
 
-  EditPlaylist({required this.initialName});
+  EditPlaylist({
+    required this.initialName,
+    this.initialImagePath,
+    required this.playlistId,
+  });
 
   @override
   _EditPlaylistState createState() => _EditPlaylistState();
@@ -14,9 +25,12 @@ class EditPlaylist extends StatefulWidget {
 class _EditPlaylistState extends State<EditPlaylist> {
   late TextEditingController _playlistController;
   final List<String> _errors = [];
-  File? _selectedImage;
+  XFile? _pickedFile;
+  bool _isSaving = false;
 
   final ImagePicker _picker = ImagePicker();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   @override
   void initState() {
@@ -34,21 +48,74 @@ class _EditPlaylistState extends State<EditPlaylist> {
   }
 
   Future<void> _pickImage() async {
-    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      setState(() {
-        _selectedImage = File(pickedFile.path);
-      });
+    final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    setState(() {
+      _pickedFile = pickedFile;
+    });
+  }
+
+  Future<String?> _saveImageLocally(XFile pickedFile, String playlistId) async {
+    if (kIsWeb) {
+      print("Saving locally is not supported on web.");
+      return null;
+    }
+
+    try {
+      final Directory appDocDir = await getApplicationDocumentsDirectory();
+      final Directory playlistPicturesDir = Directory(path.join(appDocDir.parent.path, 'playlist_pictures'));
+
+      if (!await playlistPicturesDir.exists()) {
+        await playlistPicturesDir.create(recursive: true);
+      }
+
+      final String fileName = 'playlist_cover_${playlistId}_${DateTime.now().millisecondsSinceEpoch}.png';
+      final String savedPath = path.join(playlistPicturesDir.path, fileName);
+
+      final File imageFile = File(pickedFile.path);
+      await imageFile.copy(savedPath);
+
+      return savedPath;
+    } catch (e) {
+      print("Error saving image locally: $e");
+      return null;
     }
   }
 
-  void _onSavePressed() {
+  Future<void> _onSavePressed() async {
     _validateInput();
     if (_errors.isEmpty) {
-      Navigator.pop(context, {
-        'name': _playlistController.text,
-        'imagePath': _selectedImage?.path,
+      setState(() {
+        _isSaving = true;
       });
+
+      try {
+        String? localImagePath;
+
+        if (!kIsWeb && _pickedFile != null) {
+          localImagePath = await _saveImageLocally(_pickedFile!, widget.playlistId);
+        }
+
+        String finalImagePath = localImagePath ?? widget.initialImagePath ?? 'assets/defaultpic.jpg';
+
+        await _firestore.collection('playlists').doc(widget.playlistId).update({
+          'name': _playlistController.text,
+          'imagePath': finalImagePath,
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+
+        Navigator.pop(context, {
+          'name': _playlistController.text,
+          'imagePath': finalImagePath,
+        });
+      } catch (e) {
+        setState(() {
+          _errors.add("Error saving changes: ${e.toString()}");
+        });
+      } finally {
+        setState(() {
+          _isSaving = false;
+        });
+      }
     }
   }
 
@@ -115,13 +182,19 @@ class _EditPlaylistState extends State<EditPlaylist> {
                   color: Colors.grey[700],
                   borderRadius: BorderRadius.circular(5),
                   image: DecorationImage(
-                    image: _selectedImage != null
-                        ? FileImage(_selectedImage!)
-                        : AssetImage('assets/defaultpic.jpg') as ImageProvider,
+                    image: _pickedFile != null
+                        ? (kIsWeb
+                        ? NetworkImage(_pickedFile!.path)
+                        : FileImage(File(_pickedFile!.path))) as ImageProvider
+                        : (widget.initialImagePath != null
+                        ? (widget.initialImagePath!.startsWith('assets/')
+                        ? AssetImage(widget.initialImagePath!)
+                        : FileImage(File(widget.initialImagePath!)))
+                        : AssetImage('assets/defaultpic.jpg')) as ImageProvider,
                     fit: BoxFit.cover,
                   ),
                 ),
-                child: _selectedImage == null
+                child: _pickedFile == null && widget.initialImagePath == null
                     ? Center(
                   child: Text(
                     "Tap to upload cover image",
@@ -158,13 +231,15 @@ class _EditPlaylistState extends State<EditPlaylist> {
             SizedBox(height: 10),
             Center(
               child: ElevatedButton(
-                onPressed: _onSavePressed,
+                onPressed: _isSaving ? null : _onSavePressed,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
                   minimumSize: Size(200, 50),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                 ),
-                child: Text(
+                child: _isSaving
+                    ? CircularProgressIndicator(color: Colors.black)
+                    : Text(
                   'Save',
                   style: TextStyle(
                     fontSize: 18,

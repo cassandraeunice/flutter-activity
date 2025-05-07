@@ -150,7 +150,12 @@ class _SongPageState extends State<SongPage> {
           child: Container(
             height: 350,
             width: 300,
-            child: AddSong(), // Use AddSong screen here
+            child: AddSong(song: {
+              'title': widget.title,
+              'artist': widget.artist,
+              'image': widget.image,
+              'file': widget.file,
+            }), // Use AddSong screen here
           ),
         );
       },
