@@ -274,9 +274,8 @@ class _SongPageState extends State<SongPage> {
             onTap: () {
               // Expand the song page or navigate to full player
             },
-            onNext: () {
-              // Handle next song logic
-            },
+            onNext: _nextTrack, // Connect to the _nextTrack method
+            onPrevious: _prevTrack, // Connect to the _prevTrack method
           ),
         ],
       ),
