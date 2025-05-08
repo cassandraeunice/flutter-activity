@@ -429,8 +429,8 @@ class _PlaylistPageState extends State<PlaylistPage> {
             borderRadius: BorderRadius.circular(16.0),
           ),
           child: Container(
-            width: MediaQuery.of(context).size.width * 0.8,
-            height: MediaQuery.of(context).size.height * 0.53,
+            width: MediaQuery.of(context).size.width * 0.30,
+            height: MediaQuery.of(context).size.height * 0.40,
             child: EditPlaylist(
               initialName: _updatedPlaylistName ?? widget.playlistName,
               initialImagePath: widget.playlistImage,

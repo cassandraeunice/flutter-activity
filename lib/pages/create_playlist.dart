@@ -170,34 +170,34 @@ class _CreatePlaylistState extends State<CreatePlaylist> {
                 ),
               ),
             ),
-            SizedBox(height: 10),
-            GestureDetector(
-              onTap: _pickImage,
-              child: Container(
-                height: MediaQuery.of(context).size.height * 0.2,
-                width: MediaQuery.of(context).size.width * 0.8,
-                decoration: BoxDecoration(
-                  color: Colors.grey[700],
-                  borderRadius: BorderRadius.circular(5),
-                  image: _pickedFile != null
-                      ? DecorationImage(
-                    fit: BoxFit.cover,
-                    image: kIsWeb
-                        ? NetworkImage(_pickedFile!.path) // Display blob for web preview
-                        : FileImage(File(_pickedFile!.path)), // Display local file for mobile preview
-                  )
-                      : null,
-                ),
-                child: _pickedFile == null
-                    ? Center(
-                  child: Text(
-                    "Tap to upload cover image",
-                    style: TextStyle(color: Colors.white70),
-                  ),
-                )
-                    : null,
-              ),
-            ),
+            // SizedBox(height: 10),
+            // GestureDetector(
+            //   onTap: _pickImage,
+            //   child: Container(
+            //     height: MediaQuery.of(context).size.height * 0.2,
+            //     width: MediaQuery.of(context).size.width * 0.8,
+            //     decoration: BoxDecoration(
+            //       color: Colors.grey[700],
+            //       borderRadius: BorderRadius.circular(5),
+            //       image: _pickedFile != null
+            //           ? DecorationImage(
+            //         fit: BoxFit.cover,
+            //         image: kIsWeb
+            //             ? NetworkImage(_pickedFile!.path) // Display blob for web preview
+            //             : FileImage(File(_pickedFile!.path)), // Display local file for mobile preview
+            //       )
+            //           : null,
+            //     ),
+            //     child: _pickedFile == null
+            //         ? Center(
+            //       child: Text(
+            //         "Tap to upload cover image",
+            //         style: TextStyle(color: Colors.white70),
+            //       ),
+            //     )
+            //         : null,
+            //   ),
+            // ),
             SizedBox(height: 5),
             if (_errors.isNotEmpty)
               Column(
