@@ -140,112 +140,139 @@ class _CreatePlaylistState extends State<CreatePlaylist> {
         centerTitle: true,
       ),
       body: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.grey[800]!, Colors.grey[600]!],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.grey[800]!, Colors.grey[600]!],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
-          padding: EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              TextField(
-                controller: _playlistController,
-                style: TextStyle(color: Colors.white),
-                maxLength: 50,
-                decoration: InputDecoration(
-                  labelText: "Playlist Name",
-                  labelStyle: TextStyle(color: Colors.white70),
-                  filled: true,
-                  fillColor: Color(0xFF777777),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(5),
-                    borderSide: BorderSide.none,
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xFF777777)),
-                    borderRadius: BorderRadius.circular(5),
-                  ),
+        ),
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            TextField(
+              controller: _playlistController,
+              style: TextStyle(color: Colors.white),
+              maxLength: 50,
+              decoration: InputDecoration(
+                labelText: "Playlist Name",
+                labelStyle: TextStyle(color: Colors.white70),
+                filled: true,
+                fillColor: Color(0xFF777777),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(5),
+                  borderSide: BorderSide.none,
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Color(0xFF777777)),
+                  borderRadius: BorderRadius.circular(5),
                 ),
               ),
-              SizedBox(height: 10),
-              GestureDetector(
-                onTap: _pickImage,
-                child: Container(
-                  height: MediaQuery.of(context).size.height * 0.2,
-                  width: MediaQuery.of(context).size.width * 0.8,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[700],
-                    borderRadius: BorderRadius.circular(5),
-                    image: _pickedFile != null
-                        ? DecorationImage(
-                      fit: BoxFit.cover,
-                      image: kIsWeb
-                          ? NetworkImage(_pickedFile!.path) // Display blob for web preview
-                          : FileImage(File(_pickedFile!.path)), // Display local file for mobile preview
-                    )
-                        : null,
-                  ),
-                  child: _pickedFile == null
-                      ? Center(
-                    child: Text(
-                      "Tap to upload cover image",
-                      style: TextStyle(color: Colors.white70),
-                    ),
+            ),
+            SizedBox(height: 10),
+            GestureDetector(
+              onTap: _pickImage,
+              child: Container(
+                height: MediaQuery.of(context).size.height * 0.2,
+                width: MediaQuery.of(context).size.width * 0.8,
+                decoration: BoxDecoration(
+                  color: Colors.grey[700],
+                  borderRadius: BorderRadius.circular(5),
+                  image: _pickedFile != null
+                      ? DecorationImage(
+                    fit: BoxFit.cover,
+                    image: kIsWeb
+                        ? NetworkImage(_pickedFile!.path) // Display blob for web preview
+                        : FileImage(File(_pickedFile!.path)), // Display local file for mobile preview
                   )
                       : null,
                 ),
+                child: _pickedFile == null
+                    ? Center(
+                  child: Text(
+                    "Tap to upload cover image",
+                    style: TextStyle(color: Colors.white70),
+                  ),
+                )
+                    : null,
               ),
-              SizedBox(height: 5),
-              if (_errors.isNotEmpty)
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: _errors.map((error) {
-                    return Padding(
-                      padding: const EdgeInsets.only(left: 10, top: 2),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Icon(Icons.error_outline, color: Colors.red, size: 16),
-                          SizedBox(width: 5),
-                          Expanded(
-                            child: Text(
-                              error,
-                              style: TextStyle(color: Colors.red, fontSize: 14),
-                              softWrap: true,
-                            ),
+            ),
+            SizedBox(height: 5),
+            if (_errors.isNotEmpty)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: _errors.map((error) {
+                  return Padding(
+                    padding: const EdgeInsets.only(left: 10, top: 2),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(Icons.error_outline, color: Colors.red, size: 16),
+                        SizedBox(width: 5),
+                        Expanded(
+                          child: Text(
+                            error,
+                            style: TextStyle(color: Colors.red, fontSize: 14),
+                            softWrap: true,
                           ),
-                        ],
-                      ),
-                    );
-                  }).toList(),
-                ),
-              SizedBox(height: 10),
-              Center(
-                child: ElevatedButton(
-                  onPressed: _isCreating ? null : _createPlaylist,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    minimumSize: Size(200, 50),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30)),
-                  ),
-                  child: _isCreating
-                      ? CircularProgressIndicator(color: Colors.black)
-                      : Text(
-                    'Create',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
+                        ),
+                      ],
                     ),
-                  ),
+                  );
+                }).toList(),
+              ),
+          ],
+        ),
+      ),
+        bottomNavigationBar: Container(
+          color: Colors.transparent,
+          padding: const EdgeInsets.all(16.0),
+          child: ElevatedButton(
+            onPressed: _isCreating ? null : _createPlaylist,
+            style: ButtonStyle(
+              backgroundColor: WidgetStateProperty.resolveWith<Color>(
+                    (states) {
+                  if (states.contains(WidgetState.disabled)) {
+                    return Colors.white.withOpacity(0.6);
+                  }
+                  return Colors.white;
+                },
+              ),
+              foregroundColor: WidgetStateProperty.resolveWith<Color>(
+                    (states) {
+                  if (states.contains(WidgetState.disabled)) {
+                    return Colors.black.withOpacity(0.4);
+                  }
+                  return Colors.black;
+                },
+              ),
+              elevation: WidgetStateProperty.all(6),
+              shape: WidgetStateProperty.all(
+                RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                  side: BorderSide(color: Colors.black12),
                 ),
               ),
-            ],
-          )),
+              padding: WidgetStateProperty.all(
+                EdgeInsets.symmetric(vertical: 16),
+              ),
+              textStyle: WidgetStateProperty.all(
+                TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+            ),
+            child: _isCreating
+                ? CircularProgressIndicator(color: Colors.black)
+                : Text(
+              'Create',
+              style: TextStyle(
+                fontSize: 18,
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        )
     );
   }
 }

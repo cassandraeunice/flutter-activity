@@ -229,27 +229,55 @@ class _EditPlaylistState extends State<EditPlaylist> {
                 }).toList(),
               ),
             SizedBox(height: 10),
-            Center(
-              child: ElevatedButton(
-                onPressed: _isSaving ? null : _onSavePressed,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  minimumSize: Size(200, 50),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                ),
-                child: _isSaving
-                    ? CircularProgressIndicator(color: Colors.black)
-                    : Text(
-                  'Save',
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+          ],
+        ),
+      ),
+      bottomNavigationBar: Container(
+        color: Colors.transparent,
+        padding: const EdgeInsets.all(16.0),
+        child: ElevatedButton(
+          onPressed: _isSaving ? null : _onSavePressed,
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                  (states) {
+                if (states.contains(MaterialState.disabled)) {
+                  return Colors.white.withOpacity(0.6); // ~60% opacity when disabled
+                }
+                return Colors.white;
+              },
+            ),
+            foregroundColor: MaterialStateProperty.resolveWith<Color>(
+                  (states) {
+                if (states.contains(MaterialState.disabled)) {
+                  return Colors.black.withOpacity(0.4); // ~40% opacity when disabled
+                }
+                return Colors.black;
+              },
+            ),
+            elevation: MaterialStateProperty.all(6),
+            shape: MaterialStateProperty.all(
+              RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30),
+                side: BorderSide(color: Colors.black12),
               ),
             ),
-          ],
+            padding: MaterialStateProperty.all(
+              EdgeInsets.symmetric(vertical: 16),
+            ),
+            textStyle: MaterialStateProperty.all(
+              TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+          ),
+          child: _isSaving
+              ? CircularProgressIndicator(color: Colors.black)
+              : Text(
+            'Save',
+            style: TextStyle(
+              fontSize: 18,
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
       ),
     );
