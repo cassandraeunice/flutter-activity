@@ -422,5 +422,93 @@
     "file": "assets/songs/When I Was Your Man.mp3",
     "image": "assets/song_pictures/When I Was Your Man.jpg",
     "artist_image": "assets/artist_pictures/bruno mars.jpg"
+  },
+  {
+    "song_id": 54,
+    "title": "Judas",
+    "artist": "Lady Gaga",
+    "file": "assets/songs/Judas.mp3",
+    "image": "assets/song_pictures/Judas.jpg",
+    "artist_image": "assets/artist_pictures/lady gaga.png"
+  },
+  {
+    "song_id": 55,
+    "title": "like JENNIE",
+    "artist": "JENNIE",
+    "file": "assets/songs/like JENNIE.mp3",
+    "image": "assets/song_pictures/like JENNIE.jpg",
+    "artist_image": "assets/artist_pictures/jennie.jpg"
+  },
+  {
+    "song_id": 56,
+    "title": "BIRDS OF A FEATHER",
+    "artist": "Billie Eilish",
+    "file": "assets/songs/BIRDS OF A FEATHER.mp3",
+    "image": "assets/song_pictures/BIRDS OF A FEATHER.jpg",
+    "artist_image": "assets/artist_pictures/billie eilish.jpeg"
+  },
+  {
+    "song_id": 57,
+    "title": "Habang Buhay",
+    "artist": "Zack Tabudlo",
+    "file": "assets/songs/Habang Buhay.mp3",
+    "image": "assets/song_pictures/Habang Buhay.jpg",
+    "artist_image": "assets/artist_pictures/zack tabudlo.jpg"
+  },
+  {
+    "song_id": 58,
+    "title": "Dilaw",
+    "artist": "Maki",
+    "file": "assets/songs/Dilaw.mp3",
+    "image": "assets/song_pictures/Dilaw.jpg",
+    "artist_image": "assets/artist_pictures/maki.jpg"
+  },
+  {
+    "song_id": 59,
+    "title": "Beer",
+    "artist": "The Itchyworms",
+    "file": "assets/songs/Beer.mp3",
+    "image": "assets/song_pictures/Beer.jpg",
+    "artist_image": "assets/artist_pictures/the itchyworms.jpg"
+  },
+  {
+    "song_id": 60,
+    "title": "ERE",
+    "artist": "Juan Karlos",
+    "file": "assets/songs/ERE.mp3",
+    "image": "assets/song_pictures/ERE.jpg",
+    "artist_image": "assets/artist_pictures/juan karlos.jpg"
+  },
+  {
+    "song_id": 61,
+    "title": "Marilag",
+    "artist": "Dionela",
+    "file": "assets/songs/Marilag.mp3",
+    "image": "assets/song_pictures/Marilag.jpg",
+    "artist_image": "assets/artist_pictures/dionela.jpg"
+  },
+  {
+    "song_id": 62,
+    "title": "Not Like Us",
+    "artist": "Kendrick Lamar",
+    "file": "assets/songs/Not Like Us.mp3",
+    "image": "assets/song_pictures/Not Like Us.jpg",
+    "artist_image": "assets/artist_pictures/kendrick lamar.jpg"
+  },
+  {
+    "song_id": 63,
+    "title": "Dark Thoughts",
+    "artist": "Lil Tecca",
+    "file": "assets/songs/Dark Thoughts.mp3",
+    "image": "assets/song_pictures/Dark Thoughts.jpg",
+    "artist_image": "assets/artist_pictures/lil tecca.jpg"
+  },
+  {
+    "song_id": 64,
+    "title": "tv off",
+    "artist": "Kendrick Lamar",
+    "file": "assets/songs/tv off.mp3",
+    "image": "assets/song_pictures/tv off.jpg",
+    "artist_image": "assets/artist_pictures/kendrick lamar.jpg"
   }
 ]

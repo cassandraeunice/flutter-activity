@@ -12,8 +12,13 @@ import 'song.dart';
 class PlaylistPage extends StatefulWidget {
   final String playlistName;
   final String playlistImage;
+  final List<int>? songIds;
 
-  PlaylistPage({required this.playlistName, required this.playlistImage});
+  PlaylistPage({
+    required this.playlistName,
+    required this.playlistImage,
+    this.songIds,
+  });
 
   @override
   _PlaylistPageState createState() => _PlaylistPageState();
@@ -26,7 +31,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
   String? _updatedPlaylistName;
   String? playlistId;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final AudioPlayer _audioPlayer = AudioPlayer(); // AudioPlayer instance
+  final AudioPlayer _audioPlayer = AudioPlayer();
 
   @override
   void initState() {
@@ -34,6 +39,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
     _updatedPlaylistName = widget.playlistName;
     _loadSongs();
     _loadPlaylistFromFirestore();
+    _updateLastPlayed();
   }
 
   Future<void> _loadSongs() async {
@@ -41,7 +47,20 @@ class _PlaylistPageState extends State<PlaylistPage> {
     final List<dynamic> data = json.decode(response);
     setState(() {
       allSongs = List<Map<String, dynamic>>.from(data);
+      if (widget.songIds != null) {
+        playlistSongs = allSongs
+            .where((song) => widget.songIds!.contains(song['song_id']))
+            .toList();
+      }
     });
+  }
+
+  Future<void> _updateLastPlayed() async {
+    if (playlistId != null) {
+      await _firestore.collection('playlists').doc(playlistId).update({
+        'lastPlayed': FieldValue.serverTimestamp(),
+      });
+    }
   }
 
   Future<void> _loadPlaylistFromFirestore() async {
@@ -76,6 +95,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
 
     await _firestore.collection('playlists').doc(playlistId).update({
       'songs': playlistSongs,
+      'lastPlayed': FieldValue.serverTimestamp(), // Update lastPlayed
     });
   }
 
@@ -99,12 +119,17 @@ class _PlaylistPageState extends State<PlaylistPage> {
         _currentlyPlayingIndex = null;
       });
     } else {
-      await _audioPlayer.stop(); // Stop any currently playing song
-      await _audioPlayer
-          .play(DeviceFileSource(audioFilePath)); // Play the new song
+      await _audioPlayer.stop();
+      await _audioPlayer.play(DeviceFileSource(audioFilePath));
       setState(() {
         _currentlyPlayingIndex = index;
       });
+      // Update lastPlayed when a song is played
+      if (playlistId != null) {
+        await _firestore.collection('playlists').doc(playlistId).update({
+          'lastPlayed': FieldValue.serverTimestamp(),
+        });
+      }
     }
   }
 
@@ -151,7 +176,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
               ),
               SizedBox(height: 30),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Expanded(
                     child: Text(
@@ -161,22 +186,26 @@ class _PlaylistPageState extends State<PlaylistPage> {
                         fontSize: 33,
                         fontWeight: FontWeight.bold,
                       ),
-                      maxLines: 2, // Allow up to 2 lines
+                      maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
                   Row(
                     children: [
-                      IconButton(
-                        icon: Icon(Icons.add, color: Colors.white, size: 25),
-                        tooltip: 'Add Song',
-                        onPressed: _showAddSongDialog,
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.edit, color: Colors.white, size: 20),
-                        tooltip: 'Edit Playlist',
-                        onPressed: _showEditPlaylistDialog,
-                      ),
+                      if (widget.songIds ==
+                          null) // Only show for user-created playlists
+                        IconButton(
+                          icon: Icon(Icons.add, color: Colors.white, size: 25),
+                          tooltip: 'Add Song',
+                          onPressed: _showAddSongDialog,
+                        ),
+                      if (widget.songIds ==
+                          null) // Only show for user-created playlists
+                        IconButton(
+                          icon: Icon(Icons.edit, color: Colors.white, size: 20),
+                          tooltip: 'Edit Playlist',
+                          onPressed: _showEditPlaylistDialog,
+                        ),
                     ],
                   ),
                 ],
@@ -184,27 +213,42 @@ class _PlaylistPageState extends State<PlaylistPage> {
               SizedBox(height: 20),
               Row(
                 children: [
-                  Text('#',
+                  SizedBox(
+                    width: 30,
+                    child: Text(
+                      '#',
                       style: TextStyle(
-                          color: Color(0xFFB3B3B3),
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold)),
-                  SizedBox(width: 30),
-                  Expanded(
-                    child: Text('Title',
-                        style: TextStyle(
-                            color: Color(0xFFB3B3B3),
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold)),
+                        color: Color(0xFFB3B3B3),
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
-                  SizedBox(width: 0),
-                  Expanded(
-                    child: Text('Artist',
-                        style: TextStyle(
-                            color: Color(0xFFB3B3B3),
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold)),
+                  SizedBox(
+                    width: 140,
+                    child: Text(
+                      'Title',
+                      style: TextStyle(
+                        color: Color(0xFFB3B3B3),
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
+                  SizedBox(
+                    width: 120,
+                    child: Text(
+                      'Artist',
+                      style: TextStyle(
+                        color: Color(0xFFB3B3B3),
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  SizedBox(width: 50), // For play button
                 ],
               ),
               SizedBox(height: 10),
@@ -226,9 +270,13 @@ class _PlaylistPageState extends State<PlaylistPage> {
                       },
                     )
                   : Center(
-                      child: Text(
-                        'No songs in playlist',
-                        style: TextStyle(color: Colors.white),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 40.0),
+                        child: Text(
+                          'No songs in playlist',
+                          style: TextStyle(color: Colors.white),
+                          textAlign: TextAlign.center,
+                        ),
                       ),
                     ),
             ],
@@ -240,14 +288,13 @@ class _PlaylistPageState extends State<PlaylistPage> {
 
   Widget _buildSongRow(int index, String title, String artist,
       String audioFilePath, bool isPlaying) {
-
     final song = allSongs.firstWhere(
-          (s) => s['title'] == title && s['artist'] == artist,
+      (s) => s['title'] == title && s['artist'] == artist,
       orElse: () => {},
     );
 
     final artistImage = allSongs.firstWhere(
-          (song) => song['artist'].toLowerCase() == artist.toLowerCase(),
+      (song) => song['artist'].toLowerCase() == artist.toLowerCase(),
       orElse: () => {'artist_image': 'assets/defaultpic.jpg'},
     )['artist_image'];
 
@@ -271,13 +318,19 @@ class _PlaylistPageState extends State<PlaylistPage> {
       },
       child: Row(
         children: [
-          Text('${index + 1}', style: TextStyle(color: Colors.white, fontSize: 16)),
-          SizedBox(width: 30),
-          Expanded(
-            child: Text(title, style: TextStyle(color: Colors.white, fontSize: 16)),
+          SizedBox(
+            width: 30,
+            child: Text('${index + 1}',
+                style: TextStyle(color: Colors.white, fontSize: 16)),
           ),
-          SizedBox(width: 85),
-          Expanded(
+          SizedBox(
+            width: 140,
+            child: Text(title,
+                style: TextStyle(color: Colors.white, fontSize: 16),
+                overflow: TextOverflow.ellipsis),
+          ),
+          SizedBox(
+            width: 120,
             child: GestureDetector(
               onTap: () {
                 Navigator.push(
@@ -298,37 +351,44 @@ class _PlaylistPageState extends State<PlaylistPage> {
                   fontSize: 16,
                   decoration: TextDecoration.underline,
                 ),
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ),
-          IconButton(
-            icon: Icon(
-              isPlaying ? Icons.pause_circle_filled : Icons.play_circle_filled,
-              color: Colors.white,
-              size: 35,
+          SizedBox(
+            width: 50,
+            child: IconButton(
+              icon: Icon(
+                isPlaying
+                    ? Icons.pause_circle_filled
+                    : Icons.play_circle_filled,
+                color: Colors.white,
+                size: 35,
+              ),
+              onPressed: () {
+                _playPause(index, audioFilePath);
+              },
             ),
-            onPressed: () {
-              _playPause(index, audioFilePath);
-            },
           ),
-          PopupMenuButton<String>(
-            icon: Icon(Icons.more_vert, color: Colors.white),
-            onSelected: (String choice) {
-              if (choice == 'delete') {
-                _removeSongFromPlaylist(index);
-              }
-            },
-            color: Colors.black,
-            itemBuilder: (BuildContext context) => [
-              PopupMenuItem<String>(
-                value: 'delete',
-                child: Text(
-                  'Delete',
-                  style: TextStyle(color: Colors.white),
+          if (widget.songIds == null) // Only show for user-created playlists
+            PopupMenuButton<String>(
+              icon: Icon(Icons.more_vert, color: Colors.white),
+              onSelected: (String choice) {
+                if (choice == 'delete') {
+                  _removeSongFromPlaylist(index);
+                }
+              },
+              color: Colors.black,
+              itemBuilder: (BuildContext context) => [
+                PopupMenuItem<String>(
+                  value: 'delete',
+                  child: Text(
+                    'Delete',
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
         ],
       ),
     );

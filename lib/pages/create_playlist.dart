@@ -85,6 +85,7 @@ class _CreatePlaylistState extends State<CreatePlaylist> {
           'name': _playlistController.text,
           'userId': userId,
           'createdAt': FieldValue.serverTimestamp(),
+          'lastPlayed': FieldValue.serverTimestamp(),
           'songs': [],
         });
 

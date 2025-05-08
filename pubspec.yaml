@@ -96,6 +96,7 @@ flutter:
     - assets/playlist/playlist4.jpg
     - assets/playlist/playlist5.png
     - assets/playlist/playlist6.jpg
+    - assets/playlist/
     - assets/album/clairo.jpg
     - assets/album/fleetwoodmac.jpg
     - assets/album/oasis.jpg
