@@ -356,9 +356,9 @@ class _HomePageState extends State<HomePage> {
                       children: [
                         _buildPlaylistCard('assets/playlist/playlist1.jpg', "Study Hub"),
                         _buildPlaylistCard('assets/playlist/playlist2.jpg', "On Repeat"),
-                        _buildPlaylistCard('assets/playlist/playlist3.png', "volume UPPP"),
+                        _buildPlaylistCard('assets/playlist/playlist3.jpg', "volume UPPP"),
                         _buildPlaylistCard('assets/playlist/playlist4.jpg', "carpool!!"),
-                        _buildPlaylistCard('assets/playlist/playlist5.jpg', "focus time"),
+                        _buildPlaylistCard('assets/playlist/playlist5.png', "focus time"),
                         _buildPlaylistCard('assets/playlist/playlist6.jpg', "stuck in January"),
                       ],
                     ),
