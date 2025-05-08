@@ -216,20 +216,36 @@ class _LibraryPageState extends State<LibraryPage> {
               ),
               SizedBox(height: 20),
               if (_selectedCategory == 'Songs') ...[
-                _buildSongList(_getSongsFromPlaylists()),
+                _getSongsFromPlaylists().isEmpty
+                    ? Center(
+                  child: Text(
+                    'No Songs Yet',
+                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  ),
+                )
+                    : _buildSongList(_getSongsFromPlaylists()),
               ],
               if (_selectedCategory == 'Artists') ...[
-                ..._getArtistsFromPlaylists()
-                    .map((artist) => _buildArtistItem(artist))
-                    .toList(),
+                _getArtistsFromPlaylists().isEmpty
+                    ? Center(
+                  child: Text(
+                    'No Artists Yet',
+                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  ),
+                )
+                    : Column(
+                  children: _getArtistsFromPlaylists()
+                      .map((artist) => _buildArtistItem(artist))
+                      .toList(),
+                ),
               ],
               if (_selectedCategory == 'Playlists') ...[
                 _isLoadingPlaylists
                     ? Center(child: CircularProgressIndicator())
                     : _playlists.isEmpty
                         ? Center(
-                            child: Text('No playlists found',
-                                style: TextStyle(color: Colors.white)))
+                            child: Text('No Playlists Found',
+                                style: TextStyle(color: Colors.white, fontSize: 16)))
                         : Column(
                             children: _playlists
                                 .map((playlist) => _buildPlaylistItem(playlist))
@@ -326,13 +342,17 @@ class _LibraryPageState extends State<LibraryPage> {
         padding: const EdgeInsets.only(bottom: 10.0),
         child: Row(
           children: [
-            Image.asset(
-              song['image'],
-              width: 67,
-              height: 67,
-              errorBuilder: (context, error, stackTrace) {
-                return Icon(Icons.music_note, color: Colors.grey, size: 67);
-              },
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8), // Adjust the radius as needed
+              child: Image.asset(
+                song['image'],
+                width: 65,
+                height: 65,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Icon(Icons.music_note, color: Colors.grey, size: 65);
+                },
+              ),
             ),
             SizedBox(width: 10),
             Expanded(
@@ -513,33 +533,41 @@ class _LibraryPageState extends State<LibraryPage> {
     return Row(
       children: [
         if (isFilePath)
-          Container(
-            width: 67,
-            height: 67,
-            child: Image.file(
-              File(imagePath),
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return Image.asset(
-                  'assets/defaultpic.jpg',
-                  width: 67,
-                  height: 67,
-                );
-              },
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8), // Adjust the radius as needed
+            child: Container(
+              width: 65,
+              height: 65,
+              child: Image.file(
+                File(imagePath),
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Image.asset(
+                    'assets/defaultpic.jpg',
+                    width: 65,
+                    height: 65,
+                  );
+                },
+              ),
             ),
           )
         else
-          Image.asset(
-            imagePath,
-            width: 67,
-            height: 67,
-            errorBuilder: (context, error, stackTrace) {
-              return Image.asset(
-                'assets/defaultpic.jpg',
-                width: 67,
-                height: 67,
-              );
-            },
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8), // Adjust the radius as needed
+            child: Image.asset(
+              imagePath,
+              width: 65,
+              height: 65,
+              fit: BoxFit.cover, // Ensures the image fits within the rounded corners
+              errorBuilder: (context, error, stackTrace) {
+                return Image.asset(
+                  'assets/defaultpic.jpg',
+                  width: 65,
+                  height: 65,
+                  fit: BoxFit.cover,
+                );
+              },
+            ),
           ),
         SizedBox(width: 10),
         Column(

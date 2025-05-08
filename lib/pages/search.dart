@@ -61,6 +61,11 @@ class _SearchPageState extends State<SearchPage> {
     });
   }
 
+  List<String> _getArtistsFromSongs(List<Map<String, dynamic>> songs) {
+    return songs.map((song) => song['artist'] as String).toSet().toList()
+      ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -116,11 +121,13 @@ class _SearchPageState extends State<SearchPage> {
                       child: TextField(
                         controller: _searchController,
                         maxLength: 120,
+                        maxLengthEnforcement: MaxLengthEnforcement.enforced,
                         style: TextStyle(color: Colors.black, fontSize: 16),
                         decoration: InputDecoration(
                           hintText: "Artists, songs, or podcasts",
                           hintStyle: TextStyle(color: Colors.black54),
                           border: InputBorder.none,
+                          counterText: "", // Hides the character counter
                         ),
                         onChanged: (value) {
                           _filterSongs(value); // Filter songs and artists based on search query
@@ -130,7 +137,6 @@ class _SearchPageState extends State<SearchPage> {
                   ],
                 ),
               ),
-
               SizedBox(height: 16),
 
               // Display results only if user starts typing
@@ -151,36 +157,36 @@ class _SearchPageState extends State<SearchPage> {
                     itemCount: filteredArtists.length,
                     itemBuilder: (context, index) {
                       final artist = filteredArtists[index];
-                      return ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        leading: CircleAvatar(
-                          backgroundImage: AssetImage(
-                            allSongs.firstWhere(
-                                  (song) => song['artist'] == artist,
-                              orElse: () => {'artist_image': 'assets/defaultpic.jpg'},
-                            )['artist_image'],
+                      final artistImage = allSongs.firstWhere(
+                            (song) => song['artist'] == artist,
+                        orElse: () => {'artist_image': 'assets/defaultpic.jpg'},
+                      )['artist_image'];
+
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: ListTile(
+                          contentPadding: EdgeInsets.zero,
+                          leading: CircleAvatar(
+                            backgroundImage: AssetImage(artistImage),
+                            radius: 30,
                           ),
-                          radius: 25,
-                        ),
-                        title: Text(
-                          artist,
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ArtistSongsPage(
-                                artist: artist,
-                                image: allSongs.firstWhere(
-                                      (song) => song['artist'] == artist,
-                                  orElse: () => {'artist_image': 'assets/defaultpic.jpg'},
-                                )['artist_image'],
-                                allSongs: allSongs,
+                          title: Text(
+                            artist,
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ArtistSongsPage(
+                                  artist: artist,
+                                  image: artistImage,
+                                  allSongs: allSongs,
+                                ),
                               ),
-                            ),
-                          );
-                        },
+                            );
+                          },
+                        ),
                       );
                     },
                   ),
@@ -261,135 +267,137 @@ class _SearchPageState extends State<SearchPage> {
                   SizedBox(height: 16),
                 ],
               ] else ...[
-                // Initial UI with genres and categories
                 Text(
-                  "Your top genres",
+                  "Artists",
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 16,
+                    fontWeight: FontWeight.bold
                   ),
                 ),
                 SizedBox(height: 10),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      _buildGenreCard("R&B", 'assets/category/freudian.jpg', Color(0xFF9854B2)),
-                      _buildGenreCard("Hip-hop", 'assets/category/drake.png', Color(0xFF678026)),
-                      _buildGenreCard("Pop", 'assets/category/1975.png', Color(0xFF3371E4)),
-                    ],
+                SizedBox(
+                  height: 120, // Adjust height as needed
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: _getArtistsFromSongs(allSongs).map((artist) {
+                        final artistImage = allSongs.firstWhere(
+                              (song) => song['artist'] == artist,
+                          orElse: () => {'artist_image': 'assets/defaultpic.jpg'},
+                        )['artist_image'];
+
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Column(
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => ArtistSongsPage(
+                                        artist: artist,
+                                        image: artistImage,
+                                        allSongs: allSongs,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: CircleAvatar(
+                                  radius: 40,
+                                  backgroundImage: AssetImage(artistImage),
+                                  onBackgroundImageError: (exception, stackTrace) {
+                                    // Fallback to default image if there's an error
+                                  },
+                                ),
+                              ),
+                              SizedBox(height: 8),
+                              Text(
+                                artist,
+                                style: TextStyle(color: Colors.white, fontSize: 12),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                    ),
                   ),
                 ),
-
-                SizedBox(height: 16),
-
-                // Popular Podcast Categories Section
+                SizedBox(height: 8),
                 Text(
-                  "Popular podcast categories",
+                  "Songs",
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 16,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(height: 10),
+                SizedBox(height: 8),
                 SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      _buildGenreCard("News & Politics", 'assets/category/politics.jpg', Color(0xFF8768A7)),
-                      _buildGenreCard("Comedy", 'assets/category/comedy.jpg', Color(0xFFCF4321)),
-                      _buildGenreCard("Games", 'assets/category/game.jpg', Color(0xFF3371E4)),
-                    ],
-                  ),
-                ),
-
-                SizedBox(height: 16),
-
-                // Browse all
-                Text(
-                  "Browse all",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                  ),
-                ),
-                SizedBox(height: 10),
-                // Grid view section
-                SingleChildScrollView(
-                  scrollDirection: Axis.vertical,
-                  child: Column(
-                    children: [
-                      Wrap(
-                        children: [
-                          _buildGenreCard("2024 Wrapped", 'assets/category/wrapped.jpg', Color(0xFFABBB6D)),
-                          _buildGenreCard("Podcasts", 'assets/category/podcast.jpg', Color(0xFF223160)),
-                          _buildGenreCard("Charts", 'assets/category/charts.jpg', Color(0xFF8768A7)),
-                          _buildGenreCard("Made for you", 'assets/category/made for you.jpg', Color(0xFF75A768)),
-                        ],
-                      ),
-                    ],
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.6,
+                    child: ListView.builder(
+                      itemCount: allSongs.length,
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        // Shuffle the songs list
+                        allSongs.shuffle();
+                        final song = allSongs[index];
+                        return ListTile(
+                          leading: Image.asset(
+                            song['image'],
+                            width: 50,
+                            height: 50,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Icon(Icons.music_note, color: Colors.white);
+                            },
+                          ),
+                          title: Text(song['title'], style: TextStyle(color: Colors.white)),
+                          subtitle: Text(song['artist'], style: TextStyle(color: Colors.white54)),
+                          trailing: IconButton(
+                            icon: Icon(Icons.add, color: Colors.white),
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) => Dialog(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                  child: Container(
+                                    height: 350,
+                                    width: 300,
+                                    child: AddSong(song: song),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => SongPage(
+                                  title: song['title'],
+                                  artist: song['artist'],
+                                  image: song['image'],
+                                  file: song['file'],
+                                  songs: allSongs,
+                                  currentIndex: allSongs.indexOf(song),
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
                   ),
                 ),
               ]
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildGenreCard(String genre, String imagePath, Color color) {
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(4),
-      ),
-      elevation: 5,
-      color: color,
-      child: Container(
-        width: 170, // Set consistent width
-        height: 110, // Set consistent height
-        padding: const EdgeInsets.only(top: 8.0, left: 8.0),
-        child: Stack(
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  genre,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                  ),
-                ),
-              ],
-            ),
-            Positioned(
-              bottom: 0,
-              right: -15,
-              child: Transform.rotate(
-                angle: 0.5,
-                child: Container(
-                  width: 70,
-                  height: 70,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage(imagePath),
-                      fit: BoxFit.cover,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.3),
-                        spreadRadius: 2,
-                        blurRadius: 6,
-                        offset: Offset(-4, 4),
-                      ),
-                    ],
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-              ),
-            ),
-          ],
         ),
       ),
     );

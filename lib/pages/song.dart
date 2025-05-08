@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:file_picker/file_picker.dart';
 import 'mini_player.dart';
-import 'add_song.dart'; // Import AddSong screen
+import 'add_song.dart';
 
 class SongPage extends StatefulWidget {
   final String title;
@@ -65,6 +65,7 @@ class _SongPageState extends State<SongPage> {
 
     // Load the audio file
     _audioPlayer.setSourceDeviceFile(widget.file);
+    _playPause();
   }
 
   void _playPause() async {
@@ -243,7 +244,7 @@ class _SongPageState extends State<SongPage> {
                         ),
                       ),
                       IconButton(
-                        icon: Icon(Icons.favorite_border, color: Colors.white, size: 30),
+                        icon: Icon(Icons.add, color: Colors.white, size: 30),
                         onPressed: _showAddSongDialog, // Show the dialog on heart icon click
                       ),
                     ],

@@ -101,8 +101,9 @@ class _AddSongState extends State<AddSong> {
               child: _playlists.isEmpty
                   ? Center(
                 child: Text(
-                  'No eligible playlists found',
+                  "Looks like you don't have any playlists yet. Please create one.",
                   style: TextStyle(color: Colors.white),
+                  textAlign: TextAlign.center,
                 ),
               )
                   : SingleChildScrollView(

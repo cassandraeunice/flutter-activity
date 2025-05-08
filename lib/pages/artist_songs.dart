@@ -100,10 +100,22 @@ class _ArtistSongsPageState extends State<ArtistSongsPage> {
                     padding: const EdgeInsets.only(bottom: 10.0),
                     child: Row(
                       children: [
-                        Image.asset(
-                          song['image'],
-                          width: 67,
-                          height: 67,
+                        Text(
+                          '${index + 1}', // Add the song number
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                          ),
+                        ),
+                        SizedBox(width: 10),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.asset(
+                            song['image'],
+                            width: 65,
+                            height: 65,
+                            fit: BoxFit.cover,
+                          ),
                         ),
                         SizedBox(width: 10),
                         Expanded(
