@@ -3,14 +3,9 @@ import 'package:flutter/material.dart';
 import 'pages/search.dart';
 import 'pages/library.dart';
 import 'pages/profile.dart';
-// import 'pages/settings.dart';
 import 'pages/playlist.dart';
 import 'pages/song.dart';
-import 'pages/start_page.dart';
 import 'pages/sign_up/sign_up1.dart';
-import 'pages/sign_up/sign_up2.dart';
-import 'pages/sign_up/sign_up3.dart';
-import 'pages/sign_up/sign_up4.dart';
 import 'pages/forgot_password/forgot_password1.dart';
 import 'pages/edit_profile.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -50,22 +45,22 @@ class MoodyApp extends StatelessWidget {
         '/editprofile': (context) => AuthGuard(child: EditProfilePage()),
         // '/settings': (context) => AuthGuard(child: SettingsPage()),
         '/profile': (context) => AuthGuard(child: ProfilePage()),
-        '/playlist': (context) => AuthGuard(
-          child: PlaylistPage(
-            playlistName: 'Default Playlist', // Provide a default name
-            playlistImage: 'assets/default_song_cover.png', // Provide a default image
-          ),
-        ),
-        '/song': (context) => AuthGuard(
-          child: SongPage(
-            title: '', // Provide default or placeholder values
-            artist: '',
-            image: '',
-            file: '',
-            songs: [], // Provide an empty list or a default list of songs
-            currentIndex: 0, // Provide a default index
-          ),
-        ),
+        // '/playlist': (context) => AuthGuard(
+        //   child: PlaylistPage(
+        //     playlistName: 'Default Playlist', // Provide a default name
+        //     playlistImage: 'assets/default_song_cover.png', // Provide a default image
+        //   ),
+        // ),
+        // '/song': (context) => AuthGuard(
+        //   child: SongPage(
+        //     title: '', // Provide default or placeholder values
+        //     artist: '',
+        //     image: '',
+        //     file: '',
+        //     songs: [], // Provide an empty list or a default list of songs
+        //     currentIndex: 0, // Provide a default index
+        //   ),
+        //),
       },
     );
   }
@@ -211,50 +206,50 @@ class _HomePageState extends State<HomePage> {
                           MaterialPageRoute(builder: (context) => LibraryPage()),
                         ),
                       ),
-                      ListTile(
-                        leading: Icon(
-                          Icons.library_music,
-                          color: Colors.white,
-                          size: 30,
-                        ),
-                        title: Text(
-                          'Playlist',
-                          style: TextStyle(color: Colors.white, fontSize: 18),
-                        ),
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => PlaylistPage(
-                              playlistName: 'Sample Playlist', // Replace with actual data
-                              playlistImage: 'assets/default_song_cover.png', // Replace with actual data
-                            ),
-                          ),
-                        ),
-                      ),
-                      ListTile(
-                        leading: Icon(
-                          Icons.library_music,
-                          color: Colors.white,
-                          size: 30,
-                        ),
-                        title: Text(
-                          'Song',
-                          style: TextStyle(color: Colors.white, fontSize: 18),
-                        ),
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => SongPage(
-                              title: 'Sample Title', // Replace with actual data
-                              artist: 'Sample Artist',
-                              image: 'assets/sample.jpg',
-                              file: 'assets/sample.mp3',
-                              songs: [], // Provide an empty list or the actual list of songs
-                              currentIndex: 0, // Provide the appropriate index
-                            ),
-                          ),
-                        ),
-                      ),
+                      // ListTile(
+                      //   leading: Icon(
+                      //     Icons.library_music,
+                      //     color: Colors.white,
+                      //     size: 30,
+                      //   ),
+                      //   title: Text(
+                      //     'Playlist',
+                      //     style: TextStyle(color: Colors.white, fontSize: 18),
+                      //   ),
+                      //   onTap: () => Navigator.push(
+                      //     context,
+                      //     MaterialPageRoute(
+                      //       builder: (context) => PlaylistPage(
+                      //         playlistName: 'Sample Playlist', // Replace with actual data
+                      //         playlistImage: 'assets/default_song_cover.png', // Replace with actual data
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
+                      // ListTile(
+                      //   leading: Icon(
+                      //     Icons.library_music,
+                      //     color: Colors.white,
+                      //     size: 30,
+                      //   ),
+                      //   title: Text(
+                      //     'Song',
+                      //     style: TextStyle(color: Colors.white, fontSize: 18),
+                      //   ),
+                      //   onTap: () => Navigator.push(
+                      //     context,
+                      //     MaterialPageRoute(
+                      //       builder: (context) => SongPage(
+                      //         title: 'Sample Title', // Replace with actual data
+                      //         artist: 'Sample Artist',
+                      //         image: 'assets/sample.jpg',
+                      //         file: 'assets/sample.mp3',
+                      //         songs: [], // Provide an empty list or the actual list of songs
+                      //         currentIndex: 0, // Provide the appropriate index
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
                       ListTile(
                         leading: Icon(
                           Icons.search,
