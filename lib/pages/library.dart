@@ -123,7 +123,7 @@ class _LibraryPageState extends State<LibraryPage> {
           return {
             'id': doc.id,
             'name': data['name'] ?? 'Unnamed Playlist',
-            'image': data['imagePath'] ?? 'assets/defaultpic.jpg',
+            'image': data['imagePath'] ?? 'assets/default_song_cover.png',
             'userId': data['userId'],
             'songs': data['songs'] ?? [],
           };
@@ -437,7 +437,7 @@ class _LibraryPageState extends State<LibraryPage> {
           MaterialPageRoute(
             builder: (context) => PlaylistPage(
               playlistName: playlist['name'] ?? 'Unknown Playlist',
-              playlistImage: playlist['image'] ?? 'assets/defaultpic.jpg',
+              playlistImage: playlist['image'] ?? 'assets/default_song_cover.png',
             ),
           ),
         ).then((_) {
@@ -451,7 +451,7 @@ class _LibraryPageState extends State<LibraryPage> {
             _buildRecentlyPlayedItem(
               playlist['name'] ?? 'Unknown Playlist',
               '$songCount songs', // <-- Show song count here
-              playlist['image'] ?? 'assets/defaultpic.jpg',
+              playlist['image'] ?? 'assets/default_song_cover.png',
             ),
             Spacer(),
             PopupMenuButton<String>(
@@ -543,7 +543,7 @@ class _LibraryPageState extends State<LibraryPage> {
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
                   return Image.asset(
-                    'assets/defaultpic.jpg',
+                    'assets/default_song_cover.png',
                     width: 65,
                     height: 65,
                   );
@@ -561,7 +561,7 @@ class _LibraryPageState extends State<LibraryPage> {
               fit: BoxFit.cover, // Ensures the image fits within the rounded corners
               errorBuilder: (context, error, stackTrace) {
                 return Image.asset(
-                  'assets/defaultpic.jpg',
+                  'assets/default_song_cover.png',
                   width: 65,
                   height: 65,
                   fit: BoxFit.cover,

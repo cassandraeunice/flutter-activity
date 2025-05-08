@@ -53,7 +53,7 @@ class MoodyApp extends StatelessWidget {
         '/playlist': (context) => AuthGuard(
           child: PlaylistPage(
             playlistName: 'Default Playlist', // Provide a default name
-            playlistImage: 'assets/defaultpic.jpg', // Provide a default image
+            playlistImage: 'assets/default_song_cover.png', // Provide a default image
           ),
         ),
         '/song': (context) => AuthGuard(
@@ -226,7 +226,7 @@ class _HomePageState extends State<HomePage> {
                           MaterialPageRoute(
                             builder: (context) => PlaylistPage(
                               playlistName: 'Sample Playlist', // Replace with actual data
-                              playlistImage: 'assets/defaultpic.jpg', // Replace with actual data
+                              playlistImage: 'assets/default_song_cover.png', // Replace with actual data
                             ),
                           ),
                         ),

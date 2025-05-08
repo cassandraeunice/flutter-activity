@@ -136,8 +136,8 @@ class _PlaylistPageState extends State<PlaylistPage> {
             children: [
               Center(
                 child: Container(
-                  width: 300,
-                  height: 350,
+                  width: MediaQuery.of(context).size.width * 0.7, // 80% of screen width
+                  height: MediaQuery.of(context).size.width * 0.7, // Same as width to make it square
                   decoration: BoxDecoration(
                     image: DecorationImage(
                       image: widget.playlistImage.startsWith('/')
@@ -149,7 +149,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
                   ),
                 ),
               ),
-              SizedBox(height: 8),
+              SizedBox(height: 30),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [

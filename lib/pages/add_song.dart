@@ -41,7 +41,7 @@ class _AddSongState extends State<AddSong> {
       return {
         'id': doc.id,
         'name': data['name'] ?? 'Unnamed Playlist',
-        'image': data['imagePath'] ?? 'assets/defaultpic.jpg',
+        'image': data['imagePath'] ?? 'assets/default_song_cover.png',
         'songs': data['songs'] ?? [],
       };
     }).toList();

@@ -98,12 +98,12 @@ class _CreatePlaylistState extends State<CreatePlaylist> {
 
         // Step 3: Update Firestore with the image path
         await _firestore.collection('playlists').doc(playlistId).update({
-          'imagePath': localImagePath ?? 'assets/defaultpic.jpg', // Use local path or default
+          'imagePath': localImagePath ?? 'assets/default_song_cover.png', // Use local path or default
         });
 
         Navigator.pop(context, {
           'name': _playlistController.text,
-          'image': localImagePath ?? 'assets/defaultpic.jpg',
+          'image': localImagePath ?? 'assets/default_song_cover.png',
         });
       } catch (e) {
         setState(() {

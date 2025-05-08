@@ -95,7 +95,7 @@ class _EditPlaylistState extends State<EditPlaylist> {
           localImagePath = await _saveImageLocally(_pickedFile!, widget.playlistId);
         }
 
-        String finalImagePath = localImagePath ?? widget.initialImagePath ?? 'assets/defaultpic.jpg';
+        String finalImagePath = localImagePath ?? widget.initialImagePath ?? 'assets/default_song_cover.png';
 
         await _firestore.collection('playlists').doc(widget.playlistId).update({
           'name': _playlistController.text,
@@ -190,7 +190,7 @@ class _EditPlaylistState extends State<EditPlaylist> {
                         ? (widget.initialImagePath!.startsWith('assets/')
                         ? AssetImage(widget.initialImagePath!)
                         : FileImage(File(widget.initialImagePath!)))
-                        : AssetImage('assets/defaultpic.jpg')) as ImageProvider,
+                        : AssetImage('assets/default_song_cover.png')) as ImageProvider,
                     fit: BoxFit.cover,
                   ),
                 ),
