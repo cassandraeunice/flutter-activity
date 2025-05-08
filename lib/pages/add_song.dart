@@ -34,7 +34,6 @@ class _AddSongState extends State<AddSong> {
     final eligible = snapshot.docs.where((doc) {
       final data = doc.data() as Map<String, dynamic>;
       final List<dynamic> songs = data['songs'] ?? [];
-      // Filter out playlists that already contain the song
       return !songs.any((s) => s['file'] == songFile);
     }).map((doc) {
       final data = doc.data() as Map<String, dynamic>;
@@ -122,9 +121,14 @@ class _AddSongState extends State<AddSong> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                playlist['name'],
-                                style: TextStyle(color: Colors.white),
+                              SizedBox(
+                                width: 150,
+                                child: Text(
+                                  playlist['name'],
+                                  style: TextStyle(color: Colors.white),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
                               Text(
                                 '${(playlist['songs'] as List).length} songs',
@@ -183,18 +187,46 @@ class _AddSongState extends State<AddSong> {
                 ),
               ),
             ),
-            Align(
-              alignment: Alignment.centerRight,
-              child: ElevatedButton(
-                onPressed: _selectedPlaylistIds.isEmpty ? null : _addSongToSelectedPlaylists,
-                child: Text('Done'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: Colors.black,
-                ),
+          ],
+        ),
+      ),
+      bottomNavigationBar: Container(
+        color: Colors.transparent,
+        padding: const EdgeInsets.all(16.0),
+        child: ElevatedButton(
+          onPressed: _selectedPlaylistIds.isEmpty ? null : _addSongToSelectedPlaylists,
+          style: ButtonStyle(
+            backgroundColor: WidgetStateProperty.resolveWith<Color>(
+                  (states) {
+                if (states.contains(WidgetState.disabled)) {
+                  return const Color.fromARGB(255, 255, 255, 255).withValues(alpha: 153); // ~60% opacity
+                }
+                return Colors.white;
+              },
+            ),
+            foregroundColor: WidgetStateProperty.resolveWith<Color>(
+                  (states) {
+                if (states.contains(WidgetState.disabled)) {
+                  return const Color.fromARGB(255, 0, 0, 0).withValues(alpha: 102); // ~40% opacity
+                }
+                return Colors.black;
+              },
+            ),
+            elevation: WidgetStateProperty.all(6),
+            shape: WidgetStateProperty.all(
+              RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: BorderSide(color: Colors.black12),
               ),
             ),
-          ],
+            padding: WidgetStateProperty.all(
+              EdgeInsets.symmetric(vertical: 16),
+            ),
+            textStyle: WidgetStateProperty.all(
+              TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+          ),
+          child: Text('Done'),
         ),
       ),
     );
