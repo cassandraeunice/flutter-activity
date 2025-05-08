@@ -155,8 +155,15 @@ class _EditPlaylistState extends State<EditPlaylist> {
           children: [
             TextField(
               controller: _playlistController,
+              onChanged: (value) {
+                if (value.length > 30) { // Change the limit to 30
+                  _playlistController.text = value.substring(0, 30); // Substring to 30 characters
+                  _playlistController.selection = TextSelection.fromPosition(
+                    TextPosition(offset: 30), // Set cursor position at the 30th character
+                  );
+                }
+              },
               style: TextStyle(color: Colors.white),
-              maxLength: 50,
               decoration: InputDecoration(
                 labelText: "Playlist Name",
                 labelStyle: TextStyle(color: Colors.white70),
@@ -172,6 +179,8 @@ class _EditPlaylistState extends State<EditPlaylist> {
                 ),
               ),
             ),
+
+
             SizedBox(height: 10),
             // GestureDetector(
             //   onTap: _pickImage,

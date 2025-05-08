@@ -155,7 +155,6 @@ class _CreatePlaylistState extends State<CreatePlaylist> {
             TextField(
               controller: _playlistController,
               style: TextStyle(color: Colors.white),
-              maxLength: 50,
               decoration: InputDecoration(
                 labelText: "Playlist Name",
                 labelStyle: TextStyle(color: Colors.white70),
@@ -170,7 +169,14 @@ class _CreatePlaylistState extends State<CreatePlaylist> {
                   borderRadius: BorderRadius.circular(5),
                 ),
               ),
+              onChanged: (value) {
+                if (value.length > 30) {
+                  _playlistController.text = value.substring(0, 30);
+                  _playlistController.selection = TextSelection.collapsed(offset: 30); // Keep the cursor at the end
+                }
+              },
             ),
+
             // SizedBox(height: 10),
             // GestureDetector(
             //   onTap: _pickImage,
