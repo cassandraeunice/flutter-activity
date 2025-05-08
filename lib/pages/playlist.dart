@@ -4,10 +4,12 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:audioplayers/audioplayers.dart'; // Import the audioplayers package
 import 'edit_playlist.dart';
 import 'artist_songs.dart';
 import 'song.dart';
+
 
 class PlaylistPage extends StatefulWidget {
   final String playlistName;
@@ -64,9 +66,11 @@ class _PlaylistPageState extends State<PlaylistPage> {
   }
 
   Future<void> _loadPlaylistFromFirestore() async {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
     final query = await _firestore
         .collection('playlists')
         .where('name', isEqualTo: widget.playlistName)
+        .where('userId', isEqualTo: userId)
         .limit(1)
         .get();
 
