@@ -332,8 +332,8 @@ class _LibraryPageState extends State<LibraryPage> {
               artist: song['artist'],
               image: song['image'],
               file: song['file'],
-              songs: _songs, // Pass the list of all songs
-              currentIndex: _songs.indexOf(song), // Pass the current song index
+              songs: _songs,
+              currentIndex: _songs.indexOf(song),
             ),
           ),
         );
@@ -343,7 +343,7 @@ class _LibraryPageState extends State<LibraryPage> {
         child: Row(
           children: [
             ClipRRect(
-              borderRadius: BorderRadius.circular(8), // Adjust the radius as needed
+              borderRadius: BorderRadius.circular(8),
               child: Image.asset(
                 song['image'],
                 width: 65,
@@ -385,8 +385,6 @@ class _LibraryPageState extends State<LibraryPage> {
   }
 
   Widget _buildArtistItem(String artist) {
-    // Find the first song by the artist to get the artist image
-
     final artistImage = _songs.firstWhere(
       (song) => song['artist'].toLowerCase() == artist.toLowerCase(),
       orElse: () => {'artist_image': 'assets/defaultpic.jpg'},
@@ -450,7 +448,7 @@ class _LibraryPageState extends State<LibraryPage> {
           children: [
             _buildRecentlyPlayedItem(
               playlist['name'] ?? 'Unknown Playlist',
-              '$songCount songs', // <-- Show song count here
+              '$songCount songs',
               playlist['image'] ?? 'assets/default_song_cover.png',
             ),
             Spacer(),
@@ -570,9 +568,8 @@ class _LibraryPageState extends State<LibraryPage> {
             ),
           ),
         SizedBox(width: 10),
-        
         Container(
-          width: 200, // Set this based on your layout needs
+          width: MediaQuery.of(context).size.width * 0.6,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
