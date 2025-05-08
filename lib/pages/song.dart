@@ -53,13 +53,10 @@ class _SongPageState extends State<SongPage> {
       }
     });
 
-    // Reset the state when the audio finishes playing
+    // Automatically play the next track when the current one finishes
     _audioPlayer.onPlayerComplete.listen((_) {
       if (mounted) {
-        setState(() {
-          _isPlaying = false;
-          _currentPosition = Duration.zero;
-        });
+        _nextTrack();
       }
     });
 
