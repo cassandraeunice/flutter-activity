@@ -136,8 +136,8 @@ class _PlaylistPageState extends State<PlaylistPage> {
             children: [
               Center(
                 child: Container(
-                  width: MediaQuery.of(context).size.width * 0.7, // 80% of screen width
-                  height: MediaQuery.of(context).size.width * 0.7, // Same as width to make it square
+                  width: MediaQuery.of(context).size.width * 0.7,
+                  height: MediaQuery.of(context).size.width * 0.7,
                   decoration: BoxDecoration(
                     image: DecorationImage(
                       image: widget.playlistImage.startsWith('/')
@@ -153,12 +153,16 @@ class _PlaylistPageState extends State<PlaylistPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    _updatedPlaylistName ?? widget.playlistName,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 33,
-                      fontWeight: FontWeight.bold,
+                  Expanded(
+                    child: Text(
+                      _updatedPlaylistName ?? widget.playlistName,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 33,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      maxLines: 2, // Allow up to 2 lines
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                   Row(

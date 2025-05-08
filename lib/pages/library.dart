@@ -534,7 +534,7 @@ class _LibraryPageState extends State<LibraryPage> {
       children: [
         if (isFilePath)
           ClipRRect(
-            borderRadius: BorderRadius.circular(8), // Adjust the radius as needed
+            borderRadius: BorderRadius.circular(8),
             child: Container(
               width: 65,
               height: 65,
@@ -553,12 +553,12 @@ class _LibraryPageState extends State<LibraryPage> {
           )
         else
           ClipRRect(
-            borderRadius: BorderRadius.circular(8), // Adjust the radius as needed
+            borderRadius: BorderRadius.circular(8),
             child: Image.asset(
               imagePath,
               width: 65,
               height: 65,
-              fit: BoxFit.cover, // Ensures the image fits within the rounded corners
+              fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrace) {
                 return Image.asset(
                   'assets/default_song_cover.png',
@@ -570,18 +570,25 @@ class _LibraryPageState extends State<LibraryPage> {
             ),
           ),
         SizedBox(width: 10),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: TextStyle(color: Colors.white, fontSize: 16),
-            ),
-            Text(
-              subtitle,
-              style: TextStyle(color: Color(0xFFB3B3B3), fontSize: 12),
-            ),
-          ],
+        
+        Container(
+          width: 200, // Set this based on your layout needs
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: TextStyle(color: Colors.white, fontSize: 16),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              Text(
+                subtitle,
+                style: TextStyle(color: Color(0xFFB3B3B3), fontSize: 12),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
         ),
       ],
     );
