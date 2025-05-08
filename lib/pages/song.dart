@@ -226,8 +226,8 @@ class _SongPageState extends State<SongPage> {
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
                               ),
-                              maxLines: 2, // Limit to 2 lines
-                              overflow: TextOverflow.ellipsis, // Add ellipsis for overflow
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
                             ),
                             SizedBox(height: 4),
                             Text(
@@ -255,7 +255,7 @@ class _SongPageState extends State<SongPage> {
                       ),
                       Expanded(
                         child: Slider(
-                          value: _currentPosition.inSeconds.toDouble(),
+                          value: _currentPosition.inSeconds.toDouble().clamp(0, _totalDuration.inSeconds.toDouble()),
                           min: 0,
                           max: _totalDuration.inSeconds.toDouble() > 0
                               ? _totalDuration.inSeconds.toDouble()
