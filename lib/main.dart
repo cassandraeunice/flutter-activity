@@ -316,8 +316,7 @@ class _HomePageState extends State<HomePage> {
               StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
                     .collection('playlists')
-                    .where('lastPlayed', isGreaterThan: null)
-                    .orderBy('lastPlayed', descending: true)
+                    .where('userId', isEqualTo: _auth.currentUser?.uid)
                     .limit(5)
                     .snapshots(),
                 builder: (context, snapshot) {
