@@ -172,7 +172,7 @@ class _LibraryPageState extends State<LibraryPage> {
                     ),
                     child: Container(
                       width: MediaQuery.of(context).size.width * 0.30,
-                      height: MediaQuery.of(context).size.height * 0.40,
+                      height: MediaQuery.of(context).size.height * 0.42,
                       child: CreatePlaylist(),
                     ),
                   );
@@ -272,7 +272,7 @@ class _LibraryPageState extends State<LibraryPage> {
           borderRadius: BorderRadius.circular(30),
           border: Border.all(
             color: Colors.white,
-            width: 1,
+            width: 1
           ),
         ),
         padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -465,7 +465,7 @@ class _LibraryPageState extends State<LibraryPage> {
                         ),
                         child: Container(
                           width: MediaQuery.of(context).size.width * 0.30,
-                          height: MediaQuery.of(context).size.height * 0.40,
+                          height: MediaQuery.of(context).size.height * 0.42,
                           child: EditPlaylist(
                             initialName: playlist['name'] ?? '',
                             initialImagePath: playlist['image'],

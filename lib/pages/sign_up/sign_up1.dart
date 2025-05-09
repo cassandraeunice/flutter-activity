@@ -157,15 +157,6 @@ class _SignUpPage1State extends State<SignUpPage1> {
 
             SizedBox(height: 10),
 
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                "You’ll need to confirm this email later.",
-                style: TextStyle(color: Colors.white, fontSize: 12),
-              ),
-            ),
-            SizedBox(height: 30),
-
             Center(
               child: ElevatedButton(
                 onPressed: _onNextPressed,
